@@ -1,3 +1,3 @@
-import homePage from './homePage'
+import event from "./event";
 
-export const schemaTypes = [homePage]
+export const schemaTypes = [event]

@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Service from "./pages/Service";
+import Events from "./pages/Events";
 import Advocacy from "./pages/Advocacy";
 import Scholarships from "./pages/Scholarships";
 import Membership from "./pages/Membership";
@@ -19,7 +19,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/service" element={<Service />} />
+          <Route path="/events" element={<Events />} />
           <Route path="/advocacy" element={<Advocacy />} />
           <Route path="/scholarships" element={<Scholarships />} />
           <Route path="/membership" element={<Membership />} />
