@@ -1,0 +1,21 @@
+# Node
+node_modules
+dist
+.env
+.env.local
+.env.*.local
+
+# Sanity build cache
+zonta-sanity/.sanity
+zonta-sanity/dist
+zonta-sanity/node_modules
+
+# Vite / React cache
+zonta-site/node_modules
+zonta-site/dist
+zonta-site/.vite
+
+# OS / IDE junk
+.DS_Store
+Thumbs.db
+.vscode/
