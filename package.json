@@ -8,6 +8,7 @@
     "vite": "^7.1.10"
   },
   "dependencies": {
+    "react-confetti": "^6.4.0",
     "react-router-dom": "^7.9.4"
   }
 }

@@ -9,44 +9,64 @@ export default function Cart() {
     total,
     clearCart,
     addItem,
-    decreaseItem, // ✅ use the new context function
+    decreaseItem, // ✅ quantity controls
   } = useContext(CartContext)!;
 
   const navigate = useNavigate();
 
+  // ✅ Email + state management
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  // ✅ Handle checkout via backend (unchanged)
+  // ✅ Checkout handler
   const handleCheckout = async () => {
     try {
       setLoading(true);
       setError(null);
+      setSuccess(null);
 
-      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/create-checkout-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items }),
-      });
+      // Simple email validation
+      if (!email || !email.includes("@")) {
+        setError("Please enter a valid email address before proceeding.");
+        setLoading(false);
+        return;
+      }
+
+      // Send cart data + email to backend
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/create-checkout-session`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items, email }),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to create checkout session");
 
       const data = await response.json();
 
       if (data.url) {
-        window.location.href = data.url; // Redirect to Stripe Checkout
+        setSuccess("Redirecting to checkout...");
+        window.location.href = data.url; // redirect to Stripe checkout
       } else {
         throw new Error("Invalid Stripe session URL");
       }
     } catch (err: unknown) {
       console.error("Checkout error:", err);
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Empty cart view
+  // ✅ Empty cart state
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
@@ -71,10 +91,15 @@ export default function Cart() {
           Your Cart
         </h1>
 
-        {/* === Error Message === */}
+        {/* === Feedback Messages === */}
         {error && (
           <div className="mb-6 text-center text-red-600 bg-red-100 border border-red-300 py-2 rounded-md">
             {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-6 text-center text-green-700 bg-green-100 border border-green-300 py-2 rounded-md">
+            {success}
           </div>
         )}
 
@@ -134,12 +159,30 @@ export default function Cart() {
           ))}
         </div>
 
-        {/* === Totals === */}
-        <div className="text-right font-semibold text-xl text-zontaDark">
+        {/* === Total + Email Form === */}
+        <div className="text-right font-semibold text-xl text-zontaDark mb-6">
           Total: ${total.toFixed(2)}
         </div>
 
-        {/* === Buttons === */}
+        {/* ✅ Email input section */}
+        <div className="mb-6">
+          <label
+            htmlFor="email"
+            className="block text-zontaDark font-medium mb-2"
+          >
+            Email for receipt:
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full md:w-1/2 border border-zontaGold rounded-lg px-4 py-2 text-zontaDark focus:outline-none focus:ring-2 focus:ring-zontaGold"
+          />
+        </div>
+
+        {/* === Action Buttons === */}
         <div className="flex justify-end gap-4 mt-6">
           <button
             onClick={clearCart}

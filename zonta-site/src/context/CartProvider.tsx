@@ -56,7 +56,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const removeItem = (id: string) =>
     setItems((prev) => prev.filter((i) => i._id !== id));
 
-  const clearCart = () => setItems([]);
+  const clearCart = () => {
+    setItems([]);
+    localStorage.removeItem("cart");
+  }
 
   const toggleCart = () => setIsCartOpen((p) => !p);
 

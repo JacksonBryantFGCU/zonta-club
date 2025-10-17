@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Mail } from "lucide-react";
+import { Facebook, Mail } from "lucide-react";
 import ZontaLogo from "../assets/Zonta_emblem.png";
 
 export default function Footer() {
@@ -28,22 +28,13 @@ export default function Footer() {
             <h3 className="font-semibold text-lg">Connect With Us</h3>
             <div className="flex space-x-4">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/ZontaNaples"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-white transition"
                 aria-label="Facebook"
               >
                 <Facebook />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-white transition"
-                aria-label="Instagram"
-              >
-                <Instagram />
               </a>
               <a
                 href="mailto:info@zontanaples.org"
