@@ -1,75 +1,104 @@
 import { useEffect, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { CheckCircle } from "lucide-react";
-import Confetti from "react-confetti";
+import { motion } from "framer-motion";
+import { CheckCircle, Home, ShoppingBag } from "lucide-react";
 import { CartContext } from "../context/CartContext";
 
 export default function Success() {
   const { clearCart } = useContext(CartContext)!;
-  const location = useLocation();
 
-  // Optional: get order info from query params
-  const searchParams = new URLSearchParams(location.search);
-  const orderId = searchParams.get("order_id");
-
+  // 🧹 Clear cart on success
   useEffect(() => {
-    // Clear cart on success
     clearCart?.();
   }, [clearCart]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] text-center px-6">
-      <Confetti recycle={false} numberOfPieces={300} />
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="flex flex-col items-center justify-center min-h-[85vh] text-center px-6 bg-gradient-to-b from-gray-50 to-white"
+    >
+      {/* ✅ Success Icon */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 120, damping: 10 }}
+        className="mb-6"
+      >
+        <CheckCircle className="text-green-500 w-20 h-20 mx-auto" />
+      </motion.div>
 
-      <CheckCircle className="text-green-500 w-20 h-20 mb-4" />
+      {/* 🏷️ Title & Message */}
+      <motion.h1
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="text-3xl font-bold text-gray-800 mb-3"
+      >
+        Thank you for your purchase!
+      </motion.h1>
 
-      <h1 className="text-3xl font-semibold text-gray-800 mb-2">
-        Thank you for your order!
-      </h1>
-      <p className="text-gray-600 mb-6">
-        Your payment was successful.{" "}
-        {orderId ? (
-          <>
-            Your order ID is{" "}
-            <span className="font-semibold text-gray-800">{orderId}</span>.
-          </>
-        ) : (
-          "You’ll receive a confirmation email shortly."
-        )}
-      </p>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.25 }}
+        className="text-gray-600 max-w-md mb-8"
+      >
+        Your payment was processed successfully.  
+        You’ll receive an email confirmation shortly with your order details.
+      </motion.p>
 
-      <div className="bg-white shadow-lg rounded-xl p-6 max-w-md w-full mb-8 border border-gray-100">
-        <h2 className="text-lg font-semibold mb-4 text-gray-800">
-          Order Summary
-        </h2>
-        <ul className="text-sm text-gray-600 space-y-1 mb-4">
-          <li>• Items: <span className="font-medium">Shown in your email receipt</span></li>
-          <li>• Status: <span className="text-yellow-600 font-medium">Pending</span></li>
-          <li>• Total: <span className="font-medium">$XX.XX</span></li>
-        </ul>
-        <p className="text-sm text-gray-500 italic">
-          We’ll notify you when your order has been fulfilled.
-        </p>
-      </div>
+      {/* 🧾 Subtle Success Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="bg-white shadow-lg rounded-xl p-6 max-w-md w-full mb-10 border border-gray-100"
+      >
+        <div className="flex flex-col items-center text-gray-700 space-y-3">
+          <ShoppingBag className="text-zontaRed w-10 h-10" />
+          <p className="text-base font-medium">
+            We’re preparing your order for fulfillment.
+          </p>
+          <p className="text-sm text-gray-500">
+            You’ll be notified once it’s on the way!
+          </p>
+        </div>
+      </motion.div>
 
-      <div className="flex gap-4">
-        <Link
-          to="/shop"
-          className="px-6 py-2 bg-zonta-gold text-white rounded-lg hover:bg-yellow-700 transition"
-        >
-          Continue Shopping
-        </Link>
-        <Link
-          to="/"
-          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
-        >
-          Back to Home
-        </Link>
-      </div>
+      {/* 🔗 Buttons */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.45 }}
+        className="flex flex-wrap justify-center gap-4"
+      >
+        <button
+  onClick={() => window.location.assign("/ecommerce")}
+  className="flex items-center gap-2 px-6 py-2 bg-zontaGold text-white font-medium rounded-lg shadow hover:bg-yellow-700 transition"
+>
+  Continue Shopping
+</button>
+<button
+  onClick={() => window.location.assign("/")}
+  className="flex items-center gap-2 px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+>
+  <Home size={18} />
+  Back to Home
+</button>
+        
+      </motion.div>
 
-      <footer className="mt-10 text-sm text-gray-500">
-        Thank you for supporting the Zonta Club of Naples 💛
-      </footer>
-    </div>
+      {/* 💛 Footer */}
+      <motion.footer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.55 }}
+        className="mt-12 text-sm text-gray-500"
+      >
+        Thank you for supporting the{" "}
+        <span className="text-zontaRed font-semibold">Zonta Club of Naples</span> 💛
+      </motion.footer>
+    </motion.div>
   );
 }
