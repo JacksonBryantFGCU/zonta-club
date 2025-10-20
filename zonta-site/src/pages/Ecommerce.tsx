@@ -1,84 +1,58 @@
-import { useEffect, useState, useContext } from "react";
-import { sanity } from "../lib/sanityClient";
-import groq from "groq";
+import { useContext, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProducts, type Product } from "../queries/productQueries";
+import { CartContext } from "../context/CartContext";
 import SearchBar from "../components/SearchBar";
 import CategoryFilter from "../components/CategoryFilter";
 import ProductCard from "../components/ProductCard";
-import { CartContext } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
-interface Product {
-  _id: string;
-  title: string;
-  price: number;
-  description?: string;
-  imageUrl?: string;
-  inStock: boolean;
-  category?: string;
-}
-
 export default function Ecommerce() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filtered, setFiltered] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const { totalItems } = useContext(CartContext)!; // ✅ improved logic
+  const { totalItems } = useContext(CartContext)!;
   const navigate = useNavigate();
 
-  const query = groq`*[_type == "product"]{
-    _id,
-    title,
-    price,
-    description,
-    inStock,
-    "imageUrl": image.asset->url,
-    "category": category->title
-  } | order(title asc)`;
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await sanity.fetch<Product[]>(query);
-        setProducts(data);
-        setFiltered(data);
-        const uniqueCategories = Array.from(
-          new Set(data.map((p) => p.category).filter(Boolean))
-        );
-        setCategories(uniqueCategories as string[]);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // ✅ Fetch products with React Query
+  const { data: products = [], isLoading, isError } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+    staleTime: 1000 * 60 * 5, // 5 min caching
+  });
 
-    fetchProducts();
-  }, []);
+  // ✅ Derived categories and filtered products (computed)
+  const categories = useMemo(() => {
+    const unique = new Set(products.map((p) => p.category).filter(Boolean));
+    return Array.from(unique) as string[];
+  }, [products]);
 
-  // ✅ Filter products by search and category
-  useEffect(() => {
-    let filteredData = [...products];
-
+  const filtered = useMemo(() => {
+    let result = [...products];
     if (search.trim()) {
-      filteredData = filteredData.filter((p) =>
+      result = result.filter((p) =>
         p.title.toLowerCase().includes(search.toLowerCase())
       );
     }
-
     if (selectedCategory) {
-      filteredData = filteredData.filter((p) => p.category === selectedCategory);
+      result = result.filter((p) => p.category === selectedCategory);
     }
+    return result;
+  }, [products, search, selectedCategory]);
 
-    setFiltered(filteredData);
-  }, [search, selectedCategory, products]);
-
-  if (loading) {
+  // ✅ Loading / Error states
+  if (isLoading) {
     return (
       <div className="text-center py-20 text-zontaDark">
         Loading products...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center py-20 text-red-600">
+        Failed to load products. Please try again later.
       </div>
     );
   }
@@ -97,7 +71,7 @@ export default function Ecommerce() {
             onClick={() => navigate("/cart")}
             className="flex items-center gap-2 bg-zontaGold text-white px-6 py-3 rounded-lg shadow-md hover:bg-zontaDark transition"
           >
-            🛒 View Cart
+            View Cart
             {totalItems > 0 && (
               <span className="bg-white text-zontaRed font-bold px-2 py-0.5 rounded-md text-sm">
                 {totalItems}
@@ -123,7 +97,7 @@ export default function Ecommerce() {
           </p>
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((product) => (
+            {filtered.map((product: Product) => (
               <ProductCard key={product._id} product={product} />
             ))}
           </div>

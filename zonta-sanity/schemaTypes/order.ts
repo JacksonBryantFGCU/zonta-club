@@ -1,6 +1,6 @@
 export default {
   name: "order",
-  title: "Order",
+  title: "Orders",
   type: "document",
   fields: [
     {
@@ -10,36 +10,20 @@ export default {
     },
     {
       name: "total",
-      title: "Total Amount",
+      title: "Total ($)",
       type: "number",
     },
     {
-      name: "items",
-      title: "Items",
-      type: "array",
-      of: [{ type: "orderItem" }], // 👈 This line connects the two schemas
-    },
-    {
-      name: "shippingAddress",
-      title: "Shipping Address",
-      type: "object",
-      fields: [
-        { name: "line1", title: "Address Line 1", type: "string" },
-        { name: "city", title: "City", type: "string" },
-        { name: "state", title: "State", type: "string" },
-        { name: "postal_code", title: "Postal Code", type: "string" },
-      ],
-    },
-    {
       name: "status",
-      title: "Status",
+      title: "Order Status",
       type: "string",
       options: {
         list: [
           { title: "Pending", value: "Pending" },
-          { title: "Shipped", value: "Shipped" },
-          { title: "Delivered", value: "Delivered" },
+          { title: "Completed", value: "Completed" },
+          { title: "Cancelled", value: "Cancelled" },
         ],
+        layout: "dropdown",
       },
     },
     {
@@ -47,5 +31,34 @@ export default {
       title: "Created At",
       type: "datetime",
     },
+    {
+      name: "items",
+      title: "Items",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "productName", type: "string" },
+            { name: "quantity", type: "number" },
+            { name: "price", type: "number" },
+          ],
+        },
+      ],
+    },
   ],
+
+  preview: {
+    select: {
+      title: "email",
+      subtitle: "status",
+      total: "total",
+    },
+    prepare({ title, subtitle, total }: { title: string; subtitle: string; total: number }) {
+      return {
+        title,
+        subtitle: `${subtitle || "Pending"} — $${total}`,
+      };
+    },
+  },
 };

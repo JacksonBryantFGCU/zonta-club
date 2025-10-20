@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,13 +11,21 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Who We Are", path: "/about" },
-    { name: "Events", path: "/events" },
-    { name: "Advocacy", path: "/advocacy" },
     { name: "Scholarships", path: "/scholarships" },
     { name: "Memberships", path: "/membership" },
-    { name: "Zonta in Action", path: "/action" },
     { name: "Ecommerce", path: "/ecommerce" },
   ];
+
+  useEffect(() => {
+    const handleShortcut = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
+        window.location.href = "/admin";
+      }
+    };
+
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, []);
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-zontaGold shadow-md border-b border-zontaGold z-50">

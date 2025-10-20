@@ -3,6 +3,9 @@ import { CartContext } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
+
+  console.log("Backend URL →", import.meta.env.VITE_BACKEND_URL);
+
   const {
     items,
     removeItem,
@@ -21,50 +24,50 @@ export default function Cart() {
   const [success, setSuccess] = useState<string | null>(null);
 
   // ✅ Checkout handler
-  const handleCheckout = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccess(null);
+  // ✅ Checkout handler (updated for modular backend)
+const handleCheckout = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
-      // Simple email validation
-      if (!email || !email.includes("@")) {
-        setError("Please enter a valid email address before proceeding.");
-        setLoading(false);
-        return;
-      }
-
-      // Send cart data + email to backend
-      const response = await fetch(
-        `${import.meta.env.VITE_SERVER_URL}/create-checkout-session`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ items, email }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to create checkout session");
-
-      const data = await response.json();
-
-      if (data.url) {
-        setSuccess("Redirecting to checkout...");
-        window.location.href = data.url; // redirect to Stripe checkout
-      } else {
-        throw new Error("Invalid Stripe session URL");
-      }
-    } catch (err: unknown) {
-      console.error("Checkout error:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong. Please try again."
-      );
-    } finally {
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address before proceeding.");
       setLoading(false);
+      return;
     }
-  };
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/checkout/create-session`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items, email }),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to create checkout session");
+
+    const data = await response.json();
+
+    if (data.url) {
+      setSuccess("Redirecting to checkout...");
+      window.location.href = data.url;
+    } else {
+      throw new Error("Invalid Stripe session URL");
+    }
+  } catch (err: unknown) {
+    console.error("Checkout error:", err);
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Something went wrong. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // ✅ Empty cart state
   if (items.length === 0) {

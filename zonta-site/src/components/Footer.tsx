@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="bg-zontaGold text-zontaRed py-8 mt-20">
       <div className="container mx-auto px-4 text-center md:text-left">
-        {/* Top Section — Logo, Name, Mission, and Social Media */}
+        {/* ===== Top Section — Logo, Mission, and Socials ===== */}
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-6">
           {/* Left: Logo + Name + Mission */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left gap-3">
@@ -47,10 +47,20 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Divider Line */}
+        {/* ===== Divider Line ===== */}
         <div className="border-t border-zontaRed/40 mt-8 pt-4 text-center">
-          <p className="text-sm">
+          <p className="text-sm text-zontaRed/80">
             © {new Date().getFullYear()} Zonta Club of Naples. All Rights Reserved.
+          </p>
+
+          {/* ===== Subtle Admin Link ===== */}
+          <p className="text-xs mt-2 text-zontaRed/60">
+            <a
+              href="/admin"
+              className="hover:text-zontaRed transition-colors duration-200"
+            >
+              Admin
+            </a>
           </p>
         </div>
       </div>

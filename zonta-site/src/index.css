@@ -11,3 +11,8 @@ body {
     @apply max-w-6xl mx-auto px-4;
   }
 }
+
+#nprogress .bar {
+  background: #7E1E29 !important;
+  height: 3px !important;
+}
