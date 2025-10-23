@@ -1,34 +1,46 @@
 import { useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, Home, ShoppingBag } from "lucide-react";
 import { CartContext } from "../context/CartContext";
 
 export default function Success() {
   const { clearCart } = useContext(CartContext)!;
+  const navigate = useNavigate();
 
-  // 🧹 Clear cart on success
+  // 🧹 Clear cart and scroll to top on mount
   useEffect(() => {
     clearCart?.();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [clearCart]);
 
+  // Helper to “reload” SPA routes
+  const handleNavigate = (path: string) => {
+    navigate(path, { replace: true });
+    // Give a small delay so AnimatePresence completes exit animation
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 150);
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+    <motion.section
       className="flex flex-col items-center justify-center min-h-[85vh] text-center px-6 bg-gradient-to-b from-gray-50 to-white"
+      initial={{ opacity: 0, y: 25 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -25 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
       {/* ✅ Success Icon */}
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 120, damping: 10 }}
+        transition={{ type: "spring", stiffness: 120, damping: 12 }}
         className="mb-6"
       >
         <CheckCircle className="text-green-500 w-20 h-20 mx-auto" />
       </motion.div>
 
-      {/* 🏷️ Title & Message */}
       <motion.h1
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -66,7 +78,7 @@ export default function Success() {
         </div>
       </motion.div>
 
-      {/* 🔗 Buttons */}
+      {/* 🔗 Navigation Buttons */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -74,19 +86,19 @@ export default function Success() {
         className="flex flex-wrap justify-center gap-4"
       >
         <button
-  onClick={() => window.location.assign("/ecommerce")}
-  className="flex items-center gap-2 px-6 py-2 bg-zontaGold text-white font-medium rounded-lg shadow hover:bg-yellow-700 transition"
->
-  Continue Shopping
-</button>
-<button
-  onClick={() => window.location.assign("/")}
-  className="flex items-center gap-2 px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
->
-  <Home size={18} />
-  Back to Home
-</button>
-        
+          onClick={() => handleNavigate("/ecommerce")}
+          className="flex items-center gap-2 px-6 py-2 bg-zontaGold text-white font-medium rounded-lg shadow hover:bg-yellow-700 transition"
+        >
+          Continue Shopping
+        </button>
+
+        <button
+          onClick={() => handleNavigate("/")}
+          className="flex items-center gap-2 px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+        >
+          <Home size={18} />
+          Back to Home
+        </button>
       </motion.div>
 
       {/* 💛 Footer */}
@@ -99,6 +111,6 @@ export default function Success() {
         Thank you for supporting the{" "}
         <span className="text-zontaRed font-semibold">Zonta Club of Naples</span> 💛
       </motion.footer>
-    </motion.div>
+    </motion.section>
   );
 }

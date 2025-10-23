@@ -17,10 +17,21 @@ export default function Footer() {
               />
               <h2 className="text-2xl font-bold">Zonta Club of Naples</h2>
             </div>
+
             <p className="text-sm mt-2 text-zontaRed/90 max-w-sm">
               Empowering women through service and advocacy in the Naples
               community and beyond.
             </p>
+
+            {/* 🌍 Zonta International link under mission */}
+            <a
+              href="https://zonta.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center gap-1 text-sm text-zontaRed/80 hover:text-white transition-colors duration-200"
+            >
+              <span>Visit Zonta International</span>
+            </a>
           </div>
 
           {/* Right: Social Media */}

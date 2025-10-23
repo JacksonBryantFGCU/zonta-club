@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ZontaLogo from "../assets/Zonta_emblem.png";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -16,43 +17,61 @@ export default function Navbar() {
     { name: "Ecommerce", path: "/ecommerce" },
   ];
 
+  // ✅ Smooth background + shadow on scroll
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // ✅ Keyboard shortcut to go to /admin (Ctrl + Shift + A)
   useEffect(() => {
     const handleShortcut = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
-        window.location.href = "/admin";
+        navigate("/admin"); // SPA route navigation
       }
     };
-
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
-  }, []);
+  }, [navigate]);
+
+  // ✅ Close mobile menu when navigating
+  const handleNavClick = (path: string) => {
+    navigate(path);
+    setMenuOpen(false);
+  };
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-zontaGold shadow-md border-b border-zontaGold z-50">
+    <nav
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-zontaGold ${
+        scrolled
+          ? "bg-zontaGold/90 shadow-[0_2px_10px_rgba(0,0,0,0.08)] backdrop-blur-sm"
+          : "bg-zontaGold shadow-none"
+      }`}
+    >
       <div className="container mx-auto flex items-center justify-between px-4 md:px-8 py-3">
         {/* ===== Left: Logo + Title ===== */}
-        <div className="flex-shrink-0 flex items-center gap-3">
-          <Link
-            to="/"
-            className="flex items-center gap-3 text-zontaRed hover:opacity-90 transition whitespace-nowrap"
-          >
-            <img
-              src={ZontaLogo}
-              alt="Zonta Club Logo"
-              className="w-10 h-10 md:w-12 md:h-12 object-contain"
-            />
-            <span className="text-lg md:text-2xl font-bold tracking-wide">
-              Zonta Club of Naples
-            </span>
-          </Link>
-        </div>
+        <button
+          onClick={() => handleNavClick("/")}
+          className="flex items-center gap-3 text-zontaRed hover:opacity-90 transition whitespace-nowrap focus:outline-none"
+        >
+          <img
+            src={ZontaLogo}
+            alt="Zonta Club Logo"
+            className="w-10 h-10 md:w-12 md:h-12 object-contain"
+          />
+          <span className="text-lg md:text-2xl font-bold tracking-wide">
+            Zonta Club of Naples
+          </span>
+        </button>
 
-        {/* ===== Desktop Navigation Links ===== */}
+        {/* ===== Desktop Navigation ===== */}
         <div className="hidden md:flex flex-nowrap justify-end items-center space-x-6 lg:space-x-8 whitespace-nowrap flex-grow ml-10">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
+              onClick={() => setMenuOpen(false)}
               className={({ isActive }) =>
                 `font-medium transition-colors duration-200 ${
                   isActive
@@ -68,7 +87,7 @@ export default function Navbar() {
 
         {/* ===== Mobile Menu Button ===== */}
         <button
-          onClick={toggleMenu}
+          onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-zontaRed focus:outline-none ml-2"
           aria-label="Toggle menu"
         >
@@ -108,19 +127,16 @@ export default function Navbar() {
                     visible: { opacity: 1, y: 0 },
                   }}
                 >
-                  <NavLink
-                    to={link.path}
-                    onClick={() => setMenuOpen(false)}
-                    className={({ isActive }) =>
-                      `block text-center font-medium transition-colors duration-200 ${
-                        isActive
-                          ? "text-white underline decoration-zontaRed decoration-2 underline-offset-4"
-                          : "text-zontaRed hover:text-white"
-                      }`
-                    }
+                  <button
+                    onClick={() => handleNavClick(link.path)}
+                    className={`block text-center font-medium transition-colors duration-200 ${
+                      location.pathname === link.path
+                        ? "text-white underline decoration-zontaRed decoration-2 underline-offset-4"
+                        : "text-zontaRed hover:text-white"
+                    }`}
                   >
                     {link.name}
-                  </NavLink>
+                  </button>
                 </motion.li>
               ))}
             </motion.ul>

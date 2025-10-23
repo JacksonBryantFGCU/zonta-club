@@ -138,7 +138,7 @@ export default function Home() {
       </section>
 
       {/* ===== Join & Donate CTA ===== */}
-      <section className="py-20 px-6 bg-zontaDark text-white text-center w-full">
+      <section className="py-20 px-6 bg-[#fbf1de] text-zontaRed text-center w-full">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-4xl font-bold mb-6">
             Join Our Mission to Empower Women

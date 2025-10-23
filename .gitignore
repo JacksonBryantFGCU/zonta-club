@@ -1,6 +1,6 @@
 # Node
-node_modules
-dist
+node_modules/
+dist/
 .env
 .env.local
 .env.*.local
@@ -9,6 +9,8 @@ dist
 zonta-sanity/.sanity
 zonta-sanity/dist
 zonta-sanity/node_modules
+
+receipts/
 
 # Vite / React cache
 zonta-site/node_modules
