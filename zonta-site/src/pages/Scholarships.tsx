@@ -167,7 +167,7 @@ export default function Scholarships() {
       </section>
 
       {/* ===== CTA Section ===== */}
-      <section className="py-20 px-6 bg-zontaDark text-white w-full text-center">
+      <section className="py-20 px-6 bg-[#fbf1de] text-zontaRed w-full text-center">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl font-bold mb-6">
             Supporting the Next Generation of Women Leaders

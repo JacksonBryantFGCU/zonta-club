@@ -1,4 +1,7 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect } from "react";
+import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -16,43 +19,73 @@ import { CartProvider } from "./context/CartProvider";
 import { useRouteProgress } from "./hooks/useRouteProgress";
 import { useIsFetching } from "@tanstack/react-query";
 import { useLoading } from "./hooks/useLoading";
-import { useEffect } from "react";
+import BackToTopButton from "./components/BackToTopButton";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   useRouteProgress();
   const isFetching = useIsFetching();
   const { startLoading, stopLoading } = useLoading();
+  const location = useLocation();
 
   useEffect(() => {
-    if (isFetching > 0) {
-      startLoading();
-    } else {
-      stopLoading();
-    }
+    if (isFetching > 0) startLoading();
+    else stopLoading();
   }, [isFetching, startLoading, stopLoading]);
+
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] as const } },
+    exit: { opacity: 0, y: -15, transition: { duration: 0.25, ease: [0.4, 0, 0.6, 1] as const } },
+  };
 
   return (
     <CartProvider>
       <div className="min-h-screen bg-white text-gray-900 flex flex-col">
         <Navbar />
         <main className="pt-20 flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<AdminLogin />} />
-
-            <Route path="/admin" element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/about" element={<About />} />
-            <Route path="/scholarships" element={<Scholarships />} />
-            <Route path="/membership" element={<Membership />} />
-            <Route path="/ecommerce" element={<Ecommerce />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/success" element={<Success />} />
-          </Routes>
+          <ScrollToTop />
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              {[
+                { path: "/", element: <Home /> },
+                { path: "/about", element: <About /> },
+                { path: "/scholarships", element: <Scholarships /> },
+                { path: "/membership", element: <Membership /> },
+                { path: "/ecommerce", element: <Ecommerce /> },
+                { path: "/product/:id", element: <ProductDetails /> },
+                { path: "/cart", element: <Cart /> },
+                { path: "/success", element: <Success /> },
+                { path: "/login", element: <AdminLogin /> },
+                {
+                  path: "/admin",
+                  element: (
+                    <ProtectedRoute>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  ),
+                },
+                { path: "*", element: <NotFound /> },
+              ].map(({ path, element }) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      className="min-h-[80vh]"
+                    >
+                      {element}
+                    </motion.div>
+                  }
+                />
+              ))}
+            </Routes>
+          </AnimatePresence>
+          <BackToTopButton />
         </main>
         <Footer />
       </div>
