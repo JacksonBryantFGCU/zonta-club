@@ -41,9 +41,12 @@ function getAuthHeaders() {
 // 📦 Fetch All Orders
 // ================================
 export const fetchOrders = async (): Promise<Order[]> => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, {
-    headers: getAuthHeaders(),
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/orders`,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
 
   if (!res.ok) {
     const msg = await res.text();
@@ -51,7 +54,7 @@ export const fetchOrders = async (): Promise<Order[]> => {
   }
 
   const data = await res.json();
-  return data.orders || data; // flexible depending on backend structure
+  return Array.isArray(data) ? data : data.orders || [];
 };
 
 // ================================
@@ -65,9 +68,9 @@ export const updateOrderStatus = async ({
   status: "Pending" | "Completed" | "Cancelled";
 }): Promise<Order> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/orders/update-status`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/orders/update-status`,
     {
-      method: "POST",
+      method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify({ id, status }),
     }
@@ -82,11 +85,11 @@ export const updateOrderStatus = async ({
 };
 
 // ================================
-// 📤 Optional: Delete Order (Future Use)
+// 📤 Delete Order
 // ================================
 export const deleteOrder = async (id: string): Promise<{ success: boolean }> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/orders/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/orders/${id}`,
     {
       method: "DELETE",
       headers: getAuthHeaders(),

@@ -67,7 +67,7 @@ export default function Footer() {
           {/* ===== Subtle Admin Link ===== */}
           <p className="text-xs mt-2 text-zontaRed/60">
             <a
-              href="/admin"
+              href="/admin/login"
               className="hover:text-zontaRed transition-colors duration-200"
             >
               Admin

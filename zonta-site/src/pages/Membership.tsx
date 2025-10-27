@@ -1,33 +1,35 @@
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Users, HeartHandshake, Calendar, Star } from "lucide-react";
+import { fetchPublicMemberships, submitMembershipApplication } from "../queries/membershipPublicQueries";
 
 export default function Membership() {
-  const benefits = [
-    {
-      icon: <Users className="w-8 h-8 text-zontaRed" />,
-      title: "Empower Women",
-      description: "Be part of a global community dedicated to advancing women's rights and equality.",
+  const { data: memberships = [], isLoading } = useQuery({
+    queryKey: ["public-memberships"],
+    queryFn: fetchPublicMemberships,
+  });
+
+  const [selected, setSelected] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+
+  const mutation = useMutation({
+    mutationFn: submitMembershipApplication,
+    onSuccess: () => {
+      alert("✅ Application submitted successfully!");
+      setSelected(null);
+      setFormData({ name: "", email: "", message: "" });
     },
-    {
-      icon: <HeartHandshake className="w-8 h-8 text-zontaRed" />,
-      title: "Community Service",
-      description: "Contribute to meaningful local projects that uplift women and girls in your area.",
-    },
-    {
-      icon: <Calendar className="w-8 h-8 text-zontaRed" />,
-      title: "Networking & Events",
-      description: "Attend monthly meetings, workshops, and events to connect with like-minded members.",
-    },
-    {
-      icon: <Star className="w-8 h-8 text-zontaRed" />,
-      title: "Leadership Opportunities",
-      description: "Gain experience leading service initiatives and mentoring new members.",
-    },
-  ];
+    onError: () => alert("❌ Failed to submit application."),
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selected) return;
+    mutation.mutate({ ...formData, membershipId: selected });
+  };
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-zontaGold/10 to-white text-center px-6 py-16">
-      {/* ===== Hero Section ===== */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -39,59 +41,91 @@ export default function Membership() {
         </h1>
         <p className="text-lg text-gray-700 leading-relaxed">
           Join the <span className="font-semibold text-zontaRed">Zonta Club of Naples</span> — 
-          an organization of professionals empowering women through service and advocacy.
+          empowering women through service and advocacy.
         </p>
       </motion.div>
 
-      {/* ===== Benefits Grid ===== */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.15 },
-          },
-        }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto mb-16"
-      >
-        {benefits.map((benefit, i) => (
-          <motion.div
-            key={i}
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              visible: { opacity: 1, y: 0 },
-            }}
-            className="bg-white border border-zontaGold rounded-xl shadow-md p-6 hover:shadow-lg transition"
+      {isLoading ? (
+        <p className="text-gray-500">Loading memberships...</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {memberships.map((m) => (
+            <motion.div
+              key={m._id}
+              whileHover={{ scale: 1.03 }}
+              className="bg-white border border-zontaGold rounded-xl shadow-md p-6 flex flex-col items-center"
+            >
+              <h3 className="text-xl font-bold text-zontaRed mb-2">{m.title}</h3>
+              <p className="text-gray-600 text-sm mb-2">{m.description}</p>
+              <p className="text-lg font-semibold text-zontaGold mb-3">${m.price.toFixed(2)}</p>
+              <ul className="text-sm text-gray-700 mb-4 text-left">
+                {m.benefits?.map((b, i) => (
+                  <li key={i}>• {b}</li>
+                ))}
+              </ul>
+              <button
+                onClick={() => setSelected(m._id)}
+                className="bg-zontaGold text-white px-5 py-2 rounded-md hover:bg-zontaRed transition"
+              >
+                Join Now
+              </button>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* ===== Modal for Signup ===== */}
+      {selected && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-xl p-6 shadow-lg w-full max-w-md text-left"
           >
-            <div className="flex flex-col items-center text-center space-y-3">
-              {benefit.icon}
-              <h3 className="text-lg font-semibold text-zontaDark">{benefit.title}</h3>
-              <p className="text-sm text-gray-600">{benefit.description}</p>
+            <h2 className="text-xl font-bold text-zontaRed mb-4">
+              Membership Application
+            </h2>
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              className="w-full border rounded-md px-3 py-2 mb-3"
+            />
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              className="w-full border rounded-md px-3 py-2 mb-3"
+            />
+            <textarea
+              placeholder="Why do you want to join?"
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              className="w-full border rounded-md px-3 py-2 mb-3"
+              rows={3}
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="px-4 py-2 text-gray-600 hover:text-zontaRed"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={mutation.isPending}
+                className="px-4 py-2 bg-zontaGold text-white rounded-md hover:bg-zontaRed transition"
+              >
+                {mutation.isPending ? "Submitting..." : "Submit"}
+              </button>
             </div>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* ===== Call to Action Card ===== */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.6 }}
-        className="max-w-xl mx-auto bg-white border border-zontaGold shadow-lg rounded-xl p-8 text-center"
-      >
-        <h2 className="text-2xl font-bold text-zontaRed mb-3">Ready to Make an Impact?</h2>
-        <p className="text-gray-700 mb-6">
-          We welcome passionate individuals who share our mission of empowering women through service and advocacy.
-        </p>
-        <a
-          href="mailto:zontaofnaples@gmail.com"
-          className="inline-block bg-zontaGold text-white font-medium px-6 py-3 rounded-lg hover:bg-zontaDark transition"
-        >
-          Contact Us to Join
-        </a>
-      </motion.div>
+          </form>
+        </div>
+      )}
     </section>
   );
 }

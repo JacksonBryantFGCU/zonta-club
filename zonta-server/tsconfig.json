@@ -19,7 +19,8 @@
       "@middlewares/*": ["middlewares/*"],
       "@utils/*": ["utils/*"],
       "@types/*": ["types/*"],
-      "@config/*": ["config/*"]
+      "@config/*": ["config/*"],
+      "@services/*": ["services/*"]
     }
   },
   "include": ["src/**/*", "server.ts"],

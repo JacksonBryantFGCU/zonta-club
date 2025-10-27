@@ -1,12 +1,9 @@
-// src/queries/scholarshipQueries.ts
-export interface Scholarship {
+export interface Event {
   _id: string;
   title: string;
-  description: string;
-  eligibility?: string[];
-  deadline?: string;
-  fileUrl?: string;
-  imageUrl?: string;
+  date: string;
+  location?: string;
+  description?: string;
 }
 
 // ================================
@@ -22,55 +19,52 @@ function getAuthHeaders() {
 }
 
 // ================================
-// 📦 Fetch All Scholarships
+// 📦 Fetch All Events
 // ================================
-export const fetchScholarships = async (): Promise<Scholarship[]> => {
+export const fetchEvents = async (): Promise<Event[]> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/scholarships`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events`,
     { headers: getAuthHeaders() }
   );
 
   if (!res.ok) {
     const msg = await res.text();
-    throw new Error(`Failed to fetch scholarships: ${msg}`);
-  }
-
-  const data = await res.json();
-  return Array.isArray(data) ? data : data.scholarships || [];
-};
-
-// ================================
-// ➕ Create Scholarship
-// ================================
-export const createScholarship = async (
-  newScholarship: Partial<Scholarship>
-): Promise<Scholarship> => {
-  const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/scholarships`,
-    {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(newScholarship),
-    }
-  );
-
-  if (!res.ok) {
-    const msg = await res.text();
-    throw new Error(`Failed to create scholarship: ${msg}`);
+    throw new Error(`Failed to fetch events: ${msg}`);
   }
 
   return res.json();
 };
 
 // ================================
-// 🔄 Update Scholarship
+// ➕ Create Event
 // ================================
-export const updateScholarship = async (
-  id: string,
-  updates: Partial<Scholarship>
-): Promise<Scholarship> => {
+export const createEvent = async (newEvent: Partial<Event>): Promise<Event> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/scholarships/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events`,
+    {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(newEvent),
+    }
+  );
+
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(`Failed to create event: ${msg}`);
+  }
+
+  return res.json();
+};
+
+// ================================
+// 🔄 Update Event
+// ================================
+export const updateEvent = async (
+  id: string,
+  updates: Partial<Event>
+): Promise<Event> => {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events/${id}`,
     {
       method: "PUT",
       headers: getAuthHeaders(),
@@ -80,18 +74,18 @@ export const updateScholarship = async (
 
   if (!res.ok) {
     const msg = await res.text();
-    throw new Error(`Failed to update scholarship: ${msg}`);
+    throw new Error(`Failed to update event: ${msg}`);
   }
 
   return res.json();
 };
 
 // ================================
-// 🗑️ Delete Scholarship
+// 🗑️ Delete Event
 // ================================
-export const deleteScholarship = async (id: string): Promise<void> => {
+export const deleteEvent = async (id: string): Promise<void> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/scholarships/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events/${id}`,
     {
       method: "DELETE",
       headers: getAuthHeaders(),
@@ -100,6 +94,6 @@ export const deleteScholarship = async (id: string): Promise<void> => {
 
   if (!res.ok) {
     const msg = await res.text();
-    throw new Error(`Failed to delete scholarship: ${msg}`);
+    throw new Error(`Failed to delete event: ${msg}`);
   }
 };

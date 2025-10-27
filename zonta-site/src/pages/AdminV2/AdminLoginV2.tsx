@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminLogin() {
+export default function AdminLoginV2() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -15,7 +14,7 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v2/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -25,9 +24,9 @@ export default function AdminLogin() {
 
       if (!res.ok) throw new Error(data.error || "Login failed");
 
-      // ✅ Save token in localStorage
+      // ✅ Store token and redirect to AdminV2 dashboard
       localStorage.setItem("adminToken", data.token);
-      navigate("/admin"); // redirect to dashboard
+      navigate("/admin", { replace: true }); // redirect to AdminV2 root
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {

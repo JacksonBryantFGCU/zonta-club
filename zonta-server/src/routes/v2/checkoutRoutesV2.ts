@@ -1,9 +1,6 @@
 import { Router } from "express";
 
-import {
-  createCheckoutSession,
-  handleStripeWebhook,
-} from "@controllers/checkoutController";
+import { createCheckoutSession, handleStripeWebhook } from "@controllers/v2/checkoutController";
 
 const router = Router();
 

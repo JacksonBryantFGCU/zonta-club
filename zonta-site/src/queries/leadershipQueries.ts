@@ -1,7 +1,4 @@
-import groq from "groq";
-import { sanity } from "../lib/sanityClient";
-import { queryKeys } from "../lib/queryKeys";
-
+// src/queries/leadershipQueries.ts
 export interface Leader {
   _id: string;
   name: string;
@@ -10,18 +7,32 @@ export interface Leader {
   imageUrl?: string;
 }
 
-const leadershipQuery = groq`*[_type == "leadership"] | order(order asc) {
-  _id,
-  name,
-  role,
-  bio,
-  "imageUrl": image.asset->url
-}`;
+// ================================
+// 🔐 Helper: Get Admin Token
+// ================================
+function getAuthHeaders() {
+  const token = localStorage.getItem("adminToken");
+  if (!token) throw new Error("No admin token found. Please log in again.");
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+}
 
+// ================================
+// 📦 Fetch All Leaders
+// ================================
 export const fetchLeadership = async (): Promise<Leader[]> => {
-  return await sanity.fetch(leadershipQuery);
-};
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events`, // ✅ use admin endpoint
+    { headers: getAuthHeaders() }
+  );
 
-export const leadershipKeys = {
-  all: queryKeys.leadership,
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(`Failed to fetch leadership data: ${msg}`);
+  }
+
+  const data = await res.json();
+  return Array.isArray(data) ? data : data.leadership || [];
 };
