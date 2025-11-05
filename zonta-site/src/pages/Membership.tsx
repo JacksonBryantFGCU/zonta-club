@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // Membership.tsx
-export default function Membership() {
-  return <div className="p-10 text-center">Membership Information Coming Soon</div>;
-=======
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -195,5 +191,4 @@ export default function Membership() {
       )}
     </section>
   );
->>>>>>> admin-update
 }

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-export default function Ecommerce() {
-  return <div className="p-10 text-center">Ecommerce Information Coming Soon</div>;
-=======
 import { useContext, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts, type Product } from "../queries/productQueries";
@@ -160,5 +156,4 @@ export default function Ecommerce() {
       </div>
     </section>
   );
->>>>>>> admin-update
 }

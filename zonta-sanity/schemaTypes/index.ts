@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import homePage from './homePage'
-
-export const schemaTypes = [homePage]
-=======
 import event from "./event";
 import product from "./product";
 import category from "./category";
@@ -31,4 +26,3 @@ export const schemaTypes = [
   donation,
 
 ];
->>>>>>> admin-update

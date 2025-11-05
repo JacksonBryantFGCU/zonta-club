@@ -7,17 +7,6 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-<<<<<<< HEAD
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "framer-motion": "^12.23.24",
-    "lucide-react": "^0.545.0",
-    "pnpm": "^10.18.3",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.4"
-=======
     "preview": "vite preview",
     "test": "vitest"
   },
@@ -40,7 +29,6 @@
   "resolutions": {
     "react": "18.3.1",
     "react-dom": "18.3.1"
->>>>>>> admin-update
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

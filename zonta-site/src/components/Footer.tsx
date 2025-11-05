@@ -1,20 +1,12 @@
-<<<<<<< HEAD
-import { Facebook, Instagram, Mail } from "lucide-react";
-=======
 import { Mail } from "lucide-react";
 import { FaFacebook } from "react-icons/fa";
->>>>>>> admin-update
 import ZontaLogo from "../assets/Zonta_emblem.png";
 
 export default function Footer() {
   return (
     <footer className="bg-zontaGold text-zontaRed py-8 mt-20">
       <div className="container mx-auto px-4 text-center md:text-left">
-<<<<<<< HEAD
-        {/* Top Section — Logo, Name, Mission, and Social Media */}
-=======
         {/* ===== Top Section — Logo, Mission, and Socials ===== */}
->>>>>>> admin-update
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-6">
           {/* Left: Logo + Name + Mission */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left gap-3">
@@ -26,16 +18,10 @@ export default function Footer() {
               />
               <h2 className="text-2xl font-bold">Zonta Club of Naples</h2>
             </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> admin-update
             <p className="text-sm mt-2 text-zontaRed/90 max-w-sm">
               Empowering women through service and advocacy in the Naples
               community and beyond.
             </p>
-<<<<<<< HEAD
-=======
 
             {/* Zonta International link under mission */}
             <a
@@ -46,7 +32,6 @@ export default function Footer() {
             >
               <span>Visit Zonta International</span>
             </a>
->>>>>>> admin-update
           </div>
 
           {/* Right: Social Media */}
@@ -54,30 +39,13 @@ export default function Footer() {
             <h3 className="font-semibold text-lg">Connect With Us</h3>
             <div className="flex space-x-4">
               <a
-<<<<<<< HEAD
-                href="https://facebook.com"
-=======
                 href="https://www.facebook.com/ZontaNaples"
->>>>>>> admin-update
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-white transition"
                 aria-label="Facebook"
               >
-<<<<<<< HEAD
-                <Facebook />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-white transition"
-                aria-label="Instagram"
-              >
-                <Instagram />
-=======
                 <FaFacebook size={24} />
->>>>>>> admin-update
               </a>
               <a
                 href="mailto:info@zontanaples.org"
@@ -90,13 +58,6 @@ export default function Footer() {
           </div>
         </div>
 
-<<<<<<< HEAD
-        {/* Divider Line */}
-        <div className="border-t border-zontaRed/40 mt-8 pt-4 text-center">
-          <p className="text-sm">
-            © {new Date().getFullYear()} Zonta Club of Naples. All Rights Reserved.
-          </p>
-=======
         {/* ===== Divider Line ===== */}
         <div className="border-t border-zontaRed/40 mt-8 pt-4 text-center">
           <p className="text-sm text-zontaRed/80">
@@ -112,7 +73,6 @@ export default function Footer() {
               Admin
             </a>
           </p>
->>>>>>> admin-update
         </div>
       </div>
     </footer>

@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import ZontaLogo from "../assets/Zonta_emblem.png";
-
-export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-=======
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
@@ -21,42 +10,10 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const { isVisible } = useAnnouncementBanner();
->>>>>>> admin-update
 
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Who We Are", path: "/about" },
-<<<<<<< HEAD
-    { name: "Service", path: "/service" },
-    { name: "Advocacy", path: "/advocacy" },
-    { name: "Scholarships", path: "/scholarships" },
-    { name: "Memberships", path: "/membership" },
-    { name: "Zonta in Action", path: "/action" },
-    { name: "Ecommerce", path: "/ecommerce" },
-  ];
-
-  return (
-    <nav className="fixed top-0 left-0 w-full bg-zontaGold shadow-md border-b border-zontaGold z-50">
-      <div className="container mx-auto flex items-center justify-between px-4 md:px-8 py-3">
-        {/* ===== Left: Logo + Title ===== */}
-        <div className="flex-shrink-0 flex items-center gap-3">
-          <Link
-            to="/"
-            className="flex items-center gap-3 text-zontaRed hover:opacity-90 transition whitespace-nowrap"
-          >
-            <img
-              src={ZontaLogo}
-              alt="Zonta Club Logo"
-              className="w-10 h-10 md:w-12 md:h-12 object-contain"
-            />
-            <span className="text-lg md:text-2xl font-bold tracking-wide">
-              Zonta Club of Naples
-            </span>
-          </Link>
-        </div>
-
-        {/* ===== Desktop Navigation Links ===== */}
-=======
     { name: "Scholarships", path: "/scholarships" },
     { name: "Memberships", path: "/membership" },
     { name: "Ecommerce", path: "/ecommerce" },
@@ -113,16 +70,12 @@ export default function Navbar() {
         </button>
 
         {/* ===== Desktop Navigation ===== */}
->>>>>>> admin-update
         <div className="hidden md:flex flex-nowrap justify-end items-center space-x-6 lg:space-x-8 whitespace-nowrap flex-grow ml-10">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
-<<<<<<< HEAD
-=======
               onClick={() => setMenuOpen(false)}
->>>>>>> admin-update
               className={({ isActive }) =>
                 `font-medium transition-colors duration-200 ${
                   isActive
@@ -134,8 +87,6 @@ export default function Navbar() {
               {link.name}
             </NavLink>
           ))}
-<<<<<<< HEAD
-=======
 
           {/* ✅ Donate Button (highlighted) */}
           <button
@@ -144,16 +95,11 @@ export default function Navbar() {
           >
             Donate
           </button>
->>>>>>> admin-update
         </div>
 
         {/* ===== Mobile Menu Button ===== */}
         <button
-<<<<<<< HEAD
-          onClick={toggleMenu}
-=======
           onClick={() => setMenuOpen(!menuOpen)}
->>>>>>> admin-update
           className="md:hidden text-zontaRed focus:outline-none ml-2"
           aria-label="Toggle menu"
         >
@@ -193,23 +139,6 @@ export default function Navbar() {
                     visible: { opacity: 1, y: 0 },
                   }}
                 >
-<<<<<<< HEAD
-                  <NavLink
-                    to={link.path}
-                    onClick={() => setMenuOpen(false)}
-                    className={({ isActive }) =>
-                      `block text-center font-medium transition-colors duration-200 ${
-                        isActive
-                          ? "text-white underline decoration-zontaRed decoration-2 underline-offset-4"
-                          : "text-zontaRed hover:text-white"
-                      }`
-                    }
-                  >
-                    {link.name}
-                  </NavLink>
-                </motion.li>
-              ))}
-=======
                   <button
                     onClick={() => handleNavClick(link.path)}
                     className={`block text-center font-medium transition-colors duration-200 ${
@@ -238,7 +167,6 @@ export default function Navbar() {
                   Donate
                 </button>
               </motion.li>
->>>>>>> admin-update
             </motion.ul>
           </motion.div>
         )}
