@@ -3,6 +3,7 @@ import HeroImage from "../assets/hero_women_empowerment.jpg";
 import { sanity } from "../lib/sanityClient";
 import groq from "groq";
 import EventCard from "../components/EventCard";
+import { useNavigate } from "react-router-dom";
 
 interface Event {
   _id: string;
@@ -14,6 +15,7 @@ interface Event {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,31 +32,38 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center text-center overflow-hidden -mt-4">
+    <main className="flex flex-col items-center justify-center text-center overflow-hidden -mt-4 font-body">
       {/* ===== Hero Section ===== */}
       <section className="relative min-h-[90vh] flex flex-col justify-center items-center w-full text-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${HeroImage})` }}
         ></div>
-        <div className="absolute inset-0 bg-zontaGold/70 mix-blend-multiply"></div>
 
-        <div className="relative z-10 px-4 sm:px-6 lg:px-8 max-w-4xl text-white">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg">
+        {/* Removed overlay — cleaner, more photographic look */}
+
+        <div className="relative z-10 px-4 sm:px-6 lg:px-8 max-w-4xl text-white drop-shadow-lg">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-heading font-bold leading-tight mb-6">
             Empowering Women <br className="hidden sm:block" /> Through Service
             & Advocacy
           </h1>
-          <p className="text-lg sm:text-xl text-zontaDark/90 bg-white/60 px-6 py-3 rounded-lg max-w-2xl mx-auto font-medium">
+          <p className="text-lg sm:text-xl bg-white/75 text-zontaMahogany px-6 py-3 rounded-lg max-w-2xl mx-auto font-medium shadow-sm">
             The Zonta Club of Naples advances the status of women locally and
             globally — creating real change through compassion, education, and
             advocacy.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-zontaRed text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaDark transition-all duration-300">
+            <button
+              onClick={() => navigate("/about")}
+              className="bg-zontaMahogany text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaOrange transition-all duration-300"
+            >
               Learn More
             </button>
-            <button className="bg-white text-zontaRed font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaGold hover:text-white transition-all duration-300">
+            <button
+              onClick={() => navigate("/donate")}
+              className="bg-white text-zontaMahogany font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaGold hover:text-white transition-all duration-300"
+            >
               Donate
             </button>
           </div>
@@ -68,16 +77,18 @@ export default function Home() {
         >
           <path
             fill="currentColor"
-            d="M0,224L60,202.7C120,181,240,139,360,154.7C480,171,600,245,720,250.7C840,256,960,192,1080,154.7C1200,117,1320,107,1380,101.3L1440,96L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
+            d="M0,224L60,202.7C120,181,240,139,360,154.7C480,171,600,245,720,250.7C840,256,960,192,1080,154.7C1200,117,1320,107,1380,101.3L1440,96L1440,320L0,320Z"
           ></path>
         </svg>
       </section>
 
       {/* ===== Mission / Impact Section ===== */}
-      <section className="py-20 px-6 bg-white text-zontaDark max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-zontaRed mb-8">
+      <section className="py-20 px-6 bg-white text-zontaMahogany max-w-7xl mx-auto">
+        <h2 className="text-4xl font-heading font-bold mb-8 text-zontaMahogany">
           Our Mission & Impact
         </h2>
+        <div className="mx-auto mb-8 w-24 h-1 bg-gradient-to-r from-transparent via-zontaGold to-transparent"></div>
+
         <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-12">
           Zonta Club of Naples is part of a global organization of professionals
           empowering women through service and advocacy. We support education,
@@ -86,47 +97,47 @@ export default function Home() {
         </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 text-left">
-          <div className="p-6 border border-zontaGold rounded-xl shadow-md hover:shadow-lg transition">
-            <h3 className="text-2xl font-semibold text-zontaRed mb-3">
-              🧡 Community Service
-            </h3>
-            <p>
-              Partnering with local organizations to address issues like
-              domestic violence prevention, education, and women’s healthcare.
-            </p>
-          </div>
-          <div className="p-6 border border-zontaGold rounded-xl shadow-md hover:shadow-lg transition">
-            <h3 className="text-2xl font-semibold text-zontaRed mb-3">
-              🎓 Scholarships
-            </h3>
-            <p>
-              Supporting women pursuing higher education through local and
-              international scholarships.
-            </p>
-          </div>
-          <div className="p-6 border border-zontaGold rounded-xl shadow-md hover:shadow-lg transition">
-            <h3 className="text-2xl font-semibold text-zontaRed mb-3">
-              🌍 Global Connection
-            </h3>
-            <p>
-              Zonta International unites clubs in over 60 countries, building a
-              network of advocacy and empowerment worldwide.
-            </p>
-          </div>
+          {[
+            {
+              title: "Community Service",
+              text: "Partnering with local organizations to address issues like domestic violence prevention, education, and women’s healthcare.",
+            },
+            {
+              title: "Scholarships",
+              text: "Supporting women pursuing higher education through local and international scholarships.",
+            },
+            {
+              title: "Global Connection",
+              text: "Zonta International unites clubs in over 60 countries, building a network of advocacy and empowerment worldwide.",
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="p-6 border border-zontaGold rounded-xl shadow-md hover:shadow-lg transition"
+            >
+              <h3 className="text-2xl font-semibold text-zontaMahogany mb-3">
+                {item.title}
+              </h3>
+              <p>{item.text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ===== Upcoming Events Section ===== */}
-      <section className="py-20 px-6 bg-zontaGold/5 w-full">
+      <section className="py-20 px-6 bg-zontaGold/10 w-full">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-zontaRed mb-8">
+          <h2 className="text-4xl font-heading font-bold text-zontaMahogany mb-8">
             Upcoming Events
           </h2>
+          <div className="mx-auto mb-8 w-24 h-1 bg-gradient-to-r from-transparent via-zontaOrange to-transparent"></div>
 
           {loading ? (
-            <p className="text-zontaDark/70">Loading events...</p>
+            <p className="text-zontaMahogany/70">Loading events...</p>
           ) : events.length === 0 ? (
-            <p className="text-zontaDark/70">No upcoming events at this time.</p>
+            <p className="text-zontaMahogany/70">
+              No upcoming events at this time.
+            </p>
           ) : (
             <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
@@ -138,9 +149,9 @@ export default function Home() {
       </section>
 
       {/* ===== Join & Donate CTA ===== */}
-      <section className="py-20 px-6 bg-[#fbf1de] text-zontaRed text-center w-full">
+      <section className="py-20 px-6 bg-zontaGold/20 text-zontaMahogany text-center w-full">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-4xl font-bold mb-6">
+          <h2 className="text-4xl font-heading font-bold mb-6">
             Join Our Mission to Empower Women
           </h2>
           <p className="text-lg mb-10">
@@ -148,10 +159,16 @@ export default function Home() {
             contribution makes an impact. Together, we can change lives.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-zontaGold text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaRed transition-all duration-300">
+            <button
+              onClick={() => navigate("/membership")}
+              className="bg-zontaGold text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaOrange transition-all duration-300"
+            >
               Become a Member
             </button>
-            <button className="bg-white text-zontaDark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaGold hover:text-white transition-all duration-300">
+            <button
+              onClick={() => navigate("/donate")}
+              className="bg-white text-zontaMahogany font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaGold hover:text-white transition-all duration-300"
+            >
               Donate
             </button>
           </div>

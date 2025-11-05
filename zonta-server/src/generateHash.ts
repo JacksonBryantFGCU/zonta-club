@@ -7,13 +7,13 @@ import bcrypt from "bcryptjs";
  */
 const generateHash = async (): Promise<void> => {
   try {
-    const password = "Marcus1"; // 🔒 change before running
+    const password = "Marcus1"; // change before running
     const hash = await bcrypt.hash(password, 10);
 
-    console.log("🔐 Plain Password:", password);
-    console.log("✅ Hashed Password:", hash);
+    console.log("Plain Password:", password);
+    console.log("Hashed Password:", hash);
   } catch (error) {
-    console.error("❌ Error generating hash:", error);
+    console.error("Error generating hash:", error);
   }
 };
 

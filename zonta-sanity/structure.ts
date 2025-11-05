@@ -4,7 +4,7 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title("Content")
     .items([
-      // 🛍 Active Orders
+      // Active Orders
       S.listItem()
         .title("Active Orders")
         .child(
@@ -14,7 +14,7 @@ export const structure: StructureResolver = (S) =>
             .defaultOrdering([{ field: "createdAt", direction: "desc" }])
         ),
 
-      // 📦 Past Orders
+      // Past Orders
       S.listItem()
         .title("Past Orders")
         .child(

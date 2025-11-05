@@ -5,36 +5,70 @@ export default defineType({
   title: "Site Settings",
   type: "document",
   fields: [
+    // ===============================
+    // Maintenance Mode
+    // ===============================
     defineField({
-      name: "branding",
-      title: "Branding",
+      name: "maintenance",
+      title: "Maintenance Mode",
       type: "object",
       fields: [
-        { name: "siteTitle", title: "Site Title", type: "string" },
-        { name: "mission", title: "Mission Statement", type: "text" },
-        { name: "primaryHex", title: "Primary Hex", type: "string" }, // e.g. #B8860B
-        { name: "accentHex", title: "Accent Hex", type: "string" },   // e.g. #8B0000
-      ],
-    }),
-    defineField({
-      name: "email",
-      title: "Email / Notifications",
-      type: "object",
-      fields: [
-        { name: "publicEmail", title: "Public Email", type: "string" },
-        { name: "alertEmail", title: "Alert Email", type: "string" },
+        { name: "enabled", type: "boolean", title: "Enable Maintenance Mode" },
         {
-          name: "sendReceipts",
-          title: "Send Buyer Receipts?",
-          type: "boolean",
-        },
-        {
-          name: "sendNewOrderAlerts",
-          title: "Send New Order Alerts?",
-          type: "boolean",
+          name: "message",
+          type: "text",
+          rows: 2,
+          title: "Maintenance Message",
+          description: "Shown when the site is temporarily unavailable.",
         },
       ],
     }),
+
+    // ===============================
+    // Announcement Banner
+    // ===============================
+    defineField({
+      name: "announcement",
+      title: "Homepage Announcement",
+      type: "object",
+      fields: [
+        { name: "enabled", type: "boolean", title: "Show Banner?" },
+        {
+          name: "text",
+          type: "string",
+          title: "Banner Text",
+          description: "Short message displayed on the homepage banner.",
+        },
+        { name: "link", type: "url", title: "Optional Link" },
+      ],
+    }),
+
+    // ===============================
+    // Feature Toggles
+    // ===============================
+    defineField({
+      name: "features",
+      title: "Feature Toggles",
+      type: "object",
+      fields: [
+        {
+          name: "shopEnabled",
+          type: "boolean",
+          title: "Enable Shop",
+          initialValue: true,
+        },
+        {
+          name: "donationsEnabled",
+          type: "boolean",
+          title: "Enable Donations",
+          initialValue: true,
+        },
+      ],
+    }),
+
+    // ===============================
+    // Admin Accounts (metadata only)
+    // ===============================
     defineField({
       name: "admins",
       title: "Admin Accounts",
@@ -43,6 +77,7 @@ export default defineType({
         {
           type: "object",
           name: "adminUser",
+          title: "Admin User",
           fields: [
             { name: "id", type: "string", title: "ID" },
             { name: "name", type: "string", title: "Name" },
@@ -58,14 +93,26 @@ export default defineType({
                 ],
               },
             },
+            {
+              name: "active",
+              type: "boolean",
+              title: "Active",
+              initialValue: true,
+            },
           ],
         },
       ],
+      description:
+        "Admin metadata (roles and active state). Passwords are stored securely in the backend config, not here.",
     }),
+
+    // ===============================
+    // Last Updated
+    // ===============================
     defineField({
       name: "updatedAt",
-      title: "Last Updated",
       type: "datetime",
+      title: "Last Updated",
     }),
   ],
 });

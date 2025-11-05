@@ -11,17 +11,17 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
 
-    // ✅ Add this section:
-    "baseUrl": "./src",
+    // Add this section:
+    "baseUrl": ".",
     "paths": {
-      "@controllers/*": ["controllers/*"],
-      "@routes/*": ["routes/*"],
-      "@middlewares/*": ["middlewares/*"],
-      "@utils/*": ["utils/*"],
-      "@types/*": ["types/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@routes/*": ["src/routes/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@utils/*": ["src/utils/*"],
+      "@types/*": ["src/types/*"],
       "@config/*": ["config/*"],
-      "@services/*": ["services/*"]
+      "@services/*": ["src/services/*"]
     }
   },
-  "include": ["src/**/*", "server.ts"],
+  "include": ["src/**/*", "server.ts", "config"],
 }

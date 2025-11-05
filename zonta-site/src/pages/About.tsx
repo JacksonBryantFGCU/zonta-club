@@ -13,10 +13,11 @@ export default function About() {
     <main className="flex flex-col items-center text-center overflow-hidden -mt-4">
       {/* Hero Section */}
       <section className="relative w-full min-h-[60vh] flex flex-col justify-center items-center">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${HeroImage})` }}
-        ></div>
+        <img 
+          src={HeroImage} 
+          alt="Women empowerment" 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-zontaGold/70 mix-blend-multiply"></div>
 
         <div className="relative z-10 max-w-3xl px-6 text-white">

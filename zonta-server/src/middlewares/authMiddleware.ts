@@ -38,7 +38,7 @@ export const protect = (req: Request, res: Response, next: NextFunction): void =
     req.user = decoded;
     next();
   } catch (err: any) {
-    console.error("❌ Invalid token:", err.message);
+    console.error("Invalid token:", err.message);
     res.status(401).json({ error: "Invalid or expired token" });
   }
 };

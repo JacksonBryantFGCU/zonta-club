@@ -8,7 +8,7 @@ export interface Membership {
 }
 
 export const fetchPublicMemberships = async (): Promise<Membership[]> => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v2/memberships`);
+  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/memberships`);
   if (!res.ok) throw new Error("Failed to fetch memberships");
   return res.json();
 };
@@ -19,7 +19,7 @@ export const submitMembershipApplication = async (data: {
   message?: string;
   membershipId: string;
 }) => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v2/memberships/apply`, {
+  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/memberships/apply`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),

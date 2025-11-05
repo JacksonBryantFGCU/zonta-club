@@ -10,7 +10,7 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
-  console.error("❌ Error:", err.stack || err);
+  console.error("Error:", err.stack || err);
 
   res.status(err.status || 500).json({
     success: false,

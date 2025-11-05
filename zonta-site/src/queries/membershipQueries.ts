@@ -19,7 +19,7 @@ function getAuthHeaders() {
 
 export const fetchMemberships = async (): Promise<Membership[]> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/memberships`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/memberships`,
     { headers: getAuthHeaders() }
   );
   if (!res.ok) throw new Error("Failed to fetch memberships");
@@ -28,7 +28,7 @@ export const fetchMemberships = async (): Promise<Membership[]> => {
 
 export const createMembership = async (newMembership: Partial<Membership>): Promise<Membership> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/memberships`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/memberships`,
     { method: "POST", headers: getAuthHeaders(), body: JSON.stringify(newMembership) }
   );
   if (!res.ok) throw new Error("Failed to create membership");
@@ -37,7 +37,7 @@ export const createMembership = async (newMembership: Partial<Membership>): Prom
 
 export const updateMembership = async (id: string, updates: Partial<Membership>): Promise<Membership> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/memberships/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/memberships/${id}`,
     { method: "PUT", headers: getAuthHeaders(), body: JSON.stringify(updates) }
   );
   if (!res.ok) throw new Error("Failed to update membership");
@@ -46,7 +46,7 @@ export const updateMembership = async (id: string, updates: Partial<Membership>)
 
 export const deleteMembership = async (id: string): Promise<void> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/memberships/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/memberships/${id}`,
     { method: "DELETE", headers: getAuthHeaders() }
   );
   if (!res.ok) throw new Error("Failed to delete membership");

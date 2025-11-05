@@ -24,15 +24,15 @@ export default function EventCard({ event }: EventCardProps) {
         />
       )}
       <div className="p-5 text-left">
-        <h2 className="text-2xl font-bold text-zontaRed mb-2">
+        <h2 className="text-2xl font-bold text-zontaMahogany mb-2">
           {event.title}
         </h2>
         <p className="text-sm text-zontaDark/80 mb-1">
-          📅 {new Date(event.date).toLocaleDateString()}
+          {new Date(event.date).toLocaleDateString()}
         </p>
         {event.location && (
           <p className="text-sm text-zontaDark/70 mb-3">
-            📍 {event.location}
+            {event.location}
           </p>
         )}
         {event.description && (

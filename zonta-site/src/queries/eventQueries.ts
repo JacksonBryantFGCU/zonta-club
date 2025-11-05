@@ -4,6 +4,7 @@ export interface Event {
   date: string;
   location?: string;
   description?: string;
+  imageUrl?: string;
 }
 
 // ================================
@@ -23,7 +24,7 @@ function getAuthHeaders() {
 // ================================
 export const fetchEvents = async (): Promise<Event[]> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/events`,
     { headers: getAuthHeaders() }
   );
 
@@ -40,7 +41,7 @@ export const fetchEvents = async (): Promise<Event[]> => {
 // ================================
 export const createEvent = async (newEvent: Partial<Event>): Promise<Event> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/events`,
     {
       method: "POST",
       headers: getAuthHeaders(),
@@ -64,7 +65,7 @@ export const updateEvent = async (
   updates: Partial<Event>
 ): Promise<Event> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/events/${id}`,
     {
       method: "PUT",
       headers: getAuthHeaders(),
@@ -85,7 +86,7 @@ export const updateEvent = async (
 // ================================
 export const deleteEvent = async (id: string): Promise<void> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/events/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/events/${id}`,
     {
       method: "DELETE",
       headers: getAuthHeaders(),

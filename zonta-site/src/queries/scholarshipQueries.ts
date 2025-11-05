@@ -1,12 +1,18 @@
-// src/queries/scholarshipQueries.ts
+// ================================
+// 🧠 Scholarship Types
+// ================================
 export interface Scholarship {
   _id: string;
   title: string;
-  description: string;
+  description?: string;
   eligibility?: string[];
+  amount?: number;
   deadline?: string;
-  fileUrl?: string;
+  applyInstructions?: string;
+  contactEmail?: string;
+  isActive?: boolean;
   imageUrl?: string;
+  order?: number;
 }
 
 // ================================
@@ -26,7 +32,7 @@ function getAuthHeaders() {
 // ================================
 export const fetchScholarships = async (): Promise<Scholarship[]> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/scholarships`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/scholarships`,
     { headers: getAuthHeaders() }
   );
 
@@ -46,7 +52,7 @@ export const createScholarship = async (
   newScholarship: Partial<Scholarship>
 ): Promise<Scholarship> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/scholarships`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/scholarships`,
     {
       method: "POST",
       headers: getAuthHeaders(),
@@ -70,7 +76,7 @@ export const updateScholarship = async (
   updates: Partial<Scholarship>
 ): Promise<Scholarship> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/scholarships/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/scholarships/${id}`,
     {
       method: "PUT",
       headers: getAuthHeaders(),
@@ -91,7 +97,7 @@ export const updateScholarship = async (
 // ================================
 export const deleteScholarship = async (id: string): Promise<void> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/scholarships/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/scholarships/${id}`,
     {
       method: "DELETE",
       headers: getAuthHeaders(),

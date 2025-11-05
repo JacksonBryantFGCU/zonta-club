@@ -1,27 +1,65 @@
-import { useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+// src/pages/Success.tsx
+import { useEffect, useContext, useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle, Home, ShoppingBag } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Users, BookOpen, CalendarDays } from "lucide-react";
 import { CartContext } from "../context/CartContext";
 
 export default function Success() {
   const { clearCart } = useContext(CartContext)!;
+  const [params] = useSearchParams();
   const navigate = useNavigate();
 
-  // 🧹 Clear cart and scroll to top on mount
-  useEffect(() => {
-    clearCart?.();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [clearCart]);
+  const type = params.get("type") ?? "checkout";
 
-  // Helper to “reload” SPA routes
+  // 🧠 Centralized config by success type
+  const content = useMemo(() => {
+    switch (type) {
+      case "membership":
+        return {
+          title: "Membership Application Submitted!",
+          message:
+            "Thank you for applying to become a member of the Zonta Club of Naples. Your application has been received and is currently under review. You’ll receive a confirmation email once approved.",
+          icon: Users,
+          accentColor: "text-zontaRed",
+          actionLabel: "View Upcoming Events",
+          actionPath: "/events",
+        };
+      case "scholarship":
+        return {
+          title: "Scholarship Application Submitted!",
+          message:
+            "Thank you for applying for one of our scholarships. Our scholarship committee will review your application and notify selected recipients via email.",
+          icon: BookOpen,
+          accentColor: "text-zontaGold",
+          actionLabel: "Learn About Our Mission",
+          actionPath: "/about",
+        };
+      default:
+        return {
+          title: "Thank you for your purchase!",
+          message:
+            "Your payment was processed successfully. You’ll receive an email confirmation with your order details shortly.",
+          icon: ShoppingBag,
+          accentColor: "text-green-500",
+          actionLabel: "Continue Shopping",
+          actionPath: "/ecommerce",
+        };
+    }
+  }, [type]);
+
+  // 🧹 Clear cart and scroll to top if it's a checkout
+  useEffect(() => {
+    if (type === "checkout") clearCart?.();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [type, clearCart]);
+
   const handleNavigate = (path: string) => {
     navigate(path, { replace: true });
-    // Give a small delay so AnimatePresence completes exit animation
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 150);
+    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 150);
   };
+
+  const Icon = content.icon;
 
   return (
     <motion.section
@@ -38,7 +76,7 @@ export default function Success() {
         transition={{ type: "spring", stiffness: 120, damping: 12 }}
         className="mb-6"
       >
-        <CheckCircle className="text-green-500 w-20 h-20 mx-auto" />
+        <CheckCircle className={`${content.accentColor} w-20 h-20 mx-auto`} />
       </motion.div>
 
       <motion.h1
@@ -47,7 +85,7 @@ export default function Success() {
         transition={{ delay: 0.1 }}
         className="text-3xl font-bold text-gray-800 mb-3"
       >
-        Thank you for your purchase!
+        {content.title}
       </motion.h1>
 
       <motion.p
@@ -56,11 +94,10 @@ export default function Success() {
         transition={{ delay: 0.25 }}
         className="text-gray-600 max-w-md mb-8"
       >
-        Your payment was processed successfully.  
-        You’ll receive an email confirmation shortly with your order details.
+        {content.message}
       </motion.p>
 
-      {/* 🧾 Subtle Success Card */}
+      {/* 🧾 Card (visual accent) */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -68,12 +105,18 @@ export default function Success() {
         className="bg-white shadow-lg rounded-xl p-6 max-w-md w-full mb-10 border border-gray-100"
       >
         <div className="flex flex-col items-center text-gray-700 space-y-3">
-          <ShoppingBag className="text-zontaRed w-10 h-10" />
+          <Icon className={`${content.accentColor} w-10 h-10`} />
           <p className="text-base font-medium">
-            We’re preparing your order for fulfillment.
+            {type === "membership"
+              ? "We’ll be in touch soon once your application is reviewed."
+              : type === "scholarship"
+              ? "Our scholarship committee will reach out via email."
+              : "We’re preparing your order for fulfillment."}
           </p>
           <p className="text-sm text-gray-500">
-            You’ll be notified once it’s on the way!
+            {type === "checkout"
+              ? "You’ll be notified once it’s on the way!"
+              : "Please check your email for updates."}
           </p>
         </div>
       </motion.div>
@@ -86,10 +129,22 @@ export default function Success() {
         className="flex flex-wrap justify-center gap-4"
       >
         <button
-          onClick={() => handleNavigate("/ecommerce")}
-          className="flex items-center gap-2 px-6 py-2 bg-zontaGold text-white font-medium rounded-lg shadow hover:bg-yellow-700 transition"
+          onClick={() => handleNavigate(content.actionPath)}
+          className="flex items-center gap-2 px-6 py-2 bg-zontaGold text-white font-medium rounded-lg shadow hover:bg-zontaRed transition"
         >
-          Continue Shopping
+          {type === "checkout" ? (
+            <>
+              <ShoppingBag size={18} /> {content.actionLabel}
+            </>
+          ) : type === "membership" ? (
+            <>
+              <CalendarDays size={18} /> {content.actionLabel}
+            </>
+          ) : (
+            <>
+              <BookOpen size={18} /> {content.actionLabel}
+            </>
+          )}
         </button>
 
         <button

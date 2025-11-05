@@ -42,7 +42,7 @@ function getAuthHeaders() {
 // ================================
 export const fetchOrders = async (): Promise<Order[]> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/orders`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/orders`,
     {
       headers: getAuthHeaders(),
     }
@@ -68,7 +68,7 @@ export const updateOrderStatus = async ({
   status: "Pending" | "Completed" | "Cancelled";
 }): Promise<Order> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/orders/update-status`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/orders/update-status`,
     {
       method: "PATCH",
       headers: getAuthHeaders(),
@@ -89,7 +89,7 @@ export const updateOrderStatus = async ({
 // ================================
 export const deleteOrder = async (id: string): Promise<{ success: boolean }> => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v2/admin/orders/${id}`,
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/orders/${id}`,
     {
       method: "DELETE",
       headers: getAuthHeaders(),

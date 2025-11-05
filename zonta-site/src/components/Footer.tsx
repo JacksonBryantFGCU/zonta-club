@@ -1,4 +1,5 @@
-import { Facebook, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
+import { FaFacebook } from "react-icons/fa";
 import ZontaLogo from "../assets/Zonta_emblem.png";
 
 export default function Footer() {
@@ -23,7 +24,7 @@ export default function Footer() {
               community and beyond.
             </p>
 
-            {/* 🌍 Zonta International link under mission */}
+            {/* Zonta International link under mission */}
             <a
               href="https://zonta.org"
               target="_blank"
@@ -45,7 +46,7 @@ export default function Footer() {
                 className="hover:text-white transition"
                 aria-label="Facebook"
               >
-                <Facebook />
+                <FaFacebook size={24} />
               </a>
               <a
                 href="mailto:info@zontanaples.org"

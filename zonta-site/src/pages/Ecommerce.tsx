@@ -2,6 +2,7 @@ import { useContext, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts, type Product } from "../queries/productQueries";
 import { CartContext } from "../context/CartContext";
+import { usePublicSettings } from "../queries/publicSettingsQueries";
 import SearchBar from "../components/SearchBar";
 import CategoryFilter from "../components/CategoryFilter";
 import ProductCard from "../components/ProductCard";
@@ -10,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 export default function Ecommerce() {
   const { totalItems } = useContext(CartContext)!;
   const navigate = useNavigate();
+  const { data: settings } = usePublicSettings();
 
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -18,27 +20,70 @@ export default function Ecommerce() {
   const { data: products = [], isLoading, isError } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProducts,
-    staleTime: 1000 * 60 * 5, // 5 min caching
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // ✅ Derived categories and filtered products (computed)
+  // ✅ Derived categories and filtered products
   const categories = useMemo(() => {
     const unique = new Set(products.map((p) => p.category).filter(Boolean));
     return Array.from(unique) as string[];
   }, [products]);
 
   const filtered = useMemo(() => {
-    let result = [...products];
+    let result = products;
+
+    // Filter by search
     if (search.trim()) {
       result = result.filter((p) =>
         p.title.toLowerCase().includes(search.toLowerCase())
       );
     }
+
+    // Filter by category
     if (selectedCategory) {
       result = result.filter((p) => p.category === selectedCategory);
     }
+
     return result;
   }, [products, search, selectedCategory]);
+
+  // ✅ Handle "shop disabled" setting
+  if (settings && !settings.features.shopEnabled) {
+    return (
+      <section className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
+          <div className="w-16 h-16 bg-zontaGold rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg
+              className="w-8 h-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-zontaRed mb-3">
+            Shop Temporarily Unavailable
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Our online shop is currently closed. Please check back later or
+            contact us for assistance.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="px-6 py-3 bg-zontaGold text-white rounded-lg hover:bg-zontaRed transition-colors font-medium"
+          >
+            Return to Home
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   // ✅ Loading / Error states
   if (isLoading) {
@@ -57,6 +102,7 @@ export default function Ecommerce() {
     );
   }
 
+  // ✅ Main product grid
   return (
     <section className="bg-white py-16 px-6 relative">
       <div className="max-w-7xl mx-auto">
@@ -96,11 +142,16 @@ export default function Ecommerce() {
             No products found.
           </p>
         ) : (
-          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((product: Product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
+          <>
+            <h2 className="text-3xl font-bold text-zontaDark mb-6">
+              Shop Products
+            </h2>
+            <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {filtered.map((product: Product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </section>

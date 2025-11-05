@@ -1,17 +1,19 @@
 export type AdminRole = "full" | "read";
 
-export interface BrandingSettings {
-  siteTitle: string;
-  mission: string;
-  primaryHex: string;
-  accentHex: string;
+export interface MaintenanceSettings {
+  enabled: boolean;
+  message: string;
 }
 
-export interface EmailSettings {
-  publicEmail: string;
-  alertEmail: string;
-  sendReceipts: boolean;
-  sendNewOrderAlerts: boolean;
+export interface AnnouncementSettings {
+  enabled: boolean;
+  text: string;
+  link: string;
+}
+
+export interface FeatureToggles {
+  shopEnabled: boolean;
+  donationsEnabled: boolean;
 }
 
 export interface AdminAccount {
@@ -19,11 +21,15 @@ export interface AdminAccount {
   name: string;
   email: string;
   role: AdminRole;
+  active: boolean;
 }
 
 export interface SettingsState {
-  branding: BrandingSettings;
-  email: EmailSettings;
+  _id?: string;
+  _type?: string;
+  maintenance: MaintenanceSettings;
+  announcement: AnnouncementSettings;
+  features: FeatureToggles;
   admins: AdminAccount[];
   updatedAt?: string; // ISO string from backend, optional
 }

@@ -1,35 +1,69 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { fetchPublicMemberships, submitMembershipApplication } from "../queries/membershipPublicQueries";
+import { useNavigate } from "react-router-dom";
+import { fetchPublicMemberships } from "../queries/membershipPublicQueries";
 
 export default function Membership() {
+  const navigate = useNavigate();
   const { data: memberships = [], isLoading } = useQuery({
     queryKey: ["public-memberships"],
     queryFn: fetchPublicMemberships,
   });
 
   const [selected, setSelected] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-
-  const mutation = useMutation({
-    mutationFn: submitMembershipApplication,
-    onSuccess: () => {
-      alert("✅ Application submitted successfully!");
-      setSelected(null);
-      setFormData({ name: "", email: "", message: "" });
-    },
-    onError: () => alert("❌ Failed to submit application."),
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selected) return;
-    mutation.mutate({ ...formData, membershipId: selected });
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/memberships/apply`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...formData,
+            membershipId: selected,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "❌ Failed to submit membership application.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // ✅ Redirect to Stripe Checkout OR success page
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        // If no checkout link (approval required), go to success
+        navigate("/success?type=membership");
+      }
+    } catch (err) {
+      console.error("Error submitting membership:", err);
+      alert("❌ An error occurred while submitting. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-zontaGold/10 to-white text-center px-6 py-16">
+      {/* ===== Hero ===== */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -40,11 +74,15 @@ export default function Membership() {
           Become a Member
         </h1>
         <p className="text-lg text-gray-700 leading-relaxed">
-          Join the <span className="font-semibold text-zontaRed">Zonta Club of Naples</span> — 
-          empowering women through service and advocacy.
+          Join the{" "}
+          <span className="font-semibold text-zontaRed">
+            Zonta Club of Naples
+          </span>{" "}
+          — empowering women through service and advocacy.
         </p>
       </motion.div>
 
+      {/* ===== Membership Cards ===== */}
       {isLoading ? (
         <p className="text-gray-500">Loading memberships...</p>
       ) : (
@@ -57,9 +95,11 @@ export default function Membership() {
             >
               <h3 className="text-xl font-bold text-zontaRed mb-2">{m.title}</h3>
               <p className="text-gray-600 text-sm mb-2">{m.description}</p>
-              <p className="text-lg font-semibold text-zontaGold mb-3">${m.price.toFixed(2)}</p>
+              <p className="text-lg font-semibold text-zontaGold mb-3">
+                ${m.price.toFixed(2)}
+              </p>
               <ul className="text-sm text-gray-700 mb-4 text-left">
-                {m.benefits?.map((b, i) => (
+                {m.benefits?.map((b: string, i: number) => (
                   <li key={i}>• {b}</li>
                 ))}
               </ul>
@@ -74,7 +114,7 @@ export default function Membership() {
         </div>
       )}
 
-      {/* ===== Modal for Signup ===== */}
+      {/* ===== Modal Form ===== */}
       {selected && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <form
@@ -84,43 +124,65 @@ export default function Membership() {
             <h2 className="text-xl font-bold text-zontaRed mb-4">
               Membership Application
             </h2>
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-              className="w-full border rounded-md px-3 py-2 mb-3"
-            />
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-              className="w-full border rounded-md px-3 py-2 mb-3"
-            />
-            <textarea
-              placeholder="Why do you want to join?"
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full border rounded-md px-3 py-2 mb-3"
-              rows={3}
-            />
-            <div className="flex justify-end gap-3">
+
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
+                className="w-full border rounded-md px-3 py-2"
+              />
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                required
+                className="w-full border rounded-md px-3 py-2"
+              />
+              <input
+                type="tel"
+                placeholder="Phone Number (optional)"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                className="w-full border rounded-md px-3 py-2"
+              />
+              <textarea
+                placeholder="Why do you want to join?"
+                value={formData.message}
+                onChange={(e) =>
+                  setFormData({ ...formData, message: e.target.value })
+                }
+                rows={3}
+                className="w-full border rounded-md px-3 py-2"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 mt-5">
               <button
                 type="button"
-                onClick={() => setSelected(null)}
+                onClick={() => {
+                  setSelected(null);
+                  setFormData({ name: "", email: "", phone: "", message: "" });
+                }}
                 className="px-4 py-2 text-gray-600 hover:text-zontaRed"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={mutation.isPending}
-                className="px-4 py-2 bg-zontaGold text-white rounded-md hover:bg-zontaRed transition"
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-zontaGold text-white rounded-md hover:bg-zontaRed transition disabled:opacity-50"
               >
-                {mutation.isPending ? "Submitting..." : "Submit"}
+                {isSubmitting ? "Processing..." : "Apply & Pay"}
               </button>
             </div>
           </form>

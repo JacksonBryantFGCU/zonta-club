@@ -1,5 +1,6 @@
-import { sanityConfig } from "@config/sanityConfig";
 import { createClient } from "@sanity/client";
+
+import { sanityConfig } from "@config/sanityConfig";
 
 export const sanityClient = createClient({
   projectId: sanityConfig.projectId,

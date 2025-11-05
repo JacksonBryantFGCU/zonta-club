@@ -7,23 +7,31 @@ import express, { Request, Response, NextFunction } from "express";
 import fs from "fs-extra";
 import helmet from "helmet";
 
-import { handleStripeWebhook } from "@controllers/v2/checkoutController";
+import { handleStripeWebhook } from "@controllers/checkoutController";
 import { errorHandler } from "@middlewares/errorHandler";
 import { adminLimiter } from "@middlewares/rateLimiter";
-import authRoutesV2 from "@routes/v2/authRoutesV2";
-import eventsRoutesV2 from "@routes/v2/eventsRoutesV2";
-import membershipsPublicRoutes from "@routes/v2/membershipsPublicRoutes";
-import membershipsRoutesV2 from "@routes/v2/membershipsRoutesV2";
-import ordersRoutesV2 from "@routes/v2/ordersRoutesV2";
-import productsRoutesV2 from "@routes/v2/productsRoutesV2";
-import scholarshipsRoutesV2 from "@routes/v2/scholarshipsRoutesV2";
-import settingsRoutesV2 from "@routes/v2/settingsRoutesV2";
+import authRoutes from "@routes/authRoutes";
+import categoriesRoutes from "@routes/categoriesRoutes";
+import checkoutRoutes from "@routes/checkoutRoutes";
+import donationsRoutes from "@routes/donationsRoutes";
+import eventsRoutes from "@routes/eventsRoutes";
+import leadershipRoutes from "@routes/leadershipRoutes";
+import membershipApplicationsRoutes from "@routes/membershipApplicationsRoutes";
+import membershipsPublicRoutes from "@routes/membershipsPublicRoutes";
+import membershipsRoutes from "@routes/membershipsRoutes";
+import ordersRoutes from "@routes/ordersRoutes";
+import productsRoutes from "@routes/productsRoutes";
+import scholarshipsApplicationsRoutes from "@routes/scholarshipApplicationsRoutes";
+import scholarshipsPublicRoutes from "@routes/scholarshipsPublicRoutes";
+import scholarshipsRoutes from "@routes/scholarshipsRoutes";
+import settingsRoutes from "@routes/settingsRoutes";
+
 
 dotenv.config({ override: true });
 const app = express();
 
 /* =========================================================
-   🧠 SECURITY — Helmet Middleware
+   SECURITY — Helmet Middleware
    ========================================================= */
 app.use(
   helmet({
@@ -41,7 +49,7 @@ app.use(
 );
 
 /* =========================================================
-   🌍 CORS
+   CORS
    ========================================================= */
 app.use(
   cors({
@@ -52,7 +60,7 @@ app.use(
 );
 
 /* =========================================================
-   💳 Stripe Webhook (raw body for signature verification)
+   Stripe Webhook (raw body for signature verification)
    ========================================================= */
 app.post(
   "/api/checkout/webhook",
@@ -61,42 +69,49 @@ app.post(
 );
 
 /* =========================================================
-   🔠 JSON Parsing + Rate Limiting
+   JSON Parsing + Rate Limiting
    ========================================================= */
 app.use(express.json());
-app.use("/api/v2", adminLimiter);
+app.use("/api", adminLimiter);
 
 /* =========================================================
-   🧾 Serve Generated PDF Receipts
+   Serve Generated PDF Receipts
    ========================================================= */
 const receiptsDir = path.resolve("receipts");
 fs.ensureDirSync(receiptsDir);
 app.use("/receipts", express.static(receiptsDir));
 
 /* =========================================================
-   🚦 Admin API Routes
+   Admin API Routes
    ========================================================= */
 // Public
-app.use("/api/v2/auth", authRoutesV2);
+app.use("/api/auth", authRoutes);
 
 // Protected (use protect middleware inside each route file)
-app.use("/api/v2/admin/orders", ordersRoutesV2);
-app.use("/api/v2/admin/products", productsRoutesV2);
-app.use("/api/v2/admin/events", eventsRoutesV2);
-app.use("/api/v2/admin/scholarships", scholarshipsRoutesV2);
-app.use("/api/v2/admin/settings", settingsRoutesV2);
-app.use("/api/v2/admin/memberships", membershipsRoutesV2);
-app.use("/api/v2/memberships", membershipsPublicRoutes);
+app.use("/api/admin/orders", ordersRoutes);
+app.use("/api/admin/products", productsRoutes);
+app.use("/api/admin/categories", categoriesRoutes);
+app.use("/api/admin/events", eventsRoutes);
+app.use("/api/admin/scholarships", scholarshipsRoutes);
+app.use("/api/admin/scholarship-applications", scholarshipsApplicationsRoutes);
+app.use("/api/scholarships", scholarshipsPublicRoutes);
+app.use("/api/admin/settings", settingsRoutes);
+app.use("/api/admin/memberships", membershipsRoutes);
+app.use("/api/memberships", membershipsPublicRoutes);
+app.use("/api/admin/leadership", leadershipRoutes);
+app.use("/api/admin/donations", donationsRoutes);
+app.use("/api/admin/membership-applications", membershipApplicationsRoutes);
+app.use("/api/checkout", checkoutRoutes);
 
 /* =========================================================
-   🏠 Root Route
+   Root Route
    ========================================================= */
 app.get("/", (_req: Request, res: Response) => {
-  res.send("🚀 Zonta Admin Backend running securely at /api/v2/admin/*");
+  res.send("Zonta Admin Backend running securely at /api/admin/*");
 });
 
 /* =========================================================
-   ❌ 404 Handler
+   404 Handler
    ========================================================= */
 app.use((req: Request, res: Response) => {
   res.status(404).json({
@@ -106,7 +121,7 @@ app.use((req: Request, res: Response) => {
 });
 
 /* =========================================================
-   ⚠️ Global Error Handler
+   Global Error Handler
    ========================================================= */
 app.use(
   errorHandler as unknown as (
@@ -118,7 +133,7 @@ app.use(
 );
 
 /* =========================================================
-   🧑‍💼 Admin Info (for logging only)
+   Admin Info (for logging only)
    ========================================================= */
 const adminsPath = path.resolve("src/config/admins.json");
 let adminCount = 0;
@@ -128,19 +143,19 @@ try {
     adminCount = Array.isArray(adminsData) ? adminsData.length : 0;
   }
 } catch (err) {
-  console.warn("⚠️ Could not read admins.json:", err);
+  console.warn("Could not read admins.json:", err);
 }
 
 /* =========================================================
-   🧭 Debug: List Registered Routes (safe)
+   Debug: List Registered Routes (safe)
    ========================================================= */
 function logRegisteredRoutes(app: express.Application) {
   if (!app._router || !app._router.stack) {
-    console.warn("⚠️ No routes found or Express router not initialized yet.");
+    console.warn("No routes found or Express router not initialized yet.");
     return;
   }
 
-  console.log("\n🛣️ Registered routes:");
+  console.log("\nRegistered routes:");
   app._router.stack.forEach((middleware: any) => {
     if (middleware.route?.path) {
       const methods = Object.keys(middleware.route.methods)
@@ -161,19 +176,19 @@ function logRegisteredRoutes(app: express.Application) {
 }
 
 /* =========================================================
-   🚀 Start Server
+   Start Server
    ========================================================= */
 const PORT = Number(process.env.PORT || 4000);
 app.listen(PORT, () => {
   console.log("==========================================");
-  console.log(`✅ Sanity project: ${process.env.SANITY_PROJECT_ID}`);
-  console.log(`✅ Admin count: ${adminCount}`);
-  console.log(`✅ Helmet security middleware active`);
-  console.log(`✅ Rate limiting enabled for /api/v2 routes`);
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`Sanity project: ${process.env.SANITY_PROJECT_ID}`);
+  console.log(`Admin count: ${adminCount}`);
+  console.log(`Helmet security middleware active`);
+  console.log(`Rate limiting enabled for /api routes`);
+  console.log(`Server running at http://localhost:${PORT}`);
   console.log("==========================================");
 
-  // 🧭 Log routes after the app is fully initialized
+  // Log routes after the app is fully initialized
   setTimeout(() => logRegisteredRoutes(app), 250);
 });
 

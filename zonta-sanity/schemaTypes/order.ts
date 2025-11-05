@@ -3,7 +3,7 @@ export default {
   title: "Orders",
   type: "document",
   fields: [
-    // 📧 Customer Email
+    // Customer Email
     {
       name: "email",
       title: "Customer Email",
@@ -11,14 +11,14 @@ export default {
       validation: (Rule: any) => Rule.required().email(),
     },
 
-    // 👤 Customer Name
+    // Customer Name
     {
       name: "customerName",
       title: "Customer Name",
       type: "string",
     },
 
-    // 🏠 Shipping Address
+    // Shipping Address
     {
       name: "shippingAddress",
       title: "Shipping Address",
@@ -31,7 +31,7 @@ export default {
       ],
     },
 
-    // 💵 Total
+    // Total
     {
       name: "total",
       title: "Total ($)",
@@ -39,7 +39,7 @@ export default {
       validation: (Rule: any) => Rule.min(0).required(),
     },
 
-    // 🚦 Status
+    // Status
     {
       name: "status",
       title: "Order Status",
@@ -55,14 +55,14 @@ export default {
       },
     },
 
-    // 🕒 Created At
+    // Created At
     {
       name: "createdAt",
       title: "Created At",
       type: "datetime",
     },
 
-    // 📦 Ordered Items
+    // Ordered Items
     {
       name: "items",
       title: "Items",
@@ -85,7 +85,7 @@ export default {
       ],
     },
 
-    // 📎 Receipt PDF
+    // Receipt PDF
     {
       name: "receipt",
       title: "Receipt (PDF)",
@@ -104,7 +104,7 @@ export default {
     },
   ],
 
-  // 🧭 Preview Settings
+  // Preview Settings
   preview: {
     select: {
       title: "email",

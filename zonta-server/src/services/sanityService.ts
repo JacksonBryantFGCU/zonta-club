@@ -9,13 +9,13 @@ export { sanityClient };
  */
 export async function fetchDocuments<T extends BaseDocument>(type: string): Promise<T[]> {
   try {
-    console.log(`🧠 [SanityService] Fetching documents of type "${type}"`);
+    console.log(`[SanityService] Fetching documents of type "${type}"`);
     const query = `*[_type == "${type}"] | order(_createdAt desc)`;
     const result = await sanityClient.fetch(query);
-    console.log(`✅ [SanityService] Retrieved ${result.length} ${type}(s)`);
+    console.log(`[SanityService] Retrieved ${result.length} ${type}(s)`);
     return result as T[];
   } catch (err: any) {
-    console.error(`❌ [SanityService] Failed to fetch documents (${type}):`, err.message || err);
+    console.error(`[SanityService] Failed to fetch documents (${type}):`, err.message || err);
     return []; // Always return array to avoid breaking .json()
   }
 }
@@ -25,12 +25,12 @@ export async function fetchDocuments<T extends BaseDocument>(type: string): Prom
  */
 export async function fetchDocumentById<T extends BaseDocument>(id: string): Promise<T | null> {
   try {
-    console.log(`🧠 [SanityService] Fetching document by ID: ${id}`);
+    console.log(`[SanityService] Fetching document by ID: ${id}`);
     const result = await sanityClient.getDocument(id);
-    if (!result) console.warn(`⚠️ [SanityService] Document not found: ${id}`);
+    if (!result) console.warn(`[SanityService] Document not found: ${id}`);
     return (result as T) || null;
   } catch (err: any) {
-    console.error(`❌ [SanityService] fetchDocumentById error:`, err.message || err);
+    console.error(`[SanityService] fetchDocumentById error:`, err.message || err);
     return null;
   }
 }
@@ -40,12 +40,12 @@ export async function fetchDocumentById<T extends BaseDocument>(id: string): Pro
  */
 export async function createDocument<T extends BaseDocument>(type: string, data: Partial<T>): Promise<T> {
   try {
-    console.log(`🧠 [SanityService] Creating new ${type} document...`);
+    console.log(`[SanityService] Creating new ${type} document...`);
     const newDoc = await sanityClient.create({ _type: type, ...data } as any);
-    console.log(`✅ [SanityService] Created ${type} with ID: ${newDoc._id}`);
+    console.log(`[SanityService] Created ${type} with ID: ${newDoc._id}`);
     return newDoc as T;
   } catch (err: any) {
-    console.error(`❌ [SanityService] createDocument error:`, err.message || err);
+    console.error(`[SanityService] createDocument error:`, err.message || err);
     throw new Error(`Failed to create ${type} document`);
   }
 }
@@ -55,12 +55,12 @@ export async function createDocument<T extends BaseDocument>(type: string, data:
  */
 export async function updateDocument<T extends BaseDocument>(id: string, data: Partial<T>): Promise<T> {
   try {
-    console.log(`🧠 [SanityService] Updating document ${id}`);
+    console.log(`[SanityService] Updating document ${id}`);
     const updatedDoc = await sanityClient.patch(id).set(data).commit();
-    console.log(`✅ [SanityService] Updated document ${id}`);
+    console.log(`[SanityService] Updated document ${id}`);
     return updatedDoc as T;
   } catch (err: any) {
-    console.error(`❌ [SanityService] updateDocument error:`, err.message || err);
+    console.error(`[SanityService] updateDocument error:`, err.message || err);
     throw new Error(`Failed to update document ${id}`);
   }
 }
@@ -70,11 +70,11 @@ export async function updateDocument<T extends BaseDocument>(id: string, data: P
  */
 export async function deleteDocument(id: string): Promise<void> {
   try {
-    console.log(`🧠 [SanityService] Deleting document ${id}`);
+    console.log(`[SanityService] Deleting document ${id}`);
     await sanityClient.delete(id);
-    console.log(`✅ [SanityService] Deleted document ${id}`);
+    console.log(`[SanityService] Deleted document ${id}`);
   } catch (err: any) {
-    console.error(`❌ [SanityService] deleteDocument error:`, err.message || err);
+    console.error(`[SanityService] deleteDocument error:`, err.message || err);
     throw new Error(`Failed to delete document ${id}`);
   }
 }

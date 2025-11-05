@@ -18,6 +18,11 @@ export default defineType({
       validation: (Rule) => Rule.required().email(),
     }),
     defineField({
+      name: "phone",
+      title: "Phone Number",
+      type: "string",
+    }),
+    defineField({
       name: "membershipType",
       title: "Membership Type",
       type: "reference",
@@ -28,6 +33,20 @@ export default defineType({
       title: "Message",
       type: "text",
       rows: 4,
+    }),
+    defineField({
+      name: "status",
+      title: "Application Status",
+      type: "string",
+      options: {
+        list: [
+          { title: "Pending", value: "pending" },
+          { title: "Approved", value: "approved" },
+          { title: "Rejected", value: "rejected" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "pending",
     }),
     defineField({
       name: "createdAt",

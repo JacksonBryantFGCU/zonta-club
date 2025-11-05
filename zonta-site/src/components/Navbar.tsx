@@ -3,11 +3,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ZontaLogo from "../assets/Zonta_emblem.png";
+import { useAnnouncementBanner } from "../hooks/useAnnouncementBanner";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const { isVisible } = useAnnouncementBanner();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -28,7 +30,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleShortcut = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
-        navigate("/admin"); // SPA route navigation
+        navigate("/admin");
       }
     };
     window.addEventListener("keydown", handleShortcut);
@@ -43,7 +45,9 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-zontaGold ${
+      className={`fixed left-0 w-full z-40 transition-all duration-300 border-b border-zontaGold ${
+        isVisible ? "top-[46px]" : "top-0"
+      } ${
         scrolled
           ? "bg-zontaGold/90 shadow-[0_2px_10px_rgba(0,0,0,0.08)] backdrop-blur-sm"
           : "bg-zontaGold shadow-none"
@@ -83,6 +87,14 @@ export default function Navbar() {
               {link.name}
             </NavLink>
           ))}
+
+          {/* ✅ Donate Button (highlighted) */}
+          <button
+            onClick={() => handleNavClick("/donate")}
+            className="ml-4 bg-zontaRed text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-zontaDark transition-all duration-300"
+          >
+            Donate
+          </button>
         </div>
 
         {/* ===== Mobile Menu Button ===== */}
@@ -139,6 +151,22 @@ export default function Navbar() {
                   </button>
                 </motion.li>
               ))}
+
+              {/* ✅ Mobile Donate Button */}
+              <motion.li
+                key="Donate"
+                variants={{
+                  hidden: { opacity: 0, y: -5 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+              >
+                <button
+                  onClick={() => handleNavClick("/donate")}
+                  className="mt-2 bg-zontaRed text-white font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-zontaDark transition-all duration-300"
+                >
+                  Donate
+                </button>
+              </motion.li>
             </motion.ul>
           </motion.div>
         )}
