@@ -1,6 +1,11 @@
 # Node
+<<<<<<< HEAD
 node_modules
 dist
+=======
+node_modules/
+dist/
+>>>>>>> admin-update
 .env
 .env.local
 .env.*.local
@@ -10,6 +15,11 @@ zonta-sanity/.sanity
 zonta-sanity/dist
 zonta-sanity/node_modules
 
+<<<<<<< HEAD
+=======
+receipts/
+
+>>>>>>> admin-update
 # Vite / React cache
 zonta-site/node_modules
 zonta-site/dist

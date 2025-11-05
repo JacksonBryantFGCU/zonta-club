@@ -10,4 +10,12 @@ body {
   .container {
     @apply max-w-6xl mx-auto px-4;
   }
+<<<<<<< HEAD
+=======
+}
+
+#nprogress .bar {
+  background: #7E1E29 !important;
+  height: 5px !important;
+>>>>>>> admin-update
 }

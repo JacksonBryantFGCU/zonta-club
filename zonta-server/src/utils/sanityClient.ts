@@ -1,0 +1,11 @@
+import { createClient } from "@sanity/client";
+
+import { sanityConfig } from "@config/sanityConfig";
+
+export const sanityClient = createClient({
+  projectId: sanityConfig.projectId,
+  dataset: sanityConfig.dataset,
+  apiVersion: sanityConfig.apiVersion,
+  token: sanityConfig.token,
+  useCdn: sanityConfig.useCdn,
+});
