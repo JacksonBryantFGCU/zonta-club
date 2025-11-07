@@ -1,3 +1,5 @@
+// zonta-server/src/types/order.d.ts
+
 export interface OrderItem {
   title: string;
   quantity: number;

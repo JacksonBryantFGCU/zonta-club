@@ -1,3 +1,5 @@
+// zonta-site/src/components/OrderDetailDrawer.tsx
+
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Calendar, DollarSign, Package } from "lucide-react";
 import type { Order } from "../queries/orderQueries";

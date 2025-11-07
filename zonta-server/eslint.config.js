@@ -29,7 +29,7 @@ export default tseslint.config(
     },
     settings: {
       "import/resolver": {
-        typescript: {}, // ✅ resolves @aliases from tsconfig.json
+        typescript: {}, // resolves @aliases from tsconfig.json
       },
     },
     rules: {

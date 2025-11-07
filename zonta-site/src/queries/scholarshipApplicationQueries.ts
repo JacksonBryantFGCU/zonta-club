@@ -1,3 +1,5 @@
+// zonta-site/src/queries/scholarshipApplicationQueries.ts
+
 // ================================
 // 🧠 Scholarship Application Types
 // ================================

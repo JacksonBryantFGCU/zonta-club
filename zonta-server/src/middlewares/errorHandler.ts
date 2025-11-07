@@ -1,3 +1,5 @@
+// zonta-server/src/middlewares/errorHandler.ts
+
 import type { Request, Response, NextFunction } from "express";
 
 /**

@@ -1,3 +1,5 @@
+// zonta-site/src/queries/membershipPublicQueries.ts
+
 export interface Membership {
   _id: string;
   title: string;

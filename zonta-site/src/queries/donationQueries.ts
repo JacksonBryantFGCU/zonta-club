@@ -1,3 +1,5 @@
+// zonta-site/src/queries/donationQueries.ts
+
 export interface Donation {
   _id: string;
   _type: "donation";
@@ -24,7 +26,7 @@ const getAuthHeaders = () => {
 };
 
 // ================================
-// 🔍 Public: Fetch Active Donations
+// Public: Fetch Active Donations
 // ================================
 export const fetchDonations = async (): Promise<Donation[]> => {
   const res = await fetch(
@@ -47,7 +49,7 @@ export const fetchDonations = async (): Promise<Donation[]> => {
 };
 
 // ================================
-// 🔍 Admin: Fetch All Donations
+//   Admin: Fetch All Donations
 // ================================
 export const fetchDonationsAdmin = async (): Promise<Donation[]> => {
   const res = await fetch(
@@ -120,7 +122,7 @@ export const updateDonation = async (
 };
 
 // ================================
-// ❌ Delete Donation
+//  Delete Donation
 // ================================
 export const deleteDonation = async (id: string): Promise<void> => {
   const res = await fetch(

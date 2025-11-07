@@ -1,4 +1,4 @@
-// schemas/scholarship.ts
+// zonta-sanity/schemaTypes/scholarship.ts
 import { defineType, defineField } from "sanity";
 
 export default defineType({

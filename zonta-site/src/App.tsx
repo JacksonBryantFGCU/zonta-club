@@ -1,3 +1,5 @@
+// zonta-site/src/App.tsx
+
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
@@ -25,7 +27,7 @@ import BackToTopButton from "./components/BackToTopButton";
 import Donate from "./pages/Donate";
 import MembershipCancel from "./pages/MembershipCancel";
 
-// ✅ Import Admin components
+//  Import Admin components
 import AdminLayout from "./pages/Admin/AdminLayout";
 import DashboardHome from "./pages/Admin/DashboardHome";
 import Orders from "./pages/Admin/Orders";
@@ -37,8 +39,10 @@ import Leadership from "./pages/Admin/Leadership";
 import Donations from "./pages/Admin/Donations";
 import Settings from "./pages/Admin/Settings";
 import AdminLogin from "./pages/Admin/AdminLogin";
-import MembershipApplication from "./pages/Admin/MembershipApplications/MembershipApplications";
+import MembershipApplicationPage from "./pages/Admin/MembershipApplications/MembershipApplications";
 import ScholarshipApplicationPage from "./pages/Admin/ScholarshipApplications/ScholarshipApplications";
+import ScholarshipApplication from "./pages/ScholarshipApplication";
+import MembershipApplication from "./pages/MembershipApplication";
 
 export default function App() {
   useRouteProgress();
@@ -74,7 +78,9 @@ export default function App() {
         <div className="min-h-screen bg-white text-gray-900 flex flex-col">
           <AnnouncementBanner />
           <Navbar />
-          <main className={`${contentPadding} flex-grow transition-all duration-300`}>
+          <main
+            className={`${contentPadding} flex-grow transition-all duration-300`}
+          >
             <ScrollToTop />
             <AnimatePresence mode="wait">
               <Routes location={location} key={location.pathname}>
@@ -82,7 +88,12 @@ export default function App() {
                 <Route
                   path="/"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <Home />
                     </motion.div>
                   }
@@ -90,7 +101,12 @@ export default function App() {
                 <Route
                   path="/about"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <About />
                     </motion.div>
                   }
@@ -98,23 +114,64 @@ export default function App() {
                 <Route
                   path="/scholarships"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <Scholarships />
+                    </motion.div>
+                  }
+                />
+                <Route
+                  path="/scholarships/apply/:id"
+                  element={
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
+                      <ScholarshipApplication />
                     </motion.div>
                   }
                 />
                 <Route
                   path="/membership"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <Membership />
+                    </motion.div>
+                  }
+                />
+                <Route
+                  path="/membership/apply/:id"
+                  element={
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
+                      <MembershipApplication />
                     </motion.div>
                   }
                 />
                 <Route
                   path="/donate"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <Donate />
                     </motion.div>
                   }
@@ -122,7 +179,12 @@ export default function App() {
                 <Route
                   path="/ecommerce"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <Ecommerce />
                     </motion.div>
                   }
@@ -130,7 +192,12 @@ export default function App() {
                 <Route
                   path="/product/:id"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <ProductDetails />
                     </motion.div>
                   }
@@ -138,7 +205,12 @@ export default function App() {
                 <Route
                   path="/cart"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <Cart />
                     </motion.div>
                   }
@@ -146,7 +218,12 @@ export default function App() {
                 <Route
                   path="/success"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <Success />
                     </motion.div>
                   }
@@ -154,7 +231,12 @@ export default function App() {
                 <Route
                   path="/membership-cancel"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <MembershipCancel />
                     </motion.div>
                   }
@@ -176,9 +258,15 @@ export default function App() {
                   <Route path="donations" element={<Donations />} />
                   <Route path="events" element={<Events />} />
                   <Route path="scholarships" element={<ScholarshipsAdmin />} />
-                  <Route path="scholarship-applications" element={<ScholarshipApplicationPage />} />
+                  <Route
+                    path="scholarship-applications"
+                    element={<ScholarshipApplicationPage />}
+                  />
                   <Route path="memberships" element={<Memberships />} />
-                  <Route path="membership-application" element={<MembershipApplication />} />
+                  <Route
+                    path="membership-application"
+                    element={<MembershipApplicationPage />}
+                  />
                   <Route path="leadership" element={<Leadership />} />
                   <Route path="settings" element={<Settings />} />
                 </Route>
@@ -187,7 +275,12 @@ export default function App() {
                 <Route
                   path="*"
                   element={
-                    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                    <motion.div
+                      variants={pageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
                       <NotFound />
                     </motion.div>
                   }

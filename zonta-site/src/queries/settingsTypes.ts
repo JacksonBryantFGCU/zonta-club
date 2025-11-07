@@ -1,3 +1,5 @@
+// zonta-site/src/queries/settingsTypes.ts
+
 export type AdminRole = "full" | "read";
 
 export interface MaintenanceSettings {

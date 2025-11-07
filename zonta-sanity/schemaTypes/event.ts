@@ -1,3 +1,5 @@
+// zonta-sanity/schemaTypes/event.ts
+
 export default {
   name: "event",
   title: "Events",

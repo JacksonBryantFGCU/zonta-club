@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Ecommerce.tsx
+
 import { useContext, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts, type Product } from "../queries/productQueries";
@@ -16,14 +18,18 @@ export default function Ecommerce() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // ✅ Fetch products with React Query
-  const { data: products = [], isLoading, isError } = useQuery({
+  //  Fetch products with React Query
+  const {
+    data: products = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProducts,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // ✅ Derived categories and filtered products
+  //  Derived categories and filtered products
   const categories = useMemo(() => {
     const unique = new Set(products.map((p) => p.category).filter(Boolean));
     return Array.from(unique) as string[];
@@ -47,7 +53,7 @@ export default function Ecommerce() {
     return result;
   }, [products, search, selectedCategory]);
 
-  // ✅ Handle "shop disabled" setting
+  //  Handle "shop disabled" setting
   if (settings && !settings.features.shopEnabled) {
     return (
       <section className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -85,7 +91,7 @@ export default function Ecommerce() {
     );
   }
 
-  // ✅ Loading / Error states
+  //  Loading / Error states
   if (isLoading) {
     return (
       <div className="text-center py-20 text-zontaDark">
@@ -102,7 +108,7 @@ export default function Ecommerce() {
     );
   }
 
-  // ✅ Main product grid
+  //  Main product grid
   return (
     <section className="bg-white py-16 px-6 relative">
       <div className="max-w-7xl mx-auto">
@@ -146,7 +152,7 @@ export default function Ecommerce() {
             <h2 className="text-3xl font-bold text-zontaDark mb-6">
               Shop Products
             </h2>
-            <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filtered.map((product: Product) => (
                 <ProductCard key={product._id} product={product} />
               ))}

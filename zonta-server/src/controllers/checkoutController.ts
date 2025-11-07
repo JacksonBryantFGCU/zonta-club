@@ -1,3 +1,5 @@
+// zonta-server/src/controllers/checkoutController.ts
+
 import path from "path";
 
 import type { Request, Response } from "express";
@@ -45,7 +47,7 @@ export const createCheckoutSession = async (req: Request, res: Response): Promis
     const { items, email } = req.body as { items: CheckoutItem[]; email: string };
 
     if (!items || !Array.isArray(items) || items.length === 0) {
-      console.warn("⚠️ Invalid items payload");
+      console.warn(" Invalid items payload");
       res.status(400).json({ error: "Invalid items payload" });
       return;
     }
@@ -59,7 +61,7 @@ export const createCheckoutSession = async (req: Request, res: Response): Promis
       quantity: Number(item.quantity || 1),
     }));
 
-    console.log("✅ Stripe line items built:", lineItems.length);
+    console.log(" Stripe line items built:", lineItems.length);
 
     const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [];
     if (process.env.STRIPE_SHIPPING_RATE) {
@@ -80,10 +82,10 @@ export const createCheckoutSession = async (req: Request, res: Response): Promis
       metadata: { app: "zonta-store" },
     });
 
-    console.log("✅ Stripe checkout session created:", session.id);
+    console.log(" Stripe checkout session created:", session.id);
     res.json({ url: session.url });
   } catch (err: any) {
-    console.error("❌ Checkout error:", err);
+    console.error(" Checkout error:", err);
     res.status(500).json({ error: `Checkout creation failed: ${err.message}` });
   }
 };
@@ -97,7 +99,7 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!sig || !webhookSecret) {
-    console.warn("⚠️ Missing Stripe signature or webhook secret");
+    console.warn(" Missing Stripe signature or webhook secret");
     res.status(400).send("Missing Stripe signature or webhook secret");
     return;
   }
@@ -105,9 +107,9 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(req.body as Buffer, sig, webhookSecret);
-    console.log("✅ Verified Stripe webhook event:", event.type);
+    console.log(" Verified Stripe webhook event:", event.type);
   } catch (err: any) {
-    console.error("❌ Webhook verification failed:", err.message);
+    console.error(" Webhook verification failed:", err.message);
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
@@ -116,7 +118,9 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
     console.log("🎉 Checkout session completed event detected.");
 
     type ExtendedSession = Stripe.Checkout.Session & {
-      shipping_details?: { address?: { line1?: string; city?: string; state?: string; postal_code?: string } };
+      shipping_details?: {
+        address?: { line1?: string; city?: string; state?: string; postal_code?: string };
+      };
       amount_total?: number;
       payment_intent?: string | null;
     };
@@ -131,7 +135,7 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
     try {
       console.log("📦 Retrieving Stripe line items...");
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });
-      console.log("✅ Line items retrieved:", lineItems.data.length);
+      console.log(" Line items retrieved:", lineItems.data.length);
 
       const orderData = {
         _type: "order",
@@ -160,7 +164,7 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
 
       console.log("🧾 Creating order in Sanity...");
       const createdOrder = await sanityClient.create(orderData);
-      console.log("✅ Order stored in Sanity:", createdOrder._id);
+      console.log(" Order stored in Sanity:", createdOrder._id);
 
       const orderForPdf: OrderForPdf = {
         _id: createdOrder._id,
@@ -177,7 +181,7 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
 
       console.log("🖨️ Generating PDF receipt...");
       const pdfPath = await generateReceipt(orderForPdf);
-      console.log("✅ Receipt generated:", pdfPath);
+      console.log(" Receipt generated:", pdfPath);
 
       try {
         console.log("📤 Uploading receipt to Sanity...");
@@ -192,17 +196,17 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
           .set({ receipt: { _type: "file", asset: { _ref: asset._id } } })
           .commit();
 
-        console.log("✅ Receipt uploaded to Sanity.");
+        console.log(" Receipt uploaded to Sanity.");
       } catch (uploadErr) {
-        console.error("❌ Error uploading receipt to Sanity:", uploadErr);
+        console.error(" Error uploading receipt to Sanity:", uploadErr);
       }
 
       try {
         console.log("📧 Sending receipt email to:", email);
         await sendReceiptEmail(email, pdfPath, createdOrder._id, orderForPdf);
-        console.log("✅ Receipt email sent to:", email);
+        console.log(" Receipt email sent to:", email);
       } catch (emailErr) {
-        console.error("❌ Error sending receipt email:", emailErr);
+        console.error(" Error sending receipt email:", emailErr);
       }
 
       console.log("🧹 Cleaning up temporary receipt file...");
@@ -211,11 +215,11 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
           await fs.remove(pdfPath);
           console.log(`🧾 Deleted temporary file: ${pdfPath}`);
         } catch (cleanupErr) {
-          console.warn("⚠️ Could not delete temp receipt:", cleanupErr);
+          console.warn(" Could not delete temp receipt:", cleanupErr);
         }
       }, 30_000);
     } catch (err) {
-      console.error("❌ Error handling checkout session:", err);
+      console.error(" Error handling checkout session:", err);
     }
   }
 

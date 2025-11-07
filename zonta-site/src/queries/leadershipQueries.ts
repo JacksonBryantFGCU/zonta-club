@@ -1,4 +1,5 @@
-// src/queries/leadershipQueries.ts
+// zonta-site/src/queries/leadershipQueries.ts
+
 export interface Leader {
   _id: string;
   name: string;
@@ -34,7 +35,7 @@ export const fetchLeadership = async (): Promise<Leader[]> => {
 
   const data: unknown = await res.json();
 
-  // ✅ Ensure runtime shape safety (optional)
+  //  Ensure runtime shape safety (optional)
   if (!Array.isArray(data)) {
     console.warn("Leadership response not array:", data);
     return [];

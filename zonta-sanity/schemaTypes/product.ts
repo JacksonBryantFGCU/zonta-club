@@ -1,3 +1,5 @@
+// zonta-sanity/schemaTypes/product.ts
+
 export default {
   name: "product",
   title: "Products",

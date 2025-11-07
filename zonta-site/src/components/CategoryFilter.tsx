@@ -1,3 +1,5 @@
+// zonta-site/src/components/CategoryFilter.tsx
+
 interface CategoryFilterProps {
   categories: string[];
   selected: string | null;

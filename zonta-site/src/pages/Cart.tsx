@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Cart.tsx
+
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
@@ -12,19 +14,19 @@ export default function Cart() {
     total,
     clearCart,
     addItem,
-    decreaseItem, // ✅ quantity controls
+    decreaseItem, // quantity controls
   } = useContext(CartContext)!;
 
   const navigate = useNavigate();
 
-  // ✅ Email + state management
+  // Email + state management
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // ✅ Checkout handler
-  // ✅ Checkout handler (updated for modular backend)
+  // Checkout handler
+  // Checkout handler (updated for modular backend)
 const handleCheckout = async () => {
   try {
     setLoading(true);
@@ -69,7 +71,7 @@ const handleCheckout = async () => {
 };
 
 
-  // ✅ Empty cart state
+  // Empty cart state
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
@@ -86,7 +88,7 @@ const handleCheckout = async () => {
     );
   }
 
-  // ✅ Main cart layout
+  // Main cart layout
   return (
     <section className="py-16 px-6 bg-white">
       <div className="max-w-4xl mx-auto">
@@ -129,7 +131,7 @@ const handleCheckout = async () => {
                 </div>
               </div>
 
-              {/* ✅ Quantity Controls */}
+              {/* Quantity Controls */}
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => decreaseItem(item._id)}
@@ -167,7 +169,7 @@ const handleCheckout = async () => {
           Total: ${total.toFixed(2)}
         </div>
 
-        {/* ✅ Email input section */}
+        {/* Email input section */}
         <div className="mb-6">
           <label
             htmlFor="email"

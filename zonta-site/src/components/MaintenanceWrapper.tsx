@@ -1,3 +1,5 @@
+// zonta-site/src/components/MaintenanceWrapper.tsx
+
 import { useLocation } from "react-router-dom";
 import { usePublicSettings } from "../queries/publicSettingsQueries";
 

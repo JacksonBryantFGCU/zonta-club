@@ -1,4 +1,4 @@
-// src/services/sanityService.ts
+// zonta-server/src/services/sanityService.ts
 import { sanityClient } from "@utils/sanityClient";
 import type { BaseDocument } from "@utils/types";
 

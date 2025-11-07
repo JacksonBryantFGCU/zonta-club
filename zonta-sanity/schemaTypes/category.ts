@@ -1,3 +1,5 @@
+// zonta-sanity/schemaTypes/category.ts
+
 export default {
   name: "category",
   title: "Categories",

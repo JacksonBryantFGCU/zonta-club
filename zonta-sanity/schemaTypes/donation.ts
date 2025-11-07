@@ -1,3 +1,5 @@
+// zonta-sanity/schemaTypes/donation.ts
+
 import { defineType, defineField } from "sanity";
 
 export default defineType({

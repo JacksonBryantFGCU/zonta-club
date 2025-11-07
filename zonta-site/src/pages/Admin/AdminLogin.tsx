@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/AdminLogin.tsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -27,7 +29,7 @@ export default function AdminLogin() {
 
       if (!res.ok) throw new Error(data.error || "Login failed");
 
-      // ✅ Store token and email, then redirect to Admin dashboard
+      //  Store token and email, then redirect to Admin dashboard
       localStorage.setItem("adminToken", data.token);
       localStorage.setItem("adminEmail", email);
       navigate("/admin", { replace: true }); // redirect to Admin root

@@ -1,3 +1,5 @@
+// zonta-server/src/middlewares/authMiddleware.ts
+
 import dotenv from "dotenv";
 import type { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";

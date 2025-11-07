@@ -1,4 +1,4 @@
-// src/components/EventCard.tsx
+// zonta-site/src/components/EventCard.tsx
 interface EventCardProps {
   event: {
     _id: string;

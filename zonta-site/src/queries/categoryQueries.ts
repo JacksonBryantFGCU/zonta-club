@@ -1,4 +1,4 @@
-// Category Queries for Admin
+// zonta-site/src/queries/categoryQueries.ts
 
 export interface Category {
   _id: string;
@@ -16,7 +16,7 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL;
 function getAuthHeaders() {
   const token = localStorage.getItem("adminToken");
   if (!token) {
-    console.warn("⚠️ No admin token found in localStorage");
+    console.warn("No admin token found in localStorage");
   }
   return {
     "Content-Type": "application/json",

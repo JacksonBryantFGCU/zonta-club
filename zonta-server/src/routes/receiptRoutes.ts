@@ -1,3 +1,5 @@
+// zonta-server/src/routes/receiptRoutes.ts
+
 import { Router } from "express";
 
 import { getReceipt } from "@controllers/receiptController";

@@ -1,29 +1,40 @@
+// zonta-site/src/pages/Admin/Settings.tsx
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { SettingsState, FeatureToggles } from "../../queries/settingsTypes";
+import type {
+  SettingsState,
+  FeatureToggles,
+} from "../../queries/settingsTypes";
 
 // ========================
 // 📡 API Helpers
 // ========================
 async function fetchSettings(): Promise<SettingsState> {
   const token = localStorage.getItem("adminToken");
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/admin/settings`, {
-    headers: { Authorization: `Bearer ${token ?? ""}` },
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/settings`,
+    {
+      headers: { Authorization: `Bearer ${token ?? ""}` },
+    }
+  );
   if (!res.ok) throw new Error("Failed to load settings");
   return res.json();
 }
 
 async function updateSettings(updated: SettingsState): Promise<SettingsState> {
   const token = localStorage.getItem("adminToken");
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/admin/settings`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token ?? ""}`,
-    },
-    body: JSON.stringify(updated),
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/settings`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token ?? ""}`,
+      },
+      body: JSON.stringify(updated),
+    }
+  );
   if (!res.ok) throw new Error("Failed to save settings");
   return res.json();
 }
@@ -33,7 +44,11 @@ async function updateSettings(updated: SettingsState): Promise<SettingsState> {
 // ========================
 export default function Settings() {
   const queryClient = useQueryClient();
-  const { data: settings, isLoading, isError } = useQuery({
+  const {
+    data: settings,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["settings"],
     queryFn: fetchSettings,
   });
@@ -44,16 +59,16 @@ export default function Settings() {
       // Invalidate both admin settings and public settings queries
       queryClient.invalidateQueries({ queryKey: ["settings"] });
       queryClient.invalidateQueries({ queryKey: ["publicSettings"] });
-      
+
       // Force immediate refetch of public settings
       queryClient.refetchQueries({ queryKey: ["publicSettings"] });
-      
-      setStatus("✅ Settings saved - changes will appear immediately");
+
+      setStatus(" Settings saved - changes will appear immediately");
       setTimeout(() => setStatus(""), 3000);
     },
     onError: (error: Error) => {
-      console.error("❌ Save settings error:", error);
-      setStatus(`❌ Failed to save settings: ${error.message}`);
+      console.error(" Save settings error:", error);
+      setStatus(` Failed to save settings: ${error.message}`);
     },
   });
 
@@ -73,7 +88,8 @@ export default function Settings() {
     setDraft((prev) => {
       if (!prev) return null;
       const currentSection = prev[section];
-      if (typeof currentSection !== 'object' || Array.isArray(currentSection)) return prev;
+      if (typeof currentSection !== "object" || Array.isArray(currentSection))
+        return prev;
       return {
         ...prev,
         [section]: { ...currentSection, [key]: value },
@@ -122,7 +138,9 @@ export default function Settings() {
 
       {/* Maintenance */}
       <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-zontaRed">Maintenance Mode</h2>
+        <h2 className="text-lg font-semibold text-zontaRed">
+          Maintenance Mode
+        </h2>
         <p className="text-sm text-gray-600 mb-3">
           Enable this to temporarily disable the public site with a notice.
         </p>
@@ -131,9 +149,7 @@ export default function Settings() {
           <input
             type="checkbox"
             checked={draft.maintenance.enabled}
-            onChange={(e) =>
-              toggle("maintenance", "enabled", e.target.checked)
-            }
+            onChange={(e) => toggle("maintenance", "enabled", e.target.checked)}
             className="h-4 w-4 text-zontaGold rounded border-gray-300"
           />
           Enable Maintenance Mode
@@ -143,15 +159,15 @@ export default function Settings() {
           className="w-full border border-gray-300 rounded-md text-sm p-2 focus:ring-2 focus:ring-zontaGold"
           placeholder="Maintenance message"
           value={draft.maintenance.message}
-          onChange={(e) =>
-            toggle("maintenance", "message", e.target.value)
-          }
+          onChange={(e) => toggle("maintenance", "message", e.target.value)}
         />
       </section>
 
       {/* Announcement */}
       <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-zontaRed">Homepage Announcement</h2>
+        <h2 className="text-lg font-semibold text-zontaRed">
+          Homepage Announcement
+        </h2>
         <p className="text-sm text-gray-600 mb-3">
           Display a short announcement banner on the homepage.
         </p>
@@ -200,9 +216,7 @@ export default function Settings() {
             <input
               type="checkbox"
               checked={draft.features[f.key as keyof FeatureToggles]}
-              onChange={(e) =>
-                toggle("features", f.key, e.target.checked)
-              }
+              onChange={(e) => toggle("features", f.key, e.target.checked)}
               className="h-4 w-4 text-zontaGold rounded border-gray-300"
             />
             {f.label}
@@ -212,7 +226,9 @@ export default function Settings() {
 
       {/* Admin Access */}
       <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 overflow-x-auto">
-        <h2 className="text-lg font-semibold text-zontaRed mb-3">Admin Access</h2>
+        <h2 className="text-lg font-semibold text-zontaRed mb-3">
+          Admin Access
+        </h2>
         <p className="text-sm text-gray-600 mb-4">
           Manage admin account roles and access. Only the Club President can
           modify roles or deactivate accounts.
@@ -235,9 +251,7 @@ export default function Settings() {
                 <td className="py-2 px-3">
                   <select
                     value={a.role}
-                    onChange={(e) =>
-                      updateAdmin(a.id, "role", e.target.value)
-                    }
+                    onChange={(e) => updateAdmin(a.id, "role", e.target.value)}
                     disabled={!isPresident}
                     className="border border-gray-300 rounded-md px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-zontaGold disabled:bg-gray-100"
                     aria-label={`Role for ${a.name}`}
@@ -253,7 +267,9 @@ export default function Settings() {
                     onChange={(e) =>
                       updateAdmin(a.id, "active", e.target.checked)
                     }
-                    disabled={!isPresident || a.email === "jackbryant5589@gmail.com"}
+                    disabled={
+                      !isPresident || a.email === "jackbryant5589@gmail.com"
+                    }
                     className="h-4 w-4 text-zontaGold rounded border-gray-300"
                     aria-label={`Toggle active status for ${a.name}`}
                   />

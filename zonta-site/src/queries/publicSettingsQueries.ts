@@ -1,3 +1,5 @@
+// zonta-site/src/queries/publicSettingsQueries.ts
+
 import { useQuery } from "@tanstack/react-query";
 import { sanity } from "../lib/sanityClient";
 

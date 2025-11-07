@@ -1,3 +1,5 @@
+// zonta-site/src/components/Footer.tsx
+
 import { Mail } from "lucide-react";
 import { FaFacebook } from "react-icons/fa";
 import ZontaLogo from "../assets/Zonta_emblem.png";

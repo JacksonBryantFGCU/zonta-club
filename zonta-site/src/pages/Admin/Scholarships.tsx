@@ -1,4 +1,4 @@
-// src/pages/Admin/Scholarships.tsx
+// zonta-site/src/pages/Admin/Scholarships.tsx
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -141,7 +141,7 @@ export default function Scholarships() {
                   <td className="px-4 py-2 flex gap-2">
                     <button
                       className="px-3 py-1 text-xs bg-zontaGold text-white rounded-md hover:bg-zontaRed transition"
-                      onClick={() => handleEdit(s)}
+                      onClick={() => handleEdit({ ...s, description: s.description ?? "" })}
                     >
                       Edit
                     </button>

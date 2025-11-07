@@ -1,3 +1,5 @@
+// zonta-server/src/utils/types.ts
+
 export interface BaseDocument {
   _id?: string;
   _type: string;

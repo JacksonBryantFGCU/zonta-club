@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/MembershipApplications/MembershipApplications.tsx
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -12,14 +14,14 @@ import UpdateStatusModal from "./UpdateStatusModal";
 export default function MembershipApplications() {
   const queryClient = useQueryClient();
 
-  // ✅ Local UI state
+  // Local UI state
   const [selectedApp, setSelectedApp] = useState<MembershipApplication | null>(
     null
   );
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
-  // ✅ Fetch applications
+  // Fetch applications
   const {
     data: applications = [],
     isLoading,
@@ -30,7 +32,7 @@ export default function MembershipApplications() {
     staleTime: 60_000,
   });
 
-  // ✅ Update status mutation
+  // Update status mutation
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
       updateMembershipApplicationStatus(id, status),
@@ -43,7 +45,7 @@ export default function MembershipApplications() {
     },
   });
 
-  // ✅ Delete membership application
+  // Delete membership application
   const deleteMutation = useMutation({
     mutationFn: deleteMembershipApplication,
     onSuccess: () => {
@@ -114,7 +116,7 @@ export default function MembershipApplications() {
             </thead>
             <tbody>
               {applications.map((app) => {
-                // ✅ Handle missing/null fields safely
+                // Handle missing/null fields safely
                 const safeStatus = app.status ?? "pending";
                 const formattedStatus =
                   safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1);

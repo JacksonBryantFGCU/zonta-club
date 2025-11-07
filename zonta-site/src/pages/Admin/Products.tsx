@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/Products.tsx
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchProducts,

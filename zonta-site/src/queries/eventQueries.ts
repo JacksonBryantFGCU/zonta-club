@@ -1,3 +1,5 @@
+// zonta-site/src/queries/eventQueries.ts
+
 export interface Event {
   _id: string;
   title: string;

@@ -1,3 +1,5 @@
+// zonta-server/src/services/emailService.ts
+
 import path from "path";
 
 import dayjs from "dayjs";
@@ -18,7 +20,7 @@ export async function sendReceiptEmail(
     const { EMAIL_USER, EMAIL_PASS } = process.env;
 
     if (!EMAIL_USER || !EMAIL_PASS) {
-      console.warn("⚠️ Missing EMAIL_USER or EMAIL_PASS. Skipping email send.");
+      console.warn(" Missing EMAIL_USER or EMAIL_PASS. Skipping email send.");
       return;
     }
 
@@ -31,7 +33,9 @@ export async function sendReceiptEmail(
     const hasFile = await fs.pathExists(pdfPath);
     console.log("📎 PDF attachment exists:", hasFile);
 
-    const dateStr = order ? dayjs(order.createdAt).format("MMMM D, YYYY") : dayjs().format("MMMM D, YYYY");
+    const dateStr = order
+      ? dayjs(order.createdAt).format("MMMM D, YYYY")
+      : dayjs().format("MMMM D, YYYY");
     const BRAND_PRIMARY = "#b91c1c";
     const BRAND_SECONDARY = "#f4b400";
     const CLUB_NAME = process.env.CLUB_NAME || "Zonta Club of Naples";
@@ -102,8 +106,8 @@ export async function sendReceiptEmail(
 
     console.log("📤 Sending email...");
     await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent successfully to:", to);
+    console.log(" Email sent successfully to:", to);
   } catch (error) {
-    console.error("❌ Error sending receipt email:", error);
+    console.error(" Error sending receipt email:", error);
   }
 }

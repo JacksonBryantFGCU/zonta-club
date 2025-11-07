@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/MembershipApplication.tsx
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -12,14 +14,14 @@ import UpdateStatusModal from "./MembershipApplications/UpdateStatusModal";
 export default function MembershipApplications() {
   const queryClient = useQueryClient();
 
-  // ✅ Local state
+  //  Local state
   const [selectedApp, setSelectedApp] = useState<MembershipApplication | null>(
     null
   );
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
-  // ✅ Queries
+  //  Queries
   const {
     data: applications = [],
     isLoading,
@@ -30,7 +32,7 @@ export default function MembershipApplications() {
     staleTime: 60_000,
   });
 
-  // ✅ Mutations
+  //  Mutations
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
       updateMembershipApplicationStatus(id, status),
@@ -72,12 +74,10 @@ export default function MembershipApplications() {
     }
   };
 
-  // ✅ Loading / error states
+  //  Loading / error states
   if (isLoading)
     return (
-      <p className="text-center text-gray-500 py-8">
-        Loading applications...
-      </p>
+      <p className="text-center text-gray-500 py-8">Loading applications...</p>
     );
   if (isError)
     return (
@@ -164,7 +164,7 @@ export default function MembershipApplications() {
         </table>
       </div>
 
-      {/* ✅ Mobile Card Layout */}
+      {/*  Mobile Card Layout */}
       <div className="grid md:hidden gap-4">
         {applications.map((app) => {
           const safeStatus = app.status ?? "pending";

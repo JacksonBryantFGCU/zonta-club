@@ -1,3 +1,5 @@
+// zonta-site/src/queries/settingsQueries.ts
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SettingsState } from "./settingsTypes";
 

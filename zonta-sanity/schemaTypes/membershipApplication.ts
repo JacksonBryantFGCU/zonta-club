@@ -1,3 +1,5 @@
+// zonta-sanity/schemaTypes/membershipApplication.ts
+
 import { defineType, defineField } from "sanity";
 
 export default defineType({

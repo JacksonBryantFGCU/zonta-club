@@ -1,3 +1,5 @@
+// zonta-server/src/utils/sanityClient.ts
+
 import { createClient } from "@sanity/client";
 
 import { sanityConfig } from "@config/sanityConfig";

@@ -1,3 +1,5 @@
+// zonta-site/src/queries/productQueries.ts
+
 // ==============================================
 // 📦 Product Queries (Admin)
 // ==============================================
@@ -43,16 +45,16 @@ export const fetchProducts = async (): Promise<Product[]> => {
     }
 
     const data = await res.json();
-    console.log("🔍 Raw product data:", data);
+    console.log("  Raw product data:", data);
 
-    // ✅ Normalize: handle array or wrapped response
+    //  Normalize: handle array or wrapped response
     const products = Array.isArray(data)
       ? data
       : Array.isArray(data.products)
       ? data.products
       : [];
 
-    // ✅ Clean up / normalize each product
+    //  Clean up / normalize each product
     return products.map((p: unknown) => {
       const prod = p as {
         _id: string;
@@ -80,8 +82,10 @@ export const fetchProducts = async (): Promise<Product[]> => {
             ? prod.imageUrl
             : prod.image?.asset?._ref ?? "",
         inStock:
-          typeof prod.inStock === "boolean" ? prod.inStock : Boolean(prod.inStock ?? true),
-        // ✅ Category: support dereferenced or ref object
+          typeof prod.inStock === "boolean"
+            ? prod.inStock
+            : Boolean(prod.inStock ?? true),
+        //  Category: support dereferenced or ref object
         category:
           typeof prod.category === "string"
             ? prod.category
@@ -90,14 +94,16 @@ export const fetchProducts = async (): Promise<Product[]> => {
                 ? `Ref: ${prod.category._ref.slice(0, 6)}…`
                 : "—"),
         categoryId:
-          typeof prod.category === "object" ? prod.category?._id ?? prod.category?._ref : "",
+          typeof prod.category === "object"
+            ? prod.category?._id ?? prod.category?._ref
+            : "",
         createdAt: prod._createdAt ?? "",
         updatedAt: prod._updatedAt ?? "",
       };
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("❌ fetchProducts error:", message);
+    console.error(" fetchProducts error:", message);
     throw new Error(message);
   }
 };
@@ -127,7 +133,7 @@ export const createProduct = async (
     return data.product ?? data;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("❌ createProduct error:", message);
+    console.error(" createProduct error:", message);
     throw new Error(message);
   }
 };
@@ -158,7 +164,7 @@ export const updateProduct = async (
     return data.product ?? data;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("❌ updateProduct error:", message);
+    console.error(" updateProduct error:", message);
     throw new Error(message);
   }
 };
@@ -186,7 +192,7 @@ export const deleteProduct = async (
     return { success: true };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("❌ deleteProduct error:", message);
+    console.error(" deleteProduct error:", message);
     throw new Error(message);
   }
 };

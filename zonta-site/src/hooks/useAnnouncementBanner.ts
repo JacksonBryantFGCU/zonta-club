@@ -1,3 +1,5 @@
+// zonta-site/src/hooks/useAnnouncementBanner.ts
+
 import { useState, useEffect } from "react";
 import { usePublicSettings } from "../queries/publicSettingsQueries";
 

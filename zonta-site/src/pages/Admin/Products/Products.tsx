@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/Products/Products.tsx
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchProducts,
@@ -174,7 +176,7 @@ export default function Products() {
               </thead>
               <tbody>
                 {products.map((p) => {
-                  // ✅ Handle reference objects safely
+                  //  Handle reference objects safely
                   const category =
                     typeof p.category === "string"
                       ? p.category

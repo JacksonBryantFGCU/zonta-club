@@ -1,4 +1,5 @@
-// src/pages/NotFound.tsx
+// zonta-site/src/pages/NotFound.tsx
+
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";

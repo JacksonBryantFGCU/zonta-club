@@ -1,3 +1,5 @@
+// zonta-site/src/lib/sanityClient.ts
+
 import { createClient } from "@sanity/client";
 
 export const sanity = createClient({

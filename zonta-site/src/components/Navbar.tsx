@@ -1,3 +1,5 @@
+// zonta-site/src/components/Navbar.tsx
+
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
@@ -19,14 +21,14 @@ export default function Navbar() {
     { name: "Ecommerce", path: "/ecommerce" },
   ];
 
-  // ✅ Smooth background + shadow on scroll
+  //  Smooth background + shadow on scroll
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Keyboard shortcut to go to /admin (Ctrl + Shift + A)
+  //  Keyboard shortcut to go to /admin (Ctrl + Shift + A)
   useEffect(() => {
     const handleShortcut = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
@@ -37,7 +39,7 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", handleShortcut);
   }, [navigate]);
 
-  // ✅ Close mobile menu when navigating
+  //  Close mobile menu when navigating
   const handleNavClick = (path: string) => {
     navigate(path);
     setMenuOpen(false);
@@ -88,7 +90,7 @@ export default function Navbar() {
             </NavLink>
           ))}
 
-          {/* ✅ Donate Button (highlighted) */}
+          {/*  Donate Button (highlighted) */}
           <button
             onClick={() => handleNavClick("/donate")}
             className="ml-4 bg-zontaRed text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-zontaDark transition-all duration-300"
@@ -152,7 +154,7 @@ export default function Navbar() {
                 </motion.li>
               ))}
 
-              {/* ✅ Mobile Donate Button */}
+              {/*  Mobile Donate Button */}
               <motion.li
                 key="Donate"
                 variants={{

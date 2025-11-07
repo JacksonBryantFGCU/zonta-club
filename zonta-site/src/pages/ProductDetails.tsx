@@ -1,3 +1,5 @@
+// zonta-site/src/pages/ProductDetails.tsx
+
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { sanity } from "../lib/sanityClient";
@@ -13,17 +15,17 @@ export default function ProductDetails() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const query = groq`*[_type == "product" && _id == $id][0]{
-    _id,
-    title,
-    price,
-    description,
-    inStock,
-    "imageUrl": image.asset->url,
-    "category": category->title
-  }`;
-
   useEffect(() => {
+    const query = groq`*[_type == "product" && _id == $id][0]{
+      _id,
+      title,
+      price,
+      description,
+      inStock,
+      "imageUrl": image.asset->url,
+      "category": category->title
+    }`;
+
     sanity.fetch<Product>(query, { id }).then((data) => {
       setProduct(data);
       setLoading(false);
@@ -53,12 +55,12 @@ export default function ProductDetails() {
     <section className="py-16 px-6 bg-white">
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
         {/* ===== Product Image ===== */}
-        <div>
+        <div className="flex items-center justify-center bg-gray-50 rounded-lg p-4 md:p-8">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
               alt={product.title}
-              className="w-full h-auto rounded-lg shadow-md"
+              className="w-full h-auto max-h-[500px] object-contain rounded-lg"
             />
           ) : (
             <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">

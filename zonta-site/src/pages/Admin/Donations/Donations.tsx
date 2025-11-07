@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/Donations/Donations.tsx
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -85,7 +87,7 @@ export default function Donations() {
         <p className="text-sm text-gray-500 mt-2">{errorMessage}</p>
         {isAuthError && (
           <p className="text-sm text-blue-600 mt-3">
-            💡 Try logging out and logging back in to refresh your session.
+            Try logging out and logging back in to refresh your session.
           </p>
         )}
       </div>

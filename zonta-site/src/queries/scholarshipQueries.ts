@@ -1,3 +1,5 @@
+// zonta-site/src/queries/scholarshipQueries.ts
+
 // ================================
 // 🧠 Scholarship Types
 // ================================

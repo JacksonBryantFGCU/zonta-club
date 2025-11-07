@@ -1,3 +1,5 @@
+// zonta-server/src/controllers/receiptController.ts
+
 import type { Request, Response } from "express";
 
 import { generateReceipt } from "@utils/generateReceipt";

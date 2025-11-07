@@ -1,3 +1,5 @@
+// zonta-server/src/controllers/scholarshipApplicationsController.ts
+
 import type { Request, Response } from "express";
 
 import { sanityClient } from "@services/sanityService";
@@ -28,7 +30,7 @@ export const getScholarshipApplications = async (_req: Request, res: Response) =
     const applications = await sanityClient.fetch(query);
     res.status(200).json(applications);
   } catch (err) {
-    console.error("❌ Failed to fetch scholarship applications:", err);
+    console.error(" Failed to fetch scholarship applications:", err);
     res.status(500).json({ error: "Failed to fetch scholarship applications" });
   }
 };
@@ -52,7 +54,7 @@ export const updateScholarshipApplicationStatus = async (req: Request, res: Resp
     const updated = await sanityClient.patch(id).set({ status }).commit();
     res.status(200).json({ message: "Status updated", updated });
   } catch (err) {
-    console.error("❌ Failed to update scholarship application:", err);
+    console.error(" Failed to update scholarship application:", err);
     res.status(500).json({ error: "Failed to update scholarship application" });
   }
 };
@@ -68,7 +70,7 @@ export const deleteScholarshipApplication = async (req: Request, res: Response) 
     await sanityClient.delete(id);
     res.status(200).json({ message: "Scholarship application deleted successfully" });
   } catch (err) {
-    console.error("❌ Failed to delete scholarship application:", err);
+    console.error(" Failed to delete scholarship application:", err);
     res.status(500).json({ error: "Failed to delete scholarship application" });
   }
 };

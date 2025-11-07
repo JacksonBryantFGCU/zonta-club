@@ -1,3 +1,5 @@
+// zonta-sanity/schemaTypes/order.ts
+
 export default {
   name: "order",
   title: "Orders",

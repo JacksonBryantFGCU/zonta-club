@@ -1,3 +1,5 @@
+// zonta-site/src/components/ProtectedRoute.tsx
+
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
@@ -19,14 +21,14 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
       const now = Date.now() / 1000;
 
       if (payload.exp && payload.exp < now) {
-        console.warn("⚠️ Token expired. Logging out...");
+        console.warn(" Token expired. Logging out...");
         localStorage.removeItem("adminToken");
         setIsValid(false);
       } else {
         setIsValid(true);
       }
     } catch (err) {
-      console.error("❌ Invalid token:", err);
+      console.error(" Invalid token:", err);
       localStorage.removeItem("adminToken");
       setIsValid(false);
     }

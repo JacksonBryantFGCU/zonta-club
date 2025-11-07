@@ -1,3 +1,5 @@
+// zonta-server/src/routes/settingsRoutes.ts
+
 import express from "express";
 
 import { getSettings, updateSettings } from "@controllers/settingsController";

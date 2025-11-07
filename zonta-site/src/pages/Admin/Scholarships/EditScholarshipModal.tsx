@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/Scholarhips/EditScholarshipModal.tsx
+
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
@@ -15,7 +17,6 @@ export interface Scholarship {
   description: string;
   eligibility?: string[];
   deadline?: string;
-  fileUrl?: string;
 }
 
 export interface ScholarshipFormData {
@@ -23,7 +24,6 @@ export interface ScholarshipFormData {
   description: string;
   eligibility: string[];
   deadline: string;
-  fileUrl?: string;
 }
 
 export default function EditScholarshipModal({
@@ -38,7 +38,6 @@ export default function EditScholarshipModal({
     description: "",
     eligibility: [],
     deadline: "",
-    fileUrl: "",
   });
 
   const [eligibilityInput, setEligibilityInput] = useState("");
@@ -56,7 +55,6 @@ export default function EditScholarshipModal({
         description: scholarship.description || "",
         eligibility: scholarship.eligibility || [],
         deadline: deadlineDate,
-        fileUrl: scholarship.fileUrl || "",
       });
       setEligibilityInput("");
     }
@@ -212,26 +210,6 @@ export default function EditScholarshipModal({
                 ))}
               </div>
             )}
-          </div>
-
-          {/* File URL */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Application Form URL
-            </label>
-            <input
-              type="url"
-              value={formData.fileUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, fileUrl: e.target.value })
-              }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-zontaGold focus:border-transparent"
-              placeholder="https://example.com/application-form.pdf"
-              disabled={isSubmitting}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Optional: Link to downloadable application form
-            </p>
           </div>
 
           {/* Actions */}

@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/ScholarhipApplications/ViewApplicationModal.tsx
+
 import { X } from "lucide-react";
 import type { ScholarshipApplication } from "../../../queries/scholarshipApplicationQueries";
 

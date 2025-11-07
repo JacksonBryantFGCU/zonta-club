@@ -1,3 +1,5 @@
+// zonta-server/src/routes/categoriesRoutes.ts
+
 import express from "express";
 
 import {

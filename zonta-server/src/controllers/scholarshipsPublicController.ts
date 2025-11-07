@@ -1,8 +1,10 @@
+// zonta-server/src/controllers/scholarshipsPublicController.ts
+
 import type { Request, Response } from "express";
 
 import { sanityClient } from "@services/sanityService";
 
-// ✅ Add `_type` to the interface to match Sanity's document schema
+//  Add `_type` to the interface to match Sanity's document schema
 interface ScholarshipApplication {
   _id?: string;
   _type: "scholarshipApplication"; // 👈 Added this line
@@ -66,13 +68,11 @@ export const submitScholarshipApplication = async (req: Request, res: Response) 
     });
 
     if (existing) {
-      res
-        .status(400)
-        .json({ error: "You have already applied for this scholarship." });
+      res.status(400).json({ error: "You have already applied for this scholarship." });
       return;
     }
 
-    // ✅ Build Sanity document
+    //  Build Sanity document
     const doc: ScholarshipApplication = {
       _type: "scholarshipApplication",
       name,
@@ -89,11 +89,11 @@ export const submitScholarshipApplication = async (req: Request, res: Response) 
     const created = await sanityClient.create(doc);
 
     res.status(201).json({
-      message: "✅ Scholarship application submitted successfully.",
+      message: " Scholarship application submitted successfully.",
       application: created,
     });
   } catch (err) {
-    console.error("❌ Failed to submit scholarship application:", err);
+    console.error(" Failed to submit scholarship application:", err);
     res.status(500).json({ error: "Failed to submit scholarship application" });
   }
 };

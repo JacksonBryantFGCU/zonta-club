@@ -1,3 +1,5 @@
+// zonta-server/src/controllers/membershipsPublicController.ts
+
 import type { Request, Response } from "express";
 import Stripe from "stripe";
 
@@ -16,7 +18,7 @@ export const submitMembershipApplication = async (req: Request, res: Response) =
       return;
     }
 
-    // ✅ 1. Check for existing membership application with same email
+    //  1. Check for existing membership application with same email
     const existingQuery = `*[_type == "membershipApplication" && email == $email && (status == "pending" || status == "approved")][0]{_id, status}`;
     const existingApp = await sanityClient.fetch(existingQuery, { email });
 
@@ -30,7 +32,7 @@ export const submitMembershipApplication = async (req: Request, res: Response) =
       return;
     }
 
-    // ✅ 2. Create new Sanity membership application
+    //  2. Create new Sanity membership application
     const applicationDoc = {
       _type: "membershipApplication",
       name,
@@ -45,7 +47,7 @@ export const submitMembershipApplication = async (req: Request, res: Response) =
 
     const createdApp = await sanityClient.create(applicationDoc);
 
-    // ✅ 3. Fetch membership details for Stripe
+    //  3. Fetch membership details for Stripe
     const membership = await sanityClient.fetch(
       `*[_type == "membership" && _id == $id][0]{title, price}`,
       { id: membershipId }
@@ -56,7 +58,7 @@ export const submitMembershipApplication = async (req: Request, res: Response) =
       return;
     }
 
-    // ✅ 4. Create Stripe Checkout Session
+    //  4. Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -82,14 +84,14 @@ export const submitMembershipApplication = async (req: Request, res: Response) =
       cancel_url: `${process.env.FRONTEND_URL}/membership-cancel`,
     });
 
-    // ✅ 5. Respond with Stripe redirect
+    //  5. Respond with Stripe redirect
     res.status(201).json({
       message: "Application submitted successfully. Redirecting to checkout...",
       checkoutUrl: session.url,
       applicationId: createdApp._id,
     });
   } catch (err) {
-    console.error("❌ Failed to submit membership application:", err);
+    console.error(" Failed to submit membership application:", err);
     res.status(500).json({ error: "Failed to submit membership application" });
   }
 };
@@ -102,7 +104,7 @@ export const getPublicMemberships = async (_req: Request, res: Response) => {
     const memberships = await sanityClient.fetch(query);
     res.status(200).json(memberships);
   } catch (err) {
-    console.error("❌ Failed to fetch memberships:", err);
+    console.error(" Failed to fetch memberships:", err);
     res.status(500).json({ error: "Failed to fetch memberships" });
   }
 };

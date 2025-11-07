@@ -1,3 +1,5 @@
+// zonta-site/src/queries/membershipApplicationQueries.ts
+
 export interface MembershipApplication {
   _id: string;
   name: string;

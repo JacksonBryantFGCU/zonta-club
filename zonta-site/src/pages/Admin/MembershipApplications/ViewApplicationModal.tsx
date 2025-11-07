@@ -1,3 +1,5 @@
+// zonta-site/src/pages/Admin/MembershipApplications/ViewApplicationModal.tsx
+
 import { X } from "lucide-react";
 import type { MembershipApplication } from "../../../queries/membershipApplicationQueries";
 
@@ -14,7 +16,7 @@ export default function ViewApplicationModal({
 }: ViewApplicationModalProps) {
   if (!isOpen || !application) return null;
 
-  // ✅ Safe fallbacks for missing or null values
+  // Safe fallbacks for missing or null values
   const safeStatus = application.status ?? "pending";
   const formattedStatus =
     safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1);

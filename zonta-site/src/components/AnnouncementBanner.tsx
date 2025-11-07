@@ -1,3 +1,5 @@
+// zonta-site/src/components/AnnouncementBanner.tsx
+
 import { useAnnouncementBanner } from "../hooks/useAnnouncementBanner";
 
 export default function AnnouncementBanner() {

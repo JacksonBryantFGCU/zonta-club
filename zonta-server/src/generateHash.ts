@@ -1,3 +1,5 @@
+// zonta-server/src/generateHash.ts
+
 import bcrypt from "bcryptjs";
 
 /**

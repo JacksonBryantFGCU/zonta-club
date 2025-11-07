@@ -1,9 +1,20 @@
+// zonta-site/src/pages/Home.tsx
+
 import { useEffect, useState } from "react";
 import HeroImage from "../assets/hero_women_empowerment.jpg";
 import { sanity } from "../lib/sanityClient";
 import groq from "groq";
 import EventCard from "../components/EventCard";
+import PartnerCard from "../components/PartnerCard";
 import { useNavigate } from "react-router-dom";
+
+// Import partner logos
+import ACSLogo from "../assets/acs-sponsor.png";
+import HabitatLogo from "../assets/habitatforhumanity-sponsor.png";
+import PACELogo from "../assets/pace-sponsor.png";
+import Path2FreedomLogo from "../assets/path2freedom-sponsor.jpg";
+import ProjectHelpLogo from "../assets/project-help-sponsor.png";
+import ShelterLogo from "../assets/shelter-sponsor.jpg";
 
 interface Event {
   _id: string;
@@ -47,7 +58,7 @@ export default function Home() {
             Empowering Women <br className="hidden sm:block" /> Through Service
             & Advocacy
           </h1>
-          <p className="text-lg sm:text-xl bg-white/75 text-zontaMahogany px-6 py-3 rounded-lg max-w-2xl mx-auto font-medium shadow-sm">
+          <p className="text-lg sm:text-xl bg-white/90 text-zontaMahogany px-6 py-3 rounded-lg max-w-2xl mx-auto font-medium shadow-sm border-2 border-zontaCyan/30">
             The Zonta Club of Naples advances the status of women locally and
             globally — creating real change through compassion, education, and
             advocacy.
@@ -56,13 +67,13 @@ export default function Home() {
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/about")}
-              className="bg-zontaMahogany text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaOrange transition-all duration-300"
+              className="bg-zontaMahogany text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaCyan hover:scale-105 transition-all duration-300"
             >
               Learn More
             </button>
             <button
               onClick={() => navigate("/donate")}
-              className="bg-white text-zontaMahogany font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaGold hover:text-white transition-all duration-300"
+              className="bg-white text-zontaMahogany font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaLightGold hover:text-white hover:scale-105 border-2 border-zontaLightGold transition-all duration-300"
             >
               Donate
             </button>
@@ -83,13 +94,13 @@ export default function Home() {
       </section>
 
       {/* ===== Mission / Impact Section ===== */}
-      <section className="py-20 px-6 bg-white text-zontaMahogany max-w-7xl mx-auto">
-        <h2 className="text-4xl font-heading font-bold mb-8 text-zontaMahogany">
+      <section className="py-20 px-6 bg-white text-gray-800 max-w-7xl mx-auto">
+        <h2 className="text-4xl font-heading font-bold mb-4 text-zontaMahogany">
           Our Mission & Impact
         </h2>
-        <div className="mx-auto mb-8 w-24 h-1 bg-gradient-to-r from-transparent via-zontaGold to-transparent"></div>
+        <div className="mx-auto mb-8 w-24 h-1 bg-gradient-to-r from-zontaCyan via-zontaBlue to-zontaCyan"></div>
 
-        <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-12">
+        <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-12 text-gray-700">
           Zonta Club of Naples is part of a global organization of professionals
           empowering women through service and advocacy. We support education,
           health, and equality initiatives while connecting local members to a
@@ -100,37 +111,44 @@ export default function Home() {
           {[
             {
               title: "Community Service",
-              text: "Partnering with local organizations to address issues like domestic violence prevention, education, and women’s healthcare.",
+              icon: "🧡",
+              text: "Partnering with local organizations to address issues like domestic violence prevention, education, and women's healthcare.",
+              color: "zontaPink",
             },
             {
               title: "Scholarships",
+              icon: "🎓",
               text: "Supporting women pursuing higher education through local and international scholarships.",
+              color: "zontaViolet",
             },
             {
               title: "Global Connection",
+              icon: "🌍",
               text: "Zonta International unites clubs in over 60 countries, building a network of advocacy and empowerment worldwide.",
+              color: "zontaBlue",
             },
           ].map((item) => (
             <div
               key={item.title}
-              className="p-6 border border-zontaGold rounded-xl shadow-md hover:shadow-lg transition"
+              className={`p-6 border-2 border-${item.color}/40 rounded-xl shadow-sm hover:shadow-xl hover:border-${item.color} hover:-translate-y-1 transition-all duration-300 bg-white`}
             >
-              <h3 className="text-2xl font-semibold text-zontaMahogany mb-3">
+              <div className="text-3xl mb-3">{item.icon}</div>
+              <h3 className={`text-2xl font-semibold text-${item.color} mb-3`}>
                 {item.title}
               </h3>
-              <p>{item.text}</p>
+              <p className="text-gray-700">{item.text}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ===== Upcoming Events Section ===== */}
-      <section className="py-20 px-6 bg-zontaGold/10 w-full">
+      <section className="py-20 px-6 bg-gradient-to-br from-zontaBlue/10 via-zontaCyan/5 to-zontaBlue/10 w-full">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl font-heading font-bold text-zontaMahogany mb-8">
+          <h2 className="text-4xl font-heading font-bold text-zontaMahogany mb-4">
             Upcoming Events
           </h2>
-          <div className="mx-auto mb-8 w-24 h-1 bg-gradient-to-r from-transparent via-zontaOrange to-transparent"></div>
+          <div className="mx-auto mb-8 w-24 h-1 bg-gradient-to-r from-zontaPink via-zontaViolet to-zontaPink"></div>
 
           {loading ? (
             <p className="text-zontaMahogany/70">Loading events...</p>
@@ -148,26 +166,74 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== Who We Support Section ===== */}
+      <section className="py-20 px-6 bg-white w-full">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-4xl font-heading font-bold text-zontaMahogany mb-4">
+            Who We Support
+          </h2>
+          <div className="mx-auto mb-8 w-24 h-1 bg-gradient-to-r from-zontaViolet via-zontaPink to-zontaViolet"></div>
+          
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto mb-12">
+            We proudly partner with local and national organizations that share our commitment 
+            to empowering women, supporting families, and building stronger communities.
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <PartnerCard 
+              name="American Cancer Society" 
+              logoUrl={ACSLogo} 
+              donateUrl="https://donate.cancer.org/" 
+            />
+            <PartnerCard 
+              name="Habitat for Humanity" 
+              logoUrl={HabitatLogo} 
+              donateUrl="https://www.habitat.org/donate" 
+            />
+            <PartnerCard 
+              name="PACE Center for Girls" 
+              logoUrl={PACELogo} 
+              donateUrl="https://pacecenter.org/donate/" 
+            />
+            <PartnerCard 
+              name="Path2Freedom" 
+              logoUrl={Path2FreedomLogo} 
+              donateUrl="https://www.path2freedom.com/donate" 
+            />
+            <PartnerCard 
+              name="Project H.E.L.P." 
+              logoUrl={ProjectHelpLogo} 
+              donateUrl="https://projecthelpnaples.org/donate/" 
+            />
+            <PartnerCard 
+              name="The Shelter for Abused Women & Children" 
+              logoUrl={ShelterLogo} 
+              donateUrl="https://naplesshelter.org/donate/" 
+            />
+          </div>
+        </div>
+      </section>
+
       {/* ===== Join & Donate CTA ===== */}
-      <section className="py-20 px-6 bg-zontaGold/20 text-zontaMahogany text-center w-full">
+      <section className="py-20 px-6 bg-gradient-to-br from-zontaLightGold/20 via-zontaGold/10 to-zontaOrange/15 text-zontaMahogany text-center w-full">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-4xl font-heading font-bold mb-6">
             Join Our Mission to Empower Women
           </h2>
-          <p className="text-lg mb-10">
+          <p className="text-lg mb-10 text-gray-700">
             Whether through membership, donations, or volunteering — your
             contribution makes an impact. Together, we can change lives.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/membership")}
-              className="bg-zontaGold text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaOrange transition-all duration-300"
+              className="bg-zontaViolet text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaPink hover:scale-105 transition-all duration-300"
             >
               Become a Member
             </button>
             <button
               onClick={() => navigate("/donate")}
-              className="bg-white text-zontaMahogany font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaGold hover:text-white transition-all duration-300"
+              className="bg-white text-zontaMahogany font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaCyan hover:text-white hover:scale-105 border-2 border-zontaCyan transition-all duration-300"
             >
               Donate
             </button>

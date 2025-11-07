@@ -1,3 +1,5 @@
+// zonta-sanity/schemaTypes/index.ts
+
 import event from "./event";
 import product from "./product";
 import category from "./category";
