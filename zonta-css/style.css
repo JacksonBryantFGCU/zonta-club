@@ -1,0 +1,155 @@
+/* Simple reset */
+*{
+    margin : 0;
+    padding : 0;
+    box-sizing: border-box
+    
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.6;
+    color: #6c0909;
+    background: #faf7f2;
+}
+
+/* Layout helper */
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Hero */
+.membership-hero {
+    background: #6e0505; /* deep brown */
+    color: #fff;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.membership-hero h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+}
+
+/* Sections */
+.membership-why,
+.membership-details,
+.membership-contact,
+.membership-form {
+    padding: 3rem 0;
+}
+
+.membership-why h2,
+.membership-details h2,
+.membership-contact h2,
+.membership-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Cards */
+.cards {
+    display: gid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.5rem;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Details grid */
+.details-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.details-grid h3 {
+    margin-bottom: 0.5rem;
+}
+
+/* Contact section */
+.membership-contact{
+    text-align: center;
+    background: #f0e2cf
+}
+
+.membership-contact a {
+    color:#5e0505;
+    font-weight: 600;
+}
+
+/* Form */
+.membership-form form {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0, 0.06);
+}
+
+.form-row {
+    margin-bottom: 1rem;
+}
+
+.form-row label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+}
+
+.form-row input,
+.form-row textarea {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    font: inherit;
+}
+
+.form-row input:focus,
+.form-row textarea:focus {
+    outline: 2px solid #c69214;
+    border-color: #c69214;
+}
+
+/* Make sure sections have some spacing on small screens */
+section + section {
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.btn-primary {
+    text-decoration: none;
+    display: inline-block;
+    background-color: white;
+    padding: 5px;
+    border-radius: 10px;
+    transition: 0.3s ease;
+    border: 2px solid rgb(0, 0, 0);
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 2px 2px 0 0 white;
+}
