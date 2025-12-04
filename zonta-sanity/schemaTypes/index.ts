@@ -26,5 +26,4 @@ export const schemaTypes = [
   membershipApplication,
   siteSettings,
   donation,
-
 ];

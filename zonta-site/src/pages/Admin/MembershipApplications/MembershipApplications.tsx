@@ -6,22 +6,23 @@ import {
   fetchMembershipApplications,
   updateMembershipApplicationStatus,
   deleteMembershipApplication,
+  createMembershipPaymentLink,
   type MembershipApplication,
 } from "../../../queries/membershipApplicationQueries";
+
 import ViewApplicationModal from "./ViewApplicationModal";
 import UpdateStatusModal from "./UpdateStatusModal";
 
 export default function MembershipApplications() {
   const queryClient = useQueryClient();
 
-  // Local UI state
   const [selectedApp, setSelectedApp] = useState<MembershipApplication | null>(
     null
   );
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
-  // Fetch applications
+  // Fetch data
   const {
     data: applications = [],
     isLoading,
@@ -32,7 +33,7 @@ export default function MembershipApplications() {
     staleTime: 60_000,
   });
 
-  // Update status mutation
+  // Update status
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
       updateMembershipApplicationStatus(id, status),
@@ -45,13 +46,21 @@ export default function MembershipApplications() {
     },
   });
 
-  // Delete membership application
+  // Delete application
   const deleteMutation = useMutation({
     mutationFn: deleteMembershipApplication,
-    onSuccess: () => {
+    onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ["admin", "membershipApplications"],
-      });
+      }),
+  });
+
+  // Create payment link
+  const generatePaymentLinkMutation = useMutation({
+    mutationFn: (id: string) => createMembershipPaymentLink(id),
+    onSuccess: (data) => {
+      alert(`Payment link generated:\n\n${data.checkoutUrl}`);
+      navigator.clipboard.writeText(data.checkoutUrl);
     },
   });
 
@@ -66,18 +75,19 @@ export default function MembershipApplications() {
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (confirm(`Are you sure you want to permanently delete the application for "${name}"?`)) {
+    if (confirm(`Delete application for "${name}"?`)) {
       deleteMutation.mutate(id);
     }
   };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-zontaRed">
           Membership Applications
         </h2>
+
         <button
           onClick={() =>
             queryClient.invalidateQueries({
@@ -90,94 +100,117 @@ export default function MembershipApplications() {
         </button>
       </div>
 
-      {/* Loading / Error / Empty states */}
-      {isLoading ? (
-        <p className="text-center text-gray-500 py-8">
+      {/* STATES */}
+      {isLoading && (
+        <p className="text-center py-8 text-gray-500">
           Loading applications...
         </p>
-      ) : isError ? (
-        <p className="text-center text-red-500 py-8">
-          Failed to load applications.
-        </p>
-      ) : applications.length === 0 ? (
-        <p className="text-gray-600 text-sm">No applications found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-zontaGold text-sm">
-            <thead className="bg-zontaGold text-white">
-              <tr>
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Email</th>
-                <th className="px-4 py-2 text-left">Membership Type</th>
-                <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Date</th>
-                <th className="px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {applications.map((app) => {
-                // Handle missing/null fields safely
-                const safeStatus = app.status ?? "pending";
-                const formattedStatus =
-                  safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1);
-                const statusColor =
-                  safeStatus === "approved"
-                    ? "bg-green-100 text-green-700"
-                    : safeStatus === "rejected"
-                    ? "bg-red-100 text-red-700"
-                    : "bg-yellow-100 text-yellow-700";
-
-                return (
-                  <tr
-                    key={app._id}
-                    className="border-b border-zontaGold/40 hover:bg-zontaGold/10 transition"
-                  >
-                    <td className="px-4 py-2 font-medium">{app.name}</td>
-                    <td className="px-4 py-2">{app.email}</td>
-                    <td className="px-4 py-2">
-                      {app.membershipType?.title ?? "N/A"}
-                    </td>
-                    <td className="px-4 py-2">
-                      <span
-                        className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColor}`}
-                      >
-                        {formattedStatus}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">
-                      {app.createdAt
-                        ? new Date(app.createdAt).toLocaleDateString()
-                        : "N/A"}
-                    </td>
-                    <td className="px-4 py-2 flex flex-wrap gap-2">
-                      <button
-                        onClick={() => handleView(app)}
-                        className="px-3 py-1 text-xs bg-zontaGold text-white rounded-md hover:bg-zontaRed transition"
-                      >
-                        View
-                      </button>
-                      <button
-                        onClick={() => handleUpdateStatus(app)}
-                        className="px-3 py-1 text-xs bg-gray-100 text-zontaRed rounded-md hover:bg-gray-200 transition"
-                      >
-                        Update Status
-                      </button>
-                      <button
-                        onClick={() => handleDelete(app._id, app.name)}
-                        className="px-3 py-1 text-xs bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
       )}
 
-      {/* Modals */}
+      {isError && (
+        <p className="text-center py-8 text-red-500">
+          Failed to load applications.
+        </p>
+      )}
+
+      {!isLoading && !isError && applications.length === 0 && (
+        <p className="text-gray-600 text-sm">No applications found.</p>
+      )}
+
+      {/* CARD LIST */}
+      <div className="space-y-6">
+        {applications.map((app) => {
+          const price = app.membershipType?.price ?? 0;
+          const isFreeTier = price === 0;
+          const showPaymentLink =
+            !isFreeTier && !app.paid && app.status !== "rejected";
+
+          const safeStatus = app.status ?? "pending";
+
+          const statusColor =
+            safeStatus === "approved"
+              ? "bg-green-100 text-green-700"
+              : safeStatus === "rejected"
+              ? "bg-red-100 text-red-700"
+              : "bg-yellow-100 text-yellow-700";
+
+          return (
+            <div
+              key={app._id}
+              className="border border-zontaGold rounded-xl p-5 bg-white shadow-sm"
+            >
+              {/* NAME */}
+              <p className="text-lg font-semibold text-zontaMahogany">
+                {app.name}
+              </p>
+              <p className="text-gray-700">{app.email}</p>
+
+              {/* MEMBERSHIP */}
+              <div className="mt-2">
+                <p className="font-semibold text-zontaMahogany">
+                  Membership: {app.membershipType?.title ?? "N/A"}
+                </p>
+
+                {isFreeTier ? (
+                  <p className="text-green-600 text-sm font-semibold">
+                    Free Tier
+                  </p>
+                ) : (
+                  <p className="text-zontaGold text-sm font-semibold">
+                    ${price.toFixed(2)}
+                  </p>
+                )}
+              </div>
+
+              {/* STATUS */}
+              <div className="mt-3">
+                <span
+                  className={`px-3 py-1 rounded-md text-xs font-semibold ${statusColor}`}
+                >
+                  {safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1)}
+                </span>
+              </div>
+
+              {/* ACTIONS */}
+              <div className="flex flex-wrap gap-2 mt-4">
+                <button
+                  onClick={() => handleView(app)}
+                  className="px-3 py-1 text-xs bg-zontaGold text-white rounded-md hover:bg-zontaRed transition"
+                >
+                  View
+                </button>
+
+                <button
+                  onClick={() => handleUpdateStatus(app)}
+                  className="px-3 py-1 text-xs bg-gray-100 text-zontaRed rounded-md hover:bg-gray-200 transition"
+                >
+                  Update Status
+                </button>
+
+                {showPaymentLink && (
+                  <button
+                    onClick={() =>
+                      generatePaymentLinkMutation.mutate(app._id)
+                    }
+                    className="px-3 py-1 text-xs bg-zontaMahogany text-white rounded-md hover:bg-zontaRed transition"
+                  >
+                    Payment Link
+                  </button>
+                )}
+
+                <button
+                  onClick={() => handleDelete(app._id, app.name)}
+                  className="px-3 py-1 text-xs bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* MODALS */}
       <ViewApplicationModal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}

@@ -1,9 +1,5 @@
 // zonta-site/src/queries/productQueries.ts
 
-// ==============================================
-// 📦 Product Queries (Admin)
-// ==============================================
-
 export interface Product {
   _id: string;
   title: string;
@@ -11,188 +7,175 @@ export interface Product {
   description?: string;
   imageUrl?: string;
   inStock: boolean;
-  category?: string; // Category title (resolved from Sanity)
-  categoryId?: string; // Underlying Sanity ref ID
+  category: string;
+  categoryId?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
-// ==============================================
-// 🔐 Helper: Auth Headers
-// ==============================================
+/* ================================
+   Raw Product Type (from Sanity)
+================================ */
+interface RawProduct {
+  _id: string;
+  title?: string;
+  price?: number | string;
+  description?: string;
+
+  // Admin returns imageUrl
+  imageUrl?: string;
+
+  // Public sometimes returns reference
+  image?: {
+    asset?: {
+      _ref?: string;
+      url?: string;
+    };
+  };
+
+  inStock?: boolean;
+
+  // Public can be string or object
+  category?: string | { title?: string };
+
+  // Admin provides these:
+  categoryId?: string;
+  categoryTitle?: string;
+
+  _createdAt?: string;
+  _updatedAt?: string;
+}
+
+/* ================================
+   AUTH HEADERS (ADMIN ONLY)
+================================ */
 function getAuthHeaders() {
   const token = localStorage.getItem("adminToken");
-  if (!token) throw new Error("No admin token found. Please log in again.");
+  if (!token) throw new Error("Not authorized — please log in again.");
+
   return {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 }
 
-// ==============================================
-// 🧠 Fetch All Products
-// ==============================================
-export const fetchProducts = async (): Promise<Product[]> => {
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/products`,
-      { headers: getAuthHeaders() }
-    );
+/* ================================
+   Normalize Raw Product → Product
+================================ */
+function normalizeProduct(p: RawProduct): Product {
+  return {
+    _id: p._id,
+    title: p.title ?? "Untitled",
+    price:
+      typeof p.price === "number"
+        ? p.price
+        : Number(p.price ?? 0),
 
-    if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(`Failed to fetch products: ${msg}`);
-    }
+    description: p.description ?? "",
 
-    const data = await res.json();
-    console.log("  Raw product data:", data);
+    // Prefer direct URL → fallback to asset
+    imageUrl:
+      p.imageUrl ??
+      p.image?.asset?.url ??
+      "",
 
-    //  Normalize: handle array or wrapped response
-    const products = Array.isArray(data)
-      ? data
-      : Array.isArray(data.products)
-      ? data.products
-      : [];
+    inStock: p.inStock ?? true,
 
-    //  Clean up / normalize each product
-    return products.map((p: unknown) => {
-      const prod = p as {
-        _id: string;
-        title?: string;
-        price?: number | string;
-        description?: string;
-        imageUrl?: string;
-        image?: { asset?: { _ref?: string } };
-        inStock?: boolean;
-        category?: string | { title?: string; _ref?: string; _id?: string };
-        categoryId?: string;
-        _createdAt?: string;
-        _updatedAt?: string;
-      };
-      return {
-        _id: prod._id,
-        title: prod.title ?? "Untitled",
-        price:
-          typeof prod.price === "number"
-            ? prod.price
-            : parseFloat(prod.price ?? "0") || 0,
-        description: prod.description ?? "",
-        imageUrl:
-          typeof prod.imageUrl === "string"
-            ? prod.imageUrl
-            : prod.image?.asset?._ref ?? "",
-        inStock:
-          typeof prod.inStock === "boolean"
-            ? prod.inStock
-            : Boolean(prod.inStock ?? true),
-        //  Category: support dereferenced or ref object
-        category:
-          typeof prod.category === "string"
-            ? prod.category
-            : prod.category?.title ??
-              (prod.category?._ref
-                ? `Ref: ${prod.category._ref.slice(0, 6)}…`
-                : "—"),
-        categoryId:
-          typeof prod.category === "object"
-            ? prod.category?._id ?? prod.category?._ref
-            : "",
-        createdAt: prod._createdAt ?? "",
-        updatedAt: prod._updatedAt ?? "",
-      };
-    });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(" fetchProducts error:", message);
-    throw new Error(message);
+    category: p.categoryTitle ?? (typeof p.category === "string" ? p.category : p.category?.title) ?? "Uncategorized",
+
+    categoryId: p.categoryId ?? "",
+
+    createdAt: p._createdAt ?? "",
+    updatedAt: p._updatedAt ?? "",
+  };
+}
+
+/* ================================
+   FETCH PRODUCTS (Public or Admin)
+================================ */
+export const fetchProducts = async (
+  isPublic: boolean = false
+): Promise<Product[]> => {
+  const url = isPublic
+    ? `${import.meta.env.VITE_BACKEND_URL}/api/products`
+    : `${import.meta.env.VITE_BACKEND_URL}/api/admin/products`;
+
+  const options = isPublic ? {} : { headers: getAuthHeaders() };
+
+  const res = await fetch(url, options);
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to fetch products: ${text}`);
   }
+
+  const json = await res.json();
+
+  // Admin returns array directly — public *may* return nested
+  const list: RawProduct[] = Array.isArray(json)
+    ? json
+    : Array.isArray(json.products)
+    ? json.products
+    : [];
+
+  return list.map(normalizeProduct);
 };
 
-// ==============================================
-// ➕ Create Product
-// ==============================================
+/* ================================
+   ADMIN: CREATE PRODUCT
+================================ */
 export const createProduct = async (
   newProduct: Partial<Product>
 ): Promise<Product> => {
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/products`,
-      {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(newProduct),
-      }
-    );
-
-    if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(`Failed to create product: ${msg}`);
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/products`,
+    {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(newProduct),
     }
+  );
 
-    const data = await res.json();
-    return data.product ?? data;
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(" createProduct error:", message);
-    throw new Error(message);
-  }
+  if (!res.ok) throw new Error(await res.text());
+
+  const { product } = await res.json();
+
+  return normalizeProduct(product);
 };
 
-// ==============================================
-// ✏️ Update Product
-// ==============================================
+/* ================================
+   ADMIN: UPDATE PRODUCT
+================================ */
 export const updateProduct = async (
   id: string,
   updates: Partial<Product>
 ): Promise<Product> => {
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/products/${id}`,
-      {
-        method: "PUT",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(updates),
-      }
-    );
-
-    if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(`Failed to update product: ${msg}`);
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/products/${id}`,
+    {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(updates),
     }
+  );
 
-    const data = await res.json();
-    return data.product ?? data;
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(" updateProduct error:", message);
-    throw new Error(message);
-  }
+  if (!res.ok) throw new Error(await res.text());
+
+  const { product } = await res.json();
+  return normalizeProduct(product);
 };
 
-// ==============================================
-// 🗑️ Delete Product
-// ==============================================
-export const deleteProduct = async (
-  id: string
-): Promise<{ success: boolean }> => {
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/admin/products/${id}`,
-      {
-        method: "DELETE",
-        headers: getAuthHeaders(),
-      }
-    );
-
-    if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(`Failed to delete product: ${msg}`);
+/* ================================
+   ADMIN: DELETE PRODUCT
+================================ */
+export const deleteProduct = async (id: string) => {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/products/${id}`,
+    {
+      method: "DELETE",
+      headers: getAuthHeaders(),
     }
+  );
 
-    return { success: true };
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(" deleteProduct error:", message);
-    throw new Error(message);
-  }
+  if (!res.ok) throw new Error(await res.text());
 };

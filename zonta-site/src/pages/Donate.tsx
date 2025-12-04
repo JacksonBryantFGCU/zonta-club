@@ -68,9 +68,17 @@ export default function Donate() {
   }
 
   if (isLoading)
-    return <div className="text-center py-20 text-zontaDark">Loading donation options...</div>;
+    return (
+      <div className="text-center py-20 text-zontaDark">
+        Loading donation options...
+      </div>
+    );
   if (isError)
-    return <div className="text-center py-20 text-red-600">Failed to load donations.</div>;
+    return (
+      <div className="text-center py-20 text-red-600">
+        Failed to load donations.
+      </div>
+    );
 
   // Handle add to cart
   const handleAddToCart = () => {
@@ -109,8 +117,8 @@ export default function Donate() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${HeroImage})` }}
-        ></div>
-        <div className="absolute inset-0 bg-zontaGold/75 mix-blend-multiply"></div>
+        />
+        <div className="absolute inset-0 bg-zontaGold/75 mix-blend-multiply" />
 
         <div className="relative z-10 max-w-3xl px-6">
           <h1 className="text-5xl font-bold mb-4 drop-shadow-md">
@@ -120,17 +128,6 @@ export default function Donate() {
             Your donation helps fund scholarships, advocacy initiatives, and
             service projects that empower women locally and globally.
           </p>
-          <button
-            onClick={() => navigate("/cart")}
-            className="mt-8 inline-flex items-center gap-2 bg-white text-zontaRed px-6 py-3 rounded-lg shadow-lg font-semibold hover:bg-zontaGold hover:text-white transition"
-          >
-            View Cart
-            {totalItems > 0 && (
-              <span className="bg-zontaRed text-white font-bold px-2 py-0.5 rounded-md text-sm">
-                {totalItems}
-              </span>
-            )}
-          </button>
         </div>
       </section>
 
@@ -150,24 +147,54 @@ export default function Donate() {
         {/* Optional 3-column impact icons */}
         <div className="grid gap-10 md:grid-cols-3 max-w-5xl mx-auto text-left md:text-center">
           <div>
-            <h3 className="text-xl font-semibold text-zontaGold mb-2">Scholarships</h3>
-            <p>Empowering women to pursue education and leadership opportunities.</p>
+            <h3 className="text-xl font-semibold text-zontaGold mb-2">
+              Scholarships
+            </h3>
+            <p>
+              Empowering women to pursue education and leadership opportunities.
+            </p>
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-zontaGold mb-2">Advocacy</h3>
-            <p>Promoting equality and standing up for women’s rights worldwide.</p>
+            <h3 className="text-xl font-semibold text-zontaGold mb-2">
+              Advocacy
+            </h3>
+            <p>
+              Promoting equality and standing up for women’s rights worldwide.
+            </p>
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-zontaGold mb-2">Service</h3>
-            <p>Partnering with local organizations to uplift our community together.</p>
+            <h3 className="text-xl font-semibold text-zontaGold mb-2">
+              Service
+            </h3>
+            <p>
+              Partnering with local organizations to uplift our community
+              together.
+            </p>
           </div>
         </div>
       </section>
 
+      {/* ===== Centered Cart Button ===== */}
+      <div className="w-full flex justify-center mt-6 mb-4">
+        <button
+          onClick={() => navigate("/cart")}
+          className="flex items-center gap-2 bg-zontaGold text-white px-6 py-3 rounded-lg shadow-md font-semibold hover:bg-zontaRed transition"
+        >
+          View Cart
+          {totalItems > 0 && (
+            <span className="bg-white text-zontaRed font-bold px-2 py-0.5 rounded-md text-sm">
+              {totalItems}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* ===== Donation Form Section ===== */}
-      <section className="bg-gradient-to-br from-[#fff6eb] to-[#ffe5d3] py-20 px-6 text-center">
+      <section className="bg-gradient-to-br from-[#fff6eb] to-[#ffe5d3] py-10 px-6 text-center">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl font-bold text-zontaRed mb-6">Make a Donation</h2>
+          <h2 className="text-4xl font-bold text-zontaRed mb-6">
+            Make a Donation
+          </h2>
           <p className="text-zontaDark/80 mb-10 text-lg leading-relaxed">
             Choose a donation amount below or enter a custom amount.
           </p>
@@ -216,7 +243,9 @@ export default function Donate() {
           )}
 
           {/* Error Message */}
-          {error && <p className="text-red-600 text-sm mb-3 font-medium">{error}</p>}
+          {error && (
+            <p className="text-red-600 text-sm mb-3 font-medium">{error}</p>
+          )}
 
           {/* Submit Button */}
           <button
@@ -230,7 +259,8 @@ export default function Donate() {
           <p className="mt-10 text-zontaDark/70 max-w-2xl mx-auto leading-relaxed">
             Every contribution, no matter the size, directly supports women’s
             empowerment programs, advocacy campaigns, and education grants in
-            our community and beyond. Thank you for helping us make a lasting impact.
+            our community and beyond. Thank you for helping us make a lasting
+            impact.
           </p>
         </div>
       </section>

@@ -132,6 +132,35 @@ export const handleStripeWebhook = async (req: Request, res: Response): Promise<
 
     console.log(`👤 Customer: ${customerName}, 📧 Email: ${email}`);
 
+    // Check if this is a membership application payment
+    const metadata = session.metadata || {};
+    const sanityApplicationId = metadata.sanityApplicationId;
+
+    if (sanityApplicationId) {
+      console.log("💳 Processing membership application payment...");
+      try {
+        // Update the membership application to mark it as paid
+        await sanityClient
+          .patch(sanityApplicationId)
+          .set({
+            paid: true,
+            stripeSessionId: session.id,
+            paymentIntentId: session.payment_intent ?? null,
+            paidAt: createdAtISO,
+          })
+          .commit();
+
+        console.log("✅ Membership application marked as paid:", sanityApplicationId);
+        res.json({ received: true });
+        return;
+      } catch (err) {
+        console.error("❌ Error updating membership application:", err);
+        res.status(500).json({ error: "Failed to update membership application" });
+        return;
+      }
+    }
+
+    // Otherwise, process as a regular product order
     try {
       console.log("📦 Retrieving Stripe line items...");
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });

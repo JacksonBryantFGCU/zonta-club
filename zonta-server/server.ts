@@ -10,6 +10,7 @@ import fs from "fs-extra";
 import helmet from "helmet";
 
 import { handleStripeWebhook } from "@controllers/checkoutController";
+import { cleanupUnpaidApplications } from "@controllers/membershipApplicationsController";
 import { errorHandler } from "@middlewares/errorHandler";
 import { adminLimiter } from "@middlewares/rateLimiter";
 import authRoutes from "@routes/authRoutes";
@@ -28,8 +29,8 @@ import scholarshipsPublicRoutes from "@routes/scholarshipsPublicRoutes";
 import scholarshipsRoutes from "@routes/scholarshipsRoutes";
 import settingsRoutes from "@routes/settingsRoutes";
 
-
 dotenv.config({ override: true });
+
 const app = express();
 
 /* =========================================================
@@ -46,7 +47,7 @@ app.use(
         "frame-src": ["'self'", "https://js.stripe.com"],
       },
     },
-    crossOriginEmbedderPolicy: false, // required for Stripe + Sanity compatibility
+    crossOriginEmbedderPolicy: false,
   })
 );
 
@@ -62,7 +63,7 @@ app.use(
 );
 
 /* =========================================================
-   Stripe Webhook (raw body for signature verification)
+   Stripe Webhook
    ========================================================= */
 app.post(
   "/api/checkout/webhook",
@@ -73,40 +74,45 @@ app.post(
 /* =========================================================
    JSON Parsing + Rate Limiting
    ========================================================= */
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(express.json());
 app.use("/api", adminLimiter);
 
 /* =========================================================
-   Serve Generated PDF Receipts
+   Serve Receipts
    ========================================================= */
 const receiptsDir = path.resolve("receipts");
 fs.ensureDirSync(receiptsDir);
 app.use("/receipts", express.static(receiptsDir));
 
 /* =========================================================
-   Admin API Routes
+   PUBLIC API ROUTES  (NO AUTH)
    ========================================================= */
-// Public
 app.use("/api/auth", authRoutes);
+app.use("/api/public/memberships", membershipsPublicRoutes); // 🔥 correct mount
+app.use("/api/scholarships", scholarshipsPublicRoutes); // public scholarships
+app.use("/api/products", productsRoutes);
 
-// Protected (use protect middleware inside each route file)
+/* =========================================================
+ADMIN API ROUTES (PROTECTED)
+========================================================= */
 app.use("/api/admin/orders", ordersRoutes);
-app.use("/api/admin/products", productsRoutes);
 app.use("/api/admin/categories", categoriesRoutes);
 app.use("/api/admin/events", eventsRoutes);
+app.use("/api/admin/products", productsRoutes);
 app.use("/api/admin/scholarships", scholarshipsRoutes);
 app.use("/api/admin/scholarship-applications", scholarshipsApplicationsRoutes);
-app.use("/api/scholarships", scholarshipsPublicRoutes);
 app.use("/api/admin/settings", settingsRoutes);
-app.use("/api/admin/memberships", membershipsRoutes);
-app.use("/api/memberships", membershipsPublicRoutes);
+app.use("/api/admin/memberships", membershipsRoutes); // admin memberships
+app.use("/api/admin/membership-applications", membershipApplicationsRoutes);
 app.use("/api/admin/leadership", leadershipRoutes);
 app.use("/api/admin/donations", donationsRoutes);
-app.use("/api/admin/membership-applications", membershipApplicationsRoutes);
+
 app.use("/api/checkout", checkoutRoutes);
 
 /* =========================================================
-   Root Route
+   ROOT ROUTE
    ========================================================= */
 app.get("/", (_req: Request, res: Response) => {
   res.send("Zonta Admin Backend running securely at /api/admin/*");
@@ -123,19 +129,14 @@ app.use((req: Request, res: Response) => {
 });
 
 /* =========================================================
-   Global Error Handler
+   ERROR HANDLER
    ========================================================= */
 app.use(
-  errorHandler as unknown as (
-    err: any,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => void
+  errorHandler as unknown as (err: any, req: Request, res: Response, next: NextFunction) => void
 );
 
 /* =========================================================
-   Admin Info (for logging only)
+   ADMIN INFO LOGGING
    ========================================================= */
 const adminsPath = path.resolve("src/config/admins.json");
 let adminCount = 0;
@@ -149,7 +150,7 @@ try {
 }
 
 /* =========================================================
-   Debug: List Registered Routes (safe)
+   DEBUG ROUTE LISTING
    ========================================================= */
 function logRegisteredRoutes(app: express.Application) {
   if (!app._router || !app._router.stack) {
@@ -178,20 +179,29 @@ function logRegisteredRoutes(app: express.Application) {
 }
 
 /* =========================================================
-   Start Server
+   START SERVER
    ========================================================= */
 const PORT = Number(process.env.PORT || 4000);
 app.listen(PORT, () => {
   console.log("==========================================");
   console.log(`Sanity project: ${process.env.SANITY_PROJECT_ID}`);
   console.log(`Admin count: ${adminCount}`);
-  console.log(`Helmet security middleware active`);
-  console.log(`Rate limiting enabled for /api routes`);
   console.log(`Server running at http://localhost:${PORT}`);
   console.log("==========================================");
 
-  // Log routes after the app is fully initialized
   setTimeout(() => logRegisteredRoutes(app), 250);
+
+  // Clean up unpaid membership applications on server start
+  cleanupUnpaidApplications();
+
+  // Run cleanup every 6 hours (21,600,000 ms)
+  setInterval(
+    () => {
+      console.log("🧹 Running scheduled cleanup of unpaid membership applications...");
+      cleanupUnpaidApplications();
+    },
+    6 * 60 * 60 * 1000
+  );
 });
 
 export default app;

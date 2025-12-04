@@ -41,12 +41,28 @@ export const getMemberships = async (_req: Request, res: Response): Promise<void
 export const getMembershipById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const membership = await fetchDocumentById<Membership>(id);
+
+    // Explicit GROQ query so we ALWAYS fetch the membership schema
+    const query = `*[_type == "membership" && _id == $id][0]{
+      _id,
+      title,
+      price,
+      description,
+      benefits,
+      duration,
+      isActive,
+      order
+    }`;
+
+    const membership = await sanityClient.fetch(query, { id });
+
     if (!membership) {
       res.status(404).json({ error: "Membership not found" });
       return;
     }
+
     res.status(200).json(membership);
+
   } catch (err) {
     console.error("Failed to fetch membership:", err);
     res.status(500).json({ error: "Failed to fetch membership" });

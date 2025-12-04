@@ -20,7 +20,7 @@ interface Product {
   description?: string;
   imageUrl?: string;
   inStock?: boolean;
-  category?: string | { _ref: string; _type: string };
+  category?: string;
 }
 
 export default function Products() {
@@ -37,7 +37,7 @@ export default function Products() {
     error,
   } = useQuery<Product[]>({
     queryKey: ["admin", "products"],
-    queryFn: fetchProducts,
+    queryFn: () => fetchProducts(false),
     staleTime: 60_000,
   });
 
@@ -167,6 +167,7 @@ export default function Products() {
             <table className="w-full border-collapse border border-zontaGold text-sm">
               <thead className="bg-zontaGold text-white">
                 <tr>
+                  <th className="px-4 py-2 text-left">Image</th>
                   <th className="px-4 py-2 text-left">Title</th>
                   <th className="px-4 py-2 text-left">Price</th>
                   <th className="px-4 py-2 text-left">Category</th>
@@ -174,44 +175,55 @@ export default function Products() {
                   <th className="px-4 py-2 text-left">Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {products.map((p) => {
-                  //  Handle reference objects safely
-                  const category =
-                    typeof p.category === "string"
-                      ? p.category
-                      : p.category && "_ref" in p.category
-                      ? `Ref: ${p.category._ref.slice(0, 6)}…`
-                      : "—";
-
-                  const price =
-                    typeof p.price === "number"
-                      ? `$${p.price.toFixed(2)}`
-                      : typeof p.price === "string"
-                      ? `$${p.price}`
-                      : "—";
+                  const price = `$${p.price.toFixed(2)}`;
+                  const category = p.category || "Uncategorized"; // ✅ FIXED
 
                   return (
                     <tr
                       key={p._id}
-                      className="border-b border-zontaGold/40 hover:bg-zontaGold/10"
+                      className="border-b border-zontaGold/40 hover:bg-zontaGold/10 transition"
                     >
-                      <td className="px-4 py-2 font-medium">
-                        {typeof p.title === "string"
-                          ? p.title
-                          : JSON.stringify(p.title)}
+                      {/* IMAGE */}
+                      <td className="px-4 py-2">
+                        {p.imageUrl ? (
+                          <img
+                            src={p.imageUrl}
+                            alt={p.title}
+                            className="h-12 w-12 object-cover rounded-md border border-gray-200"
+                          />
+                        ) : (
+                          <div className="h-12 w-12 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-500 border border-gray-200">
+                            No Img
+                          </div>
+                        )}
                       </td>
+
+                      {/* TITLE */}
+                      <td className="px-4 py-2 font-medium">{p.title}</td>
+
+                      {/* PRICE */}
                       <td className="px-4 py-2">{price}</td>
+
+                      {/* CATEGORY */}
                       <td className="px-4 py-2">{category}</td>
+
+                      {/* STATUS */}
                       <td className="px-4 py-2">
                         {p.inStock ? (
-                          <span className="text-green-600 font-medium">
+                          <span className="text-green-600 font-semibold">
                             In Stock
                           </span>
                         ) : (
-                          <span className="text-red-600 font-medium">Out</span>
+                          <span className="text-red-600 font-semibold">
+                            Out
+                          </span>
                         )}
                       </td>
+
+                      {/* ACTIONS */}
                       <td className="px-4 py-2 flex gap-2">
                         <button
                           className="px-3 py-1 text-xs bg-zontaGold text-white rounded-md hover:bg-zontaRed transition"
@@ -219,6 +231,7 @@ export default function Products() {
                         >
                           Edit
                         </button>
+
                         <button
                           className="px-3 py-1 text-xs bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition"
                           onClick={() => handleDelete(p._id, p.title)}

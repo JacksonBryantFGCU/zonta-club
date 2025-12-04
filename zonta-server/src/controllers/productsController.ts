@@ -15,19 +15,16 @@ interface Product extends BaseDocument {
   title: string;
   price: number;
   description?: string;
-  imageUrl?: string;
+  image?: { asset: { _ref: string } };
   inStock?: boolean;
-  category?: string;
+  category?: { _ref: string };
 }
 
-/**
- * @route GET /api/admin/products
- * @desc Get all products (dereferenced for category titles)
- * @access Protected
- */
-export const getProducts = async (_req: Request, res: Response): Promise<void> => {
+/* ============================================================
+   PUBLIC: GET /api/products
+   ============================================================ */
+export const getPublicProducts = async (_req: Request, res: Response) => {
   try {
-    console.log("Fetching products from Sanity...");
     const query = `
       *[_type == "product"] | order(_createdAt desc) {
         _id,
@@ -35,28 +32,52 @@ export const getProducts = async (_req: Request, res: Response): Promise<void> =
         price,
         description,
         inStock,
-        "categoryId": category._ref,
-        "categoryTitle": category->title,
-        "imageUrl": image.asset->url
+        "imageUrl": image.asset->url,
+        "category": category->title,
+        "categoryId": category->_id
       }
     `;
-    const products = await sanityClient.fetch(query);
 
-    console.log(`Products fetched: ${products.length}`);
-    console.log("Sample product data:", JSON.stringify(products[0], null, 2));
+    const products = await sanityClient.fetch(query);
     res.status(200).json(products);
   } catch (err) {
-    console.error("Failed to fetch products:", err);
+    console.error("Failed to fetch public products:", err);
     res.status(500).json({ error: "Failed to fetch products" });
   }
 };
 
-/**
- * @route GET /api/admin/products/:id
- * @desc Get a single product by ID
- * @access Protected
- */
-export const getProductById = async (req: Request, res: Response): Promise<void> => {
+/* ============================================================
+   ADMIN: GET /api/admin/products
+   ============================================================ */
+export const getAdminProducts = async (_req: Request, res: Response) => {
+  try {
+    const query = `
+      *[_type == "product"] | order(_createdAt desc) {
+        _id,
+        title,
+        price,
+        description,
+        inStock,
+        "imageUrl": image.asset->url,
+        "categoryId": category->_id,
+        "categoryTitle": category->title,
+        _createdAt,
+        _updatedAt
+      }
+    `;
+
+    const products = await sanityClient.fetch(query);
+    res.status(200).json(products);
+  } catch (err) {
+    console.error("Failed to fetch admin products:", err);
+    res.status(500).json({ error: "Failed to fetch products" });
+  }
+};
+
+/* ============================================================
+   GET /api/admin/products/:id
+   ============================================================ */
+export const getProductById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const product = await fetchDocumentById<Product>(id);
@@ -64,147 +85,106 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
       res.status(404).json({ error: "Product not found" });
       return;
     }
+
     res.status(200).json(product);
   } catch (err) {
-    console.error("Failed to fetch product by ID:", err);
+    console.error("Failed to fetch product:", err);
     res.status(500).json({ error: "Failed to fetch product" });
   }
 };
 
-/**
- * @route POST /api/admin/products
- * @desc Create a new product (with optional image URL or base64)
- * @access Protected
- */
-export const createProduct = async (req: Request, res: Response): Promise<void> => {
+/* ============================================================
+   POST /api/admin/products
+   ============================================================ */
+export const createProduct = async (req: Request, res: Response) => {
   try {
     const { imageData, category, ...productData } = req.body;
 
     let imageAsset = null;
 
-    // If imageData is provided (base64 or file), upload to Sanity
     if (imageData) {
-      try {
-        // Handle base64 image data
-        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
-        const buffer = Buffer.from(base64Data, "base64");
+      const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
 
-        // Upload to Sanity assets
-        imageAsset = await sanityClient.assets.upload("image", buffer, {
-          filename: `product-${Date.now()}.jpg`,
-        });
-
-        console.log("Image uploaded to Sanity:", imageAsset._id);
-      } catch (imageError) {
-        console.error("Image upload failed:", imageError);
-        // Continue without image if upload fails
-      }
+      imageAsset = await sanityClient.assets.upload("image", buffer, {
+        filename: `product-${Date.now()}.jpg`,
+      });
     }
 
-    // Prepare product data with image reference and category reference
-    const productWithReferences = {
+    const productWithRefs = {
       ...productData,
       ...(imageAsset && {
         image: {
           _type: "image",
-          asset: {
-            _type: "reference",
-            _ref: imageAsset._id,
-          },
+          asset: { _type: "reference", _ref: imageAsset._id },
         },
       }),
       ...(category && {
-        category: {
-          _type: "reference",
-          _ref: category,
-        },
+        category: { _type: "reference", _ref: category },
       }),
     };
 
-    const newProduct = await createDocument<Product>("product", productWithReferences);
-    res.status(201).json({
-      message: "Product created successfully",
-      product: newProduct,
-    });
+    const newProduct = await createDocument<Product>("product", productWithRefs);
+
+    res.status(201).json({ message: "Product created", product: newProduct });
   } catch (err) {
     console.error("Failed to create product:", err);
     res.status(500).json({ error: "Failed to create product" });
   }
 };
 
-/**
- * @route PUT /api/admin/products/:id
- * @desc Update a product (with optional image update)
- * @access Protected
- */
-export const updateProduct = async (req: Request, res: Response): Promise<void> => {
+/* ============================================================
+   PUT /api/admin/products/:id
+   ============================================================ */
+export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { imageData, category, ...productData } = req.body;
 
     let imageAsset = null;
 
-    // If imageData is provided, upload new image to Sanity
     if (imageData) {
-      try {
-        // Handle base64 image data
-        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
-        const buffer = Buffer.from(base64Data, "base64");
+      const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
 
-        // Upload to Sanity assets
-        imageAsset = await sanityClient.assets.upload("image", buffer, {
-          filename: `product-${Date.now()}.jpg`,
-        });
-
-        console.log("Image uploaded to Sanity:", imageAsset._id);
-      } catch (imageError) {
-        console.error("Image upload failed:", imageError);
-        // Continue with update even if image upload fails
-      }
+      imageAsset = await sanityClient.assets.upload("image", buffer, {
+        filename: `product-${Date.now()}.jpg`,
+      });
     }
 
-    // Prepare product data with optional new image reference and category reference
-    const productWithReferences = {
+    const productWithRefs = {
       ...productData,
       ...(imageAsset && {
         image: {
           _type: "image",
-          asset: {
-            _type: "reference",
-            _ref: imageAsset._id,
-          },
+          asset: { _type: "reference", _ref: imageAsset._id },
         },
       }),
       ...(category !== undefined && {
         category: category
-          ? {
-              _type: "reference",
-              _ref: category,
-            }
+          ? { _type: "reference", _ref: category }
           : null,
       }),
     };
 
-    const updatedProduct = await updateDocument<Product>(id, productWithReferences);
-    res.status(200).json({
-      message: "Product updated successfully",
-      product: updatedProduct,
-    });
+    const updatedProduct = await updateDocument<Product>(id, productWithRefs);
+
+    res.status(200).json({ message: "Product updated", product: updatedProduct });
   } catch (err) {
     console.error("Failed to update product:", err);
     res.status(500).json({ error: "Failed to update product" });
   }
 };
 
-/**
- * @route DELETE /api/admin/products/:id
- * @desc Delete a product
- * @access Protected
- */
-export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
+/* ============================================================
+   DELETE /api/admin/products/:id
+   ============================================================ */
+export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+
     await deleteDocument(id);
+
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (err) {
     console.error("Failed to delete product:", err);

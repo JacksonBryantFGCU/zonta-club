@@ -1,7 +1,7 @@
 // zonta-site/src/App.tsx
 
 
-mport { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import ScrollToTop from "./components/ScrollToTop";

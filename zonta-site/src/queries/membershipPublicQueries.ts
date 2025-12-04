@@ -10,7 +10,7 @@ export interface Membership {
 }
 
 export const fetchPublicMemberships = async (): Promise<Membership[]> => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/memberships`);
+  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/public/memberships`);
   if (!res.ok) throw new Error("Failed to fetch memberships");
   return res.json();
 };

@@ -8,6 +8,10 @@ export interface MembershipApplication {
   message?: string;
   status: "pending" | "approved" | "rejected";
   createdAt: string;
+  paid?: boolean;
+  paidAt?: string | null;
+  stripeSessionId?: string | null;
+  paymentIntentId?: string | null;
   membershipType?: {
     _id: string;
     title: string;
@@ -15,15 +19,24 @@ export interface MembershipApplication {
   };
 }
 
-export async function fetchMembershipApplications(): Promise<MembershipApplication[]> {
+function getAuthHeaders() {
   const token = localStorage.getItem("adminToken");
   if (!token) throw new Error("Unauthorized");
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+}
 
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/admin/membership-applications`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function fetchMembershipApplications(): Promise<MembershipApplication[]> {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/membership-applications`,
+    {
+      headers: {
+        Authorization: getAuthHeaders().Authorization,
+      },
+    }
+  );
 
   if (!res.ok) throw new Error("Failed to fetch membership applications");
   return res.json();
@@ -33,17 +46,11 @@ export async function updateMembershipApplicationStatus(
   id: string,
   status: string
 ): Promise<void> {
-  const token = localStorage.getItem("adminToken");
-  if (!token) throw new Error("Unauthorized");
-
   const res = await fetch(
     `${import.meta.env.VITE_BACKEND_URL}/api/admin/membership-applications/${id}/status`,
     {
       method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ status }),
     }
   );
@@ -52,15 +59,12 @@ export async function updateMembershipApplicationStatus(
 }
 
 export async function deleteMembershipApplication(id: string) {
-  const token = localStorage.getItem("adminToken");
-  if (!token) throw new Error("Not authorized — please log in again.");
-
   const res = await fetch(
     `${import.meta.env.VITE_BACKEND_URL}/api/admin/membership-applications/${id}`,
     {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: getAuthHeaders().Authorization,
       },
     }
   );
@@ -68,6 +72,27 @@ export async function deleteMembershipApplication(id: string) {
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Failed to delete membership application: ${text}`);
+  }
+
+  return res.json();
+}
+
+export async function createMembershipPaymentLink(
+  id: string
+): Promise<{ checkoutUrl: string }> {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/admin/membership-applications/${id}/payment-link`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: getAuthHeaders().Authorization,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to create payment link: ${text}`);
   }
 
   return res.json();

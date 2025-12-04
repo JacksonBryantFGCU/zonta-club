@@ -40,7 +40,7 @@ export default function Products() {
     error,
   } = useQuery<Product[]>({
     queryKey: ["admin", "products"],
-    queryFn: fetchProducts,
+    queryFn: () => fetchProducts(false),
     staleTime: 60_000,
   });
 
