@@ -2,7 +2,7 @@
 
 import { Router } from "express";
 
-import { getReceipt } from "@controllers/receiptController";
+import { getReceipt } from "@controllers/receiptController.js";
 
 const router = Router();
 

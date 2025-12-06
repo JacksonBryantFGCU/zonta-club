@@ -7,8 +7,8 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
-} from "@controllers/eventsController";
-import { protect } from "@middlewares/authMiddleware";
+} from "@controllers/eventsController.js";
+import { protect } from "@middlewares/authMiddleware.js";
 
 const router = express.Router();
 

@@ -2,8 +2,8 @@
 
 import type { Request, Response } from "express";
 
-import { generateReceipt } from "@utils/generateReceipt";
-import { sanityClient } from "@utils/sanityClient";
+import { generateReceipt } from "@utils/generateReceipt.js";
+import { sanityClient } from "@utils/sanityClient.js";
 
 export const getReceipt = async (req: Request, res: Response): Promise<void> => {
   try {

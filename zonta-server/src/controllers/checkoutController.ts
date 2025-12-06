@@ -6,10 +6,10 @@ import type { Request, Response } from "express";
 import fs from "fs-extra";
 import Stripe from "stripe";
 
-import { sendReceiptEmail } from "@services/emailService";
-import { generateReceipt } from "@utils/generateReceipt";
-import { sanityClient } from "@utils/sanityClient";
-import { stripe } from "@utils/stripeClient";
+import { sendReceiptEmail } from "@services/emailService.js";
+import { generateReceipt } from "@utils/generateReceipt.js";
+import { sanityClient } from "@utils/sanityClient.js";
+import { stripe } from "@utils/stripeClient.js";
 
 interface CheckoutItem {
   title: string;

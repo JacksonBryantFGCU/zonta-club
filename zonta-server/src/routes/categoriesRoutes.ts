@@ -6,8 +6,8 @@ import {
   getCategories,
   createCategory,
   deleteCategory,
-} from "@controllers/categoriesController";
-import { protect } from "@middlewares/authMiddleware";
+} from "@controllers/categoriesController.js";
+import { protect } from "@middlewares/authMiddleware.js";
 
 const router = express.Router();
 

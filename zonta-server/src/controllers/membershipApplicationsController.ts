@@ -2,7 +2,8 @@
 
 import type { Request, Response } from "express";
 import Stripe from "stripe";
-import { sanityClient } from "@services/sanityService";
+
+import { sanityClient } from "@services/sanityService.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-09-30.clover",

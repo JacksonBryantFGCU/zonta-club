@@ -7,8 +7,8 @@ import {
   getOrderById,
   updateOrderStatus,
   deleteOrder,
-} from "@controllers/ordersController";
-import { protect } from "@middlewares/authMiddleware";
+} from "@controllers/ordersController.js";
+import { protect } from "@middlewares/authMiddleware.js";
 
 const router = express.Router();
 

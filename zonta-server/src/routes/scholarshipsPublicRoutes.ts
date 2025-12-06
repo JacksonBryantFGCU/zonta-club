@@ -5,7 +5,7 @@ import express from "express";
 import {
   getPublicScholarships,
   submitScholarshipApplication,
-} from "@controllers/scholarshipsPublicController";
+} from "@controllers/scholarshipsPublicController.js";
 
 const router = express.Router();
 

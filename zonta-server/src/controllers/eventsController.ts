@@ -7,9 +7,9 @@ import {
   createDocument,
   updateDocument,
   deleteDocument,
-} from "@services/sanityService";
-import { sanityClient } from "@utils/sanityClient";
-import type { BaseDocument } from "@utils/types";
+} from "@services/sanityService.js";
+import { sanityClient } from "@utils/sanityClient.js";
+import type { BaseDocument } from "@utils/types.js";
 
 interface Event extends BaseDocument {
   title: string;

@@ -8,8 +8,8 @@ import {
   createDonation,
   updateDonation,
   deleteDonation,
-} from "@controllers/donationsController";
-import { protect } from "@middlewares/authMiddleware";
+} from "@controllers/donationsController.js";
+import { protect } from "@middlewares/authMiddleware.js";
 
 const router = express.Router();
 

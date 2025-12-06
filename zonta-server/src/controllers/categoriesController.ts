@@ -2,9 +2,9 @@
 
 import type { Request, Response } from "express";
 
-import { createDocument, deleteDocument } from "@services/sanityService";
-import { sanityClient } from "@utils/sanityClient";
-import type { BaseDocument } from "@utils/types";
+import { createDocument, deleteDocument } from "@services/sanityService.js";
+import { sanityClient } from "@utils/sanityClient.js";
+import type { BaseDocument } from "@utils/types.js";
 
 interface Category extends BaseDocument {
   title: string;

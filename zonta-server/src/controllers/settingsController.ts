@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 
 import type { Request, Response } from "express";
 
-import { sanityClient } from "@services/sanityService";
+import { sanityClient } from "@services/sanityService.js";
 
 // Fix for ESM so __dirname works
 const __filename = fileURLToPath(import.meta.url);

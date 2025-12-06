@@ -1,11 +1,12 @@
 // zonta-server/src/routes/membershipsPublicRoutes.ts
 
 import express from "express";
+
 import {
   getPublicMemberships,
   submitMembershipApplication,
-} from "@controllers/membershipsPublicController";
-import { sanityClient } from "@services/sanityService";
+} from "@controllers/membershipsPublicController.js";
+import { sanityClient } from "@services/sanityService.js";
 
 const router = express.Router();
 

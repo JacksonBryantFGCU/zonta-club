@@ -7,9 +7,9 @@ import {
   createDocument,
   updateDocument,
   deleteDocument,
-} from "@services/sanityService";
-import { sanityClient } from "@services/sanityService";
-import type { BaseDocument } from "@utils/types";
+} from "@services/sanityService.js";
+import { sanityClient } from "@services/sanityService.js";
+import type { BaseDocument } from "@utils/types.js";
 
 interface Scholarship extends BaseDocument {
   title: string;

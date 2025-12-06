@@ -9,8 +9,8 @@ import {
   updateMembership,
   deleteMembership,
   getMembershipApplicationsCount,
-} from "@controllers/membershipsController";
-import { protect } from "@middlewares/authMiddleware";
+} from "@controllers/membershipsController.js";
+import { protect } from "@middlewares/authMiddleware.js";
 
 const router = express.Router();
 

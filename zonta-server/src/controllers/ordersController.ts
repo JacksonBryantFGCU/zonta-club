@@ -7,8 +7,8 @@ import {
   fetchDocumentById,
   updateDocument,
   deleteDocument,
-} from "@services/sanityService";
-import type { BaseDocument } from "@utils/types";
+} from "@services/sanityService.js";
+import type { BaseDocument } from "@utils/types.js";
 
 interface Order extends BaseDocument {
   email: string;

@@ -8,8 +8,8 @@ import {
   createScholarship,
   updateScholarship,
   deleteScholarship,
-} from "@controllers/scholarshipsController";
-import { protect } from "@middlewares/authMiddleware";
+} from "@controllers/scholarshipsController.js";
+import { protect } from "@middlewares/authMiddleware.js";
 
 const router = express.Router();
 

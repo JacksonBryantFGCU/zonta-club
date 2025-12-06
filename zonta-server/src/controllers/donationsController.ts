@@ -2,9 +2,9 @@
 
 import type { Request, Response } from "express";
 
-import { asyncHandler } from "@middlewares/asyncHandler";
-import { createDocument, updateDocument, deleteDocument } from "@services/sanityService";
-import { sanityClient } from "@utils/sanityClient";
+import { asyncHandler } from "@middlewares/asyncHandler.js";
+import { createDocument, updateDocument, deleteDocument } from "@services/sanityService.js";
+import { sanityClient } from "@utils/sanityClient.js";
 
 interface Donation {
   title: string;

@@ -2,14 +2,13 @@
 
 import type { Request, Response } from "express";
 
+import { sanityClient } from "@services/sanityService.js";
 import {
-  fetchDocumentById,
   createDocument,
   updateDocument,
   deleteDocument,
-} from "@services/sanityService";
-import { sanityClient } from "@services/sanityService";
-import type { BaseDocument } from "@utils/types";
+} from "@services/sanityService.js";
+import type { BaseDocument } from "@utils/types.js";
 
 interface Membership extends BaseDocument {
   title: string;

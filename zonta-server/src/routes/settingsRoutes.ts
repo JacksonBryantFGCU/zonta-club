@@ -2,8 +2,8 @@
 
 import express from "express";
 
-import { getSettings, updateSettings } from "@controllers/settingsController";
-import { protect } from "@middlewares/authMiddleware";
+import { getSettings, updateSettings } from "@controllers/settingsController.js";
+import { protect } from "@middlewares/authMiddleware.js";
 
 const router = express.Router();
 
