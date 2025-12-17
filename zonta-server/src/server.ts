@@ -56,7 +56,7 @@ app.use(
    ========================================================= */
 app.use(
   cors({
-    origin: ["https://zonta-club-x9jt.vercel.app/"],
+    origin: ["https://zonta-club-x9jt.vercel.app"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
