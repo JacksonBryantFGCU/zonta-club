@@ -138,7 +138,7 @@ app.use(
 /* =========================================================
    ADMIN INFO LOGGING
    ========================================================= */
-const adminsPath = path.resolve("src/config/admins.json");
+const adminsPath = path.resolve("dist/config/admins.json");
 let adminCount = 0;
 try {
   if (fs.existsSync(adminsPath)) {
