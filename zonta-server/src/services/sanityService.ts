@@ -1,6 +1,6 @@
 // zonta-server/src/services/sanityService.ts
-import { sanityClient } from "@utils/sanityClient.js";
-import type { BaseDocument } from "@utils/types.js";
+import { sanityClient } from "../utils/sanityClient.js";
+import type { BaseDocument } from "../utils/types.js";
 
 export { sanityClient };
 
@@ -38,7 +38,10 @@ export async function fetchDocumentById<T extends BaseDocument>(id: string): Pro
 /**
  * Create a new Sanity document.
  */
-export async function createDocument<T extends BaseDocument>(type: string, data: Partial<T>): Promise<T> {
+export async function createDocument<T extends BaseDocument>(
+  type: string,
+  data: Partial<T>
+): Promise<T> {
   try {
     console.log(`[SanityService] Creating new ${type} document...`);
     const newDoc = await sanityClient.create({ _type: type, ...data } as any);
@@ -53,7 +56,10 @@ export async function createDocument<T extends BaseDocument>(type: string, data:
 /**
  * Update an existing document by ID.
  */
-export async function updateDocument<T extends BaseDocument>(id: string, data: Partial<T>): Promise<T> {
+export async function updateDocument<T extends BaseDocument>(
+  id: string,
+  data: Partial<T>
+): Promise<T> {
   try {
     console.log(`[SanityService] Updating document ${id}`);
     const updatedDoc = await sanityClient.patch(id).set(data).commit();

@@ -2,13 +2,9 @@
 
 import type { Request, Response } from "express";
 
-import {
-  createDocument,
-  updateDocument,
-  deleteDocument,
-} from "@services/sanityService.js";
-import { sanityClient } from "@utils/sanityClient.js";
-import type { BaseDocument } from "@utils/types.js";
+import { createDocument, updateDocument, deleteDocument } from "../services/sanityService.js";
+import { sanityClient } from "../utils/sanityClient.js";
+import type { BaseDocument } from "../utils/types.js";
 
 interface Leadership extends BaseDocument {
   name: string;

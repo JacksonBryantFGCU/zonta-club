@@ -7,9 +7,9 @@ import {
   createDocument,
   updateDocument,
   deleteDocument,
-} from "@services/sanityService.js";
-import { sanityClient } from "@utils/sanityClient.js";
-import type { BaseDocument } from "@utils/types.js";
+} from "../services/sanityService.js";
+import { sanityClient } from "../utils/sanityClient.js";
+import type { BaseDocument } from "../utils/types.js";
 
 interface Product extends BaseDocument {
   title: string;
@@ -161,9 +161,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         },
       }),
       ...(category !== undefined && {
-        category: category
-          ? { _type: "reference", _ref: category }
-          : null,
+        category: category ? { _type: "reference", _ref: category } : null,
       }),
     };
 

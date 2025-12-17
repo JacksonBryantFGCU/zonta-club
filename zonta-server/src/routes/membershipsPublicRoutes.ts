@@ -5,8 +5,8 @@ import express from "express";
 import {
   getPublicMemberships,
   submitMembershipApplication,
-} from "@controllers/membershipsPublicController.js";
-import { sanityClient } from "@services/sanityService.js";
+} from "../controllers/membershipsPublicController.js";
+import { sanityClient } from "../services/sanityService.js";
 
 const router = express.Router();
 

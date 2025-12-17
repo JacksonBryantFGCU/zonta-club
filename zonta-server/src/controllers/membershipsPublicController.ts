@@ -2,7 +2,7 @@
 
 import type { Request, Response } from "express";
 
-import { sanityClient } from "@services/sanityService.js";
+import { sanityClient } from "../services/sanityService.js";
 
 export const submitMembershipApplication = async (req: Request, res: Response) => {
   try {

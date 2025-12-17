@@ -2,7 +2,7 @@
 
 import { Router } from "express";
 
-import { adminLogin } from "@controllers/authController.js";
+import { adminLogin } from "../controllers/authController.js";
 
 const router = Router();
 

@@ -2,7 +2,7 @@
 
 import type { Request, Response } from "express";
 
-import { sanityClient } from "@services/sanityService.js";
+import { sanityClient } from "../services/sanityService.js";
 
 //  Add `_type` to the interface to match Sanity's document schema
 interface ScholarshipApplication {

@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import fs from "fs-extra";
 import nodemailer from "nodemailer";
 
-import type { ReceiptOrder } from "@utils/generateReceipt.js";
+import type { ReceiptOrder } from "../utils/generateReceipt.js";
 
 export async function sendReceiptEmail(
   to: string,

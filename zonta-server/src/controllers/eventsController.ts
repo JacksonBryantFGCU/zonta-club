@@ -7,9 +7,9 @@ import {
   createDocument,
   updateDocument,
   deleteDocument,
-} from "@services/sanityService.js";
-import { sanityClient } from "@utils/sanityClient.js";
-import type { BaseDocument } from "@utils/types.js";
+} from "../services/sanityService.js";
+import { sanityClient } from "../utils/sanityClient.js";
+import type { BaseDocument } from "../utils/types.js";
 
 interface Event extends BaseDocument {
   title: string;
@@ -73,39 +73,39 @@ export const getEventById = async (req: Request, res: Response): Promise<void> =
 export const createEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     const { imageData, ...eventData } = req.body;
-    
+
     let imageAsset = null;
-    
+
     // If imageData is provided (base64), upload to Sanity
     if (imageData) {
       try {
-        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
-        const buffer = Buffer.from(base64Data, 'base64');
-        
-        imageAsset = await sanityClient.assets.upload('image', buffer, {
+        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+
+        imageAsset = await sanityClient.assets.upload("image", buffer, {
           filename: `event-${Date.now()}.jpg`,
         });
-        
-        console.log('Image uploaded to Sanity:', imageAsset._id);
+
+        console.log("Image uploaded to Sanity:", imageAsset._id);
       } catch (imageError) {
-        console.error('Image upload failed:', imageError);
+        console.error("Image upload failed:", imageError);
       }
     }
-    
+
     // Prepare event data with image reference
     const eventWithImage = {
       ...eventData,
       ...(imageAsset && {
         image: {
-          _type: 'image',
+          _type: "image",
           asset: {
-            _type: 'reference',
+            _type: "reference",
             _ref: imageAsset._id,
           },
         },
       }),
     };
-    
+
     const newEvent = await createDocument<Event>("event", eventWithImage);
     res.status(201).json({
       message: "Event created successfully",
@@ -126,39 +126,39 @@ export const updateEvent = async (req: Request, res: Response): Promise<void> =>
   try {
     const { id } = req.params;
     const { imageData, ...eventData } = req.body;
-    
+
     let imageAsset = null;
-    
+
     // If imageData is provided, upload new image to Sanity
     if (imageData) {
       try {
-        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
-        const buffer = Buffer.from(base64Data, 'base64');
-        
-        imageAsset = await sanityClient.assets.upload('image', buffer, {
+        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+
+        imageAsset = await sanityClient.assets.upload("image", buffer, {
           filename: `event-${Date.now()}.jpg`,
         });
-        
-        console.log('Image uploaded to Sanity:', imageAsset._id);
+
+        console.log("Image uploaded to Sanity:", imageAsset._id);
       } catch (imageError) {
-        console.error('Image upload failed:', imageError);
+        console.error("Image upload failed:", imageError);
       }
     }
-    
+
     // Prepare event data with optional new image reference
     const eventWithImage = {
       ...eventData,
       ...(imageAsset && {
         image: {
-          _type: 'image',
+          _type: "image",
           asset: {
-            _type: 'reference',
+            _type: "reference",
             _ref: imageAsset._id,
           },
         },
       }),
     };
-    
+
     const updatedEvent = await updateDocument<Event>(id, eventWithImage);
     res.status(200).json({
       message: "Event updated successfully",

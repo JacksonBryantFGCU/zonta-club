@@ -7,8 +7,8 @@ import {
   createLeadership,
   updateLeadership,
   deleteLeadership,
-} from "@controllers/leadershipController.js";
-import { protect } from "@middlewares/authMiddleware.js";
+} from "../controllers/leadershipController.js";
+import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

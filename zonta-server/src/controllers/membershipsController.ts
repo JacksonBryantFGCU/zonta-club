@@ -2,13 +2,9 @@
 
 import type { Request, Response } from "express";
 
-import { sanityClient } from "@services/sanityService.js";
-import {
-  createDocument,
-  updateDocument,
-  deleteDocument,
-} from "@services/sanityService.js";
-import type { BaseDocument } from "@utils/types.js";
+import { sanityClient } from "../services/sanityService.js";
+import { createDocument, updateDocument, deleteDocument } from "../services/sanityService.js";
+import type { BaseDocument } from "../utils/types.js";
 
 interface Membership extends BaseDocument {
   title: string;
@@ -61,7 +57,6 @@ export const getMembershipById = async (req: Request, res: Response): Promise<vo
     }
 
     res.status(200).json(membership);
-
   } catch (err) {
     console.error("Failed to fetch membership:", err);
     res.status(500).json({ error: "Failed to fetch membership" });

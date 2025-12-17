@@ -6,8 +6,8 @@ import {
   getScholarshipApplications,
   updateScholarshipApplicationStatus,
   deleteScholarshipApplication,
-} from "@controllers/scholarshipApplicationsController.js";
-import { protect } from "@middlewares/authMiddleware.js";
+} from "../controllers/scholarshipApplicationsController.js";
+import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

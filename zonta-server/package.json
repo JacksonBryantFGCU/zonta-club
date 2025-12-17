@@ -7,7 +7,7 @@
     "dev": "dotenv -e .env -- tsx watch src/server.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --loader ./dist/loader.js ./dist/server.js",
+    "start": "node dist/server.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write .",

@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 
 import type { Request, Response } from "express";
 
-import { sanityClient } from "@services/sanityService.js";
+import { sanityClient } from "../services/sanityService.js";
 
 // Fix for ESM so __dirname works
 const __filename = fileURLToPath(import.meta.url);
@@ -33,8 +33,20 @@ export const getSettings = async (_req: Request, res: Response): Promise<void> =
         announcement: { enabled: false, text: "", link: "" },
         features: { shopEnabled: true, donationsEnabled: true },
         admins: [
-          { id: "1", name: "Club President", email: "president@zontanaples.org", role: "full", active: true },
-          { id: "2", name: "Treasurer", email: "treasurer@zontanaples.org", role: "read", active: true },
+          {
+            id: "1",
+            name: "Club President",
+            email: "president@zontanaples.org",
+            role: "full",
+            active: true,
+          },
+          {
+            id: "2",
+            name: "Treasurer",
+            email: "treasurer@zontanaples.org",
+            role: "read",
+            active: true,
+          },
         ],
         updatedAt: new Date().toISOString(),
       };

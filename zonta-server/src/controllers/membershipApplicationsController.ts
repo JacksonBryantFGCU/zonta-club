@@ -3,7 +3,7 @@
 import type { Request, Response } from "express";
 import Stripe from "stripe";
 
-import { sanityClient } from "@services/sanityService.js";
+import { sanityClient } from "../services/sanityService.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-09-30.clover",
@@ -50,10 +50,7 @@ export const getMembershipApplications = async (_req: Request, res: Response) =>
  * @desc Update membership application status
  * @access Protected
  */
-export const updateMembershipApplicationStatus = async (
-  req: Request,
-  res: Response
-) => {
+export const updateMembershipApplicationStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { status } = req.body as { status: MembershipApplication["status"] };
@@ -153,9 +150,12 @@ export const createMembershipPaymentLink = async (req: Request, res: Response) =
     });
 
     // Store Stripe session ID on the application
-    await sanityClient.patch(application._id).set({
-      stripeSessionId: session.id,
-    }).commit();
+    await sanityClient
+      .patch(application._id)
+      .set({
+        stripeSessionId: session.id,
+      })
+      .commit();
 
     res.status(200).json({
       message: "Payment link created successfully",
@@ -173,9 +173,7 @@ export const createMembershipPaymentLink = async (req: Request, res: Response) =
  */
 export const cleanupUnpaidApplications = async () => {
   try {
-    const twentyFourHoursAgo = new Date(
-      Date.now() - 24 * 60 * 60 * 1000
-    ).toISOString();
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
     // Only remove apps that had a Stripe session but never paid
     const query = `
