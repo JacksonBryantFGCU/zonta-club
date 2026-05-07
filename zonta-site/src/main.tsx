@@ -9,6 +9,7 @@ import App from "./App";
 import { queryClient } from "./lib/queryClient";
 import "./index.css";
 import { LoadingProvider } from "./context/LoadingProvider";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -17,8 +18,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <LoadingProvider>
           <App />
         </LoadingProvider>
+        <SpeedInsights />
       </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="bottom-left" />
+      <ReactQueryDevtools
+        initialIsOpen={false}
+        position="bottom"
+        buttonPosition="bottom-left"
+      />
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

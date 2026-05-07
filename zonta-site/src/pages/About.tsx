@@ -87,10 +87,10 @@ export default function About() {
                     <img
                       src={leader.imageUrl}
                       alt={leader.name}
-                      className="w-32 h-32 object-cover rounded-full border-4 border-zontaGold mb-4"
+                      className="w-44 h-44 object-cover rounded-full border-4 border-zontaGold mb-4"
                     />
                   ) : (
-                    <div className="w-32 h-32 flex items-center justify-center rounded-full border-4 border-zontaGold mb-4 bg-zontaGold/20 text-zontaDark">
+                    <div className="w-44 h-44 flex items-center justify-center rounded-full border-4 border-zontaGold mb-4 bg-zontaGold/20 text-zontaDark">
                       No Image
                     </div>
                   )}
