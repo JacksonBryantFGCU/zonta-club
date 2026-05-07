@@ -8,7 +8,9 @@
       "Bash(netstat -ano)",
       "Bash(findstr :5173)",
       "Bash(taskkill *)",
-      "PowerShell(Stop-Process *)"
+      "PowerShell(Stop-Process *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
