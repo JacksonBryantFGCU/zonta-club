@@ -29,6 +29,7 @@ import settingsRoutes, { publicSettingsRouter } from "./routes/settingsRoutes.js
 dotenv.config({ override: true });
 
 const app = express();
+app.set("trust proxy", 1);
 
 /* =========================================================
    SECURITY — Helmet Middleware
