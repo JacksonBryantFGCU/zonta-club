@@ -1,12 +1,9 @@
 // zonta-server/server.ts
 
-import path from "path";
-
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
-import fs from "fs-extra";
 import helmet from "helmet";
 
 import { handleStripeWebhook } from "./controllers/checkoutController.js";
@@ -79,13 +76,6 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(express.json());
 app.use("/api", adminLimiter);
-
-/* =========================================================
-   Serve Receipts
-   ========================================================= */
-const receiptsDir = path.resolve("receipts");
-fs.ensureDirSync(receiptsDir);
-app.use("/receipts", express.static(receiptsDir));
 
 /* =========================================================
    PUBLIC API ROUTES  (NO AUTH)

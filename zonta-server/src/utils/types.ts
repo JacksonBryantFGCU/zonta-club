@@ -7,14 +7,6 @@ export interface BaseDocument {
   _updatedAt?: string;
 }
 
-export interface Product extends BaseDocument {
-  title: string;
-  price: number;
-  description?: string;
-  imageUrl?: string;
-  stock?: number;
-}
-
 export interface Event extends BaseDocument {
   title: string;
   date: string;
@@ -28,13 +20,6 @@ export interface Scholarship extends BaseDocument {
   amount: number;
   description?: string;
   deadline?: string;
-}
-
-export interface Order extends BaseDocument {
-  email: string;
-  total: number;
-  status: string;
-  createdAt: string;
 }
 
 export interface ClubSettings extends BaseDocument {
