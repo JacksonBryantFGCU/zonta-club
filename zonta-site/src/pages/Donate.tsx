@@ -1,22 +1,30 @@
 // zonta-site/src/pages/Donate.tsx
 
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchDonations } from "../queries/donationQueries";
-import { CartContext } from "../context/CartContext";
 import { usePublicSettings } from "../queries/publicSettingsQueries";
-import { useNavigate } from "react-router-dom";
 import HeroImage from "../assets/hero_women_empowerment.jpg";
 
 export default function Donate() {
-  const { addItem, totalItems } = useContext(CartContext)!;
   const { data: settings } = usePublicSettings();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
 
-  // Fetch donation data
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      setShowThankYou(true);
+      searchParams.delete("success");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   const {
     data: donations = [],
     isLoading,
@@ -27,28 +35,12 @@ export default function Donate() {
     staleTime: 1000 * 60 * 5,
   });
 
-  const donation = donations[0]; // single donation option
+  const donation = donations[0];
 
-  // Feature disabled check
   if (settings && !settings.features.donationsEnabled) {
     return (
       <section className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="w-16 h-16 bg-zontaGold rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
           <h2 className="text-2xl font-bold text-zontaRed mb-3">
             Donations Currently Unavailable
           </h2>
@@ -80,8 +72,7 @@ export default function Donate() {
       </div>
     );
 
-  // Handle add to cart
-  const handleAddToCart = () => {
+  const handleDonate = async () => {
     if (!donation) return;
 
     let amount: number;
@@ -98,16 +89,29 @@ export default function Donate() {
       return;
     }
 
-    addItem({
-      _id: `donation-${donation._id}-${Date.now()}`,
-      title: `Donation: ${donation.title}`,
-      price: amount,
-      imageUrl: donation.imageUrl,
-    });
-
-    setSelectedAmount(null);
-    setCustomAmount("");
     setError("");
+    setSubmitting(true);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/checkout/donation-session`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount,
+            title: donation.title,
+          }),
+        }
+      );
+      if (!res.ok) throw new Error("Failed to create checkout session");
+      const { url } = await res.json();
+      if (!url) throw new Error("Invalid checkout response");
+      window.location.href = url;
+    } catch (err) {
+      console.error(err);
+      setError("Unable to start checkout. Please try again.");
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -144,7 +148,6 @@ export default function Donate() {
           </p>
         </div>
 
-        {/* Optional 3-column impact icons */}
         <div className="grid gap-10 md:grid-cols-3 max-w-5xl mx-auto text-left md:text-center">
           <div>
             <h3 className="text-xl font-semibold text-zontaGold mb-2">
@@ -159,7 +162,7 @@ export default function Donate() {
               Advocacy
             </h3>
             <p>
-              Promoting equality and standing up for women’s rights worldwide.
+              Promoting equality and standing up for women's rights worldwide.
             </p>
           </div>
           <div>
@@ -174,32 +177,23 @@ export default function Donate() {
         </div>
       </section>
 
-      {/* ===== Centered Cart Button ===== */}
-      <div className="w-full flex justify-center mt-6 mb-4">
-        <button
-          onClick={() => navigate("/cart")}
-          className="flex items-center gap-2 bg-zontaGold text-white px-6 py-3 rounded-lg shadow-md font-semibold hover:bg-zontaRed transition"
-        >
-          View Cart
-          {totalItems > 0 && (
-            <span className="bg-white text-zontaRed font-bold px-2 py-0.5 rounded-md text-sm">
-              {totalItems}
-            </span>
-          )}
-        </button>
-      </div>
-
       {/* ===== Donation Form Section ===== */}
       <section className="bg-gradient-to-br from-[#fff6eb] to-[#ffe5d3] py-10 px-6 text-center">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl font-bold text-zontaRed mb-6">
             Make a Donation
           </h2>
+
+          {showThankYou && (
+            <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+              Thank you for your generous donation!
+            </div>
+          )}
+
           <p className="text-zontaDark/80 mb-10 text-lg leading-relaxed">
             Choose a donation amount below or enter a custom amount.
           </p>
 
-          {/* Donation Options */}
           {donation && (
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               {donation.presetAmounts.map((amount) => (
@@ -222,7 +216,6 @@ export default function Donate() {
             </div>
           )}
 
-          {/* Custom Amount */}
           {donation?.allowCustomAmount && (
             <div className="flex justify-center items-center gap-3 mb-8">
               <span className="text-2xl font-bold text-zontaDark">$</span>
@@ -242,22 +235,20 @@ export default function Donate() {
             </div>
           )}
 
-          {/* Error Message */}
           {error && (
             <p className="text-red-600 text-sm mb-3 font-medium">{error}</p>
           )}
 
-          {/* Submit Button */}
           <button
-            onClick={handleAddToCart}
-            disabled={!selectedAmount && !customAmount}
+            onClick={handleDonate}
+            disabled={(!selectedAmount && !customAmount) || submitting}
             className="px-10 py-4 bg-zontaRed text-white text-lg font-semibold rounded-xl shadow-lg hover:bg-zontaDark transition disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            Add Donation to Cart
+            {submitting ? "Redirecting…" : "Donate Now"}
           </button>
 
           <p className="mt-10 text-zontaDark/70 max-w-2xl mx-auto leading-relaxed">
-            Every contribution, no matter the size, directly supports women’s
+            Every contribution, no matter the size, directly supports women's
             empowerment programs, advocacy campaigns, and education grants in
             our community and beyond. Thank you for helping us make a lasting
             impact.

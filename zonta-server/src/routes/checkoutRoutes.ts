@@ -2,20 +2,14 @@
 
 import { Router } from "express";
 
-import { createCheckoutSession, handleStripeWebhook } from "../controllers/checkoutController.js";
+import { createDonationSession } from "../controllers/checkoutController.js";
 
 const router = Router();
 
 /**
- * @route POST /api/checkout/webhook
- * @desc Stripe webhook endpoint (must use raw body)
+ * @route POST /api/checkout/donation-session
+ * @desc  Create a Stripe Checkout session for a one-time donation
  */
-router.post("/webhook", handleStripeWebhook);
-
-/**
- * @route POST /api/checkout/create-session
- * @desc Create a new Stripe Checkout session
- */
-router.post("/create-session", createCheckoutSession);
+router.post("/donation-session", createDonationSession);
 
 export default router;

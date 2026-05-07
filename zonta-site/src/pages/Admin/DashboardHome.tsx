@@ -1,6 +1,6 @@
 // zonta-site/src/pages/Admin/DashboardHome.tsx
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ResponsiveContainer,
@@ -14,391 +14,326 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { Users, GraduationCap, Calendar, HandHeart } from "lucide-react";
 
-interface Order {
+interface MembershipApplication {
   _id: string;
-  total: number;
-  status: string;
+  name: string;
+  email: string;
+  status?: string;
+  paid?: boolean;
   createdAt: string;
 }
 
+interface ScholarshipApplication {
+  _id: string;
+  name: string;
+  email: string;
+  status?: string;
+  createdAt: string;
+}
+
+interface EventDoc {
+  _id: string;
+  title: string;
+  date: string;
+}
+
+const authHeaders = () => ({
+  Authorization: `Bearer ${localStorage.getItem("adminToken") ?? ""}`,
+});
+
+const fetchJson = async <T,>(url: string): Promise<T> => {
+  const res = await fetch(url, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`Failed to fetch ${url}`);
+  return res.json();
+};
+
 export default function DashboardHome() {
-  const { data, isLoading } = useQuery<Order[]>({
-    queryKey: ["admin", "orders-summary"],
-    queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/orders`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken") ?? ""}`,
-          },
-        }
-      );
+  const base = import.meta.env.VITE_BACKEND_URL;
 
-      if (!res.ok) throw new Error("Failed to fetch orders");
-      return res.json();
-    },
+  const { data: memberships, isLoading: loadingApps } = useQuery<
+    MembershipApplication[]
+  >({
+    queryKey: ["admin", "membership-applications"],
+    queryFn: () => fetchJson(`${base}/api/admin/membership-applications`),
     staleTime: 60_000,
   });
 
-  // ===== Fetch Membership Applications Count =====
-  const { data: membershipData, isLoading: isLoadingMemberships } = useQuery<{
-    count: number;
-  }>({
-    queryKey: ["admin", "membership-count"],
-    queryFn: async () => {
-      const res = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/admin/memberships/applications/count`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken") ?? ""}`,
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error("Failed to fetch membership count");
-      return res.json();
-    },
+  const { data: scholarships, isLoading: loadingSch } = useQuery<
+    ScholarshipApplication[]
+  >({
+    queryKey: ["admin", "scholarship-applications"],
+    queryFn: () => fetchJson(`${base}/api/admin/scholarship-applications`),
     staleTime: 60_000,
   });
 
-  // ===== Calculations =====
-  const totalOrders = data?.length ?? 0;
-  const totalRevenue = data?.reduce((sum, o) => sum + (o.total || 0), 0) ?? 0;
-  const pendingOrders = data?.filter((o) => o.status === "Pending").length ?? 0;
-  const membershipCount = membershipData?.count ?? 0;
+  const { data: events, isLoading: loadingEvents } = useQuery<EventDoc[]>({
+    queryKey: ["admin", "events"],
+    queryFn: () => fetchJson(`${base}/api/admin/events`),
+    staleTime: 60_000,
+  });
 
-  // ===== Chart Type Toggle =====
-  const [chartType, setChartType] = useState<
-    "daily" | "volume" | "distribution"
-  >("daily");
+  const { data: activeMembers, isLoading: loadingMembers } = useQuery<
+    { _id: string }[]
+  >({
+    queryKey: ["admin", "memberships"],
+    queryFn: () => fetchJson(`${base}/api/admin/memberships`),
+    staleTime: 60_000,
+  });
 
-  // ===== Daily Orders Data (Last 30 Days) =====
-  const dailyOrdersData = useMemo(() => {
-    if (!data) return [];
+  const totalApps = memberships?.length ?? 0;
+  const paidApps = memberships?.filter((m) => m.paid).length ?? 0;
+  const pendingApps = totalApps - paidApps;
+  const totalScholarships = scholarships?.length ?? 0;
+  const totalEvents = events?.length ?? 0;
+  const totalMembers = activeMembers?.length ?? 0;
 
-    const last30Days = new Map<
+  const upcomingEvents = useMemo(() => {
+    if (!events) return 0;
+    const now = new Date();
+    return events.filter((e) => new Date(e.date) >= now).length;
+  }, [events]);
+
+  const applicationsTrend = useMemo(() => {
+    const days = new Map<
       string,
-      { date: string; orders: number; revenue: number }
+      { date: string; memberships: number; scholarships: number }
     >();
     const today = new Date();
 
-    // Initialize last 30 days
     for (let i = 29; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toLocaleDateString("en-US", {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const label = d.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       });
-      last30Days.set(dateStr, { date: dateStr, orders: 0, revenue: 0 });
+      days.set(label, { date: label, memberships: 0, scholarships: 0 });
     }
 
-    // Count orders per day
-    data.forEach((order) => {
-      const orderDate = new Date(order.createdAt);
-      const dateStr = orderDate.toLocaleDateString("en-US", {
+    const bucket = (iso: string, key: "memberships" | "scholarships") => {
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return;
+      const label = d.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       });
-      const existing = last30Days.get(dateStr);
-      if (existing) {
-        existing.orders += 1;
-        existing.revenue += order.total || 0;
-      }
-    });
+      const entry = days.get(label);
+      if (entry) entry[key] += 1;
+    };
 
-    return Array.from(last30Days.values());
-  }, [data]);
+    memberships?.forEach((m) => m.createdAt && bucket(m.createdAt, "memberships"));
+    scholarships?.forEach(
+      (s) => s.createdAt && bucket(s.createdAt, "scholarships")
+    );
 
-  // ===== Order Volume by Price Range =====
-  const orderDistribution = useMemo(() => {
-    if (!data) return [];
+    return Array.from(days.values());
+  }, [memberships, scholarships]);
 
-    const ranges = [
-      { range: "$0-25", min: 0, max: 25, count: 0 },
-      { range: "$25-50", min: 25, max: 50, count: 0 },
-      { range: "$50-100", min: 50, max: 100, count: 0 },
-      { range: "$100-250", min: 100, max: 250, count: 0 },
-      { range: "$250+", min: 250, max: Infinity, count: 0 },
-    ];
-
-    data.forEach((order) => {
-      const total = order.total || 0;
-      const range = ranges.find((r) => total >= r.min && total < r.max);
-      if (range) range.count += 1;
-    });
-
-    return ranges;
-  }, [data]);
-
-  // ===== Weekly Order Volume =====
-  const weeklyVolume = useMemo(() => {
-    if (!data) return [];
-
-    const weeks = new Map<
+  const statusBreakdown = useMemo(() => {
+    const counts = { Paid: 0, Pending: 0, Approved: 0, Rejected: 0 } as Record<
       string,
-      { week: string; orders: number; revenue: number }
-    >();
-
-    data.forEach((order) => {
-      const date = new Date(order.createdAt);
-      const weekStart = new Date(date);
-      weekStart.setDate(date.getDate() - date.getDay()); // Start of week (Sunday)
-      const weekStr = weekStart.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-
-      if (!weeks.has(weekStr)) {
-        weeks.set(weekStr, { week: weekStr, orders: 0, revenue: 0 });
-      }
-
-      const week = weeks.get(weekStr)!;
-      week.orders += 1;
-      week.revenue += order.total || 0;
+      number
+    >;
+    memberships?.forEach((m) => {
+      if (m.paid) counts.Paid += 1;
+      else counts.Pending += 1;
     });
-
-    return Array.from(weeks.values()).sort((a, b) => {
-      return new Date(a.week).getTime() - new Date(b.week).getTime();
+    scholarships?.forEach((s) => {
+      const key = s.status === "approved" ? "Approved" : s.status === "rejected" ? "Rejected" : "Pending";
+      counts[key] = (counts[key] ?? 0) + 1;
     });
-  }, [data]);
+    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+  }, [memberships, scholarships]);
 
-  // ===== Recent Orders (latest 5) =====
-  const recentOrders = useMemo(() => {
-    if (!data) return [];
-    return [...data]
+  const recentApplications = useMemo(() => {
+    if (!memberships) return [];
+    return [...memberships]
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       )
       .slice(0, 5);
-  }, [data]);
+  }, [memberships]);
+
+  const isLoading =
+    loadingApps || loadingSch || loadingEvents || loadingMembers;
 
   return (
     <div className="space-y-8">
-      {/* ===== Summary Cards ===== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <SummaryCard
-          title="Total Orders"
-          value={isLoading ? "..." : totalOrders}
+      <div>
+        <h2 className="text-2xl font-bold text-zontaRed">Welcome back</h2>
+        <p className="text-gray-600 mt-1">
+          Overview of memberships, scholarships, events, and donations.
+        </p>
+      </div>
+
+      {/* ===== Stat Cards ===== */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          icon={<Users size={22} />}
+          label="Active Members"
+          value={isLoading ? "…" : totalMembers}
+          tint="bg-zontaRed/10 text-zontaRed"
         />
-        <SummaryCard
-          title="Revenue"
-          value={isLoading ? "..." : `$${totalRevenue.toFixed(2)}`}
+        <StatCard
+          icon={<HandHeart size={22} />}
+          label="Membership Applications"
+          value={isLoading ? "…" : `${pendingApps} pending`}
+          sub={`${paidApps} paid · ${totalApps} total`}
+          tint="bg-zontaGold/10 text-zontaGold"
         />
-        <SummaryCard
-          title="Pending"
-          value={isLoading ? "..." : pendingOrders}
+        <StatCard
+          icon={<GraduationCap size={22} />}
+          label="Scholarship Applications"
+          value={isLoading ? "…" : totalScholarships}
+          tint="bg-zontaBlue/10 text-zontaBlue"
         />
-        <SummaryCard
-          title="Members"
-          value={isLoadingMemberships ? "..." : membershipCount}
+        <StatCard
+          icon={<Calendar size={22} />}
+          label="Upcoming Events"
+          value={isLoading ? "…" : upcomingEvents}
+          sub={`${totalEvents} total`}
+          tint="bg-zontaViolet/10 text-zontaViolet"
         />
       </div>
 
-      {/* ===== Dashboard Insights ===== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* ===== Order Analytics Chart ===== */}
-        <div className="bg-white rounded-xl shadow-sm border border-zontaGold p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-zontaRed">Order Analytics</h2>
-            <select
-              value={chartType}
-              onChange={(e) =>
-                setChartType(
-                  e.target.value as "daily" | "volume" | "distribution"
-                )
-              }
-              className="text-xs border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-zontaGold"
-              aria-label="Select chart type"
-            >
-              <option value="daily">Daily Orders (30d)</option>
-              <option value="volume">Weekly Volume</option>
-              <option value="distribution">Price Distribution</option>
-            </select>
+      {/* ===== Applications Trend ===== */}
+      <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-semibold text-zontaDark">
+              Applications — Last 30 Days
+            </h3>
+            <p className="text-sm text-gray-500">
+              New membership and scholarship submissions over time.
+            </p>
           </div>
-
-          {isLoading ? (
-            <p className="text-gray-500 text-sm">Loading chart...</p>
-          ) : (
-            <>
-              {chartType === "daily" && (
-                <ResponsiveContainer width="100%" height={300}>
-                  {dailyOrdersData.length === 0 ? (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-gray-500 text-sm">
-                        No order data yet.
-                      </p>
-                    </div>
-                  ) : (
-                    <AreaChart data={dailyOrdersData}>
-                      <defs>
-                        <linearGradient
-                          id="colorOrders"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#9b1c1c"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#9b1c1c"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis
-                        dataKey="date"
-                        tick={{ fontSize: 11 }}
-                        interval="preserveStartEnd"
-                      />
-                      <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip
-                        contentStyle={{ fontSize: "12px" }}
-                        formatter={(value: number, name: string) => {
-                          if (name === "orders") return [value, "Orders"];
-                          if (name === "revenue")
-                            return [`$${value.toFixed(2)}`, "Revenue"];
-                          return [value, name];
-                        }}
-                      />
-                      <Legend />
-                      <Area
-                        type="monotone"
-                        dataKey="orders"
-                        stroke="#9b1c1c"
-                        fillOpacity={1}
-                        fill="url(#colorOrders)"
-                        name="Orders"
-                      />
-                    </AreaChart>
-                  )}
-                </ResponsiveContainer>
-              )}
-
-              {chartType === "volume" && (
-                <ResponsiveContainer width="100%" height={300}>
-                  {weeklyVolume.length === 0 ? (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-gray-500 text-sm">
-                        No order data yet.
-                      </p>
-                    </div>
-                  ) : (
-                    <BarChart data={weeklyVolume}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="week" tick={{ fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip
-                        contentStyle={{ fontSize: "12px" }}
-                        formatter={(value: number, name: string) => {
-                          if (name === "orders") return [value, "Orders"];
-                          if (name === "revenue")
-                            return [`$${value.toFixed(2)}`, "Revenue"];
-                          return [value, name];
-                        }}
-                      />
-                      <Legend />
-                      <Bar dataKey="orders" fill="#9b1c1c" name="Orders" />
-                      <Bar dataKey="revenue" fill="#c6862c" name="Revenue" />
-                    </BarChart>
-                  )}
-                </ResponsiveContainer>
-              )}
-
-              {chartType === "distribution" && (
-                <ResponsiveContainer width="100%" height={300}>
-                  {orderDistribution.every((d) => d.count === 0) ? (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-gray-500 text-sm">
-                        No order data yet.
-                      </p>
-                    </div>
-                  ) : (
-                    <BarChart data={orderDistribution}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="range" tick={{ fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip
-                        contentStyle={{ fontSize: "12px" }}
-                        formatter={(value: number) => [value, "Orders"]}
-                      />
-                      <Bar dataKey="count" fill="#c6862c" name="Order Count" />
-                    </BarChart>
-                  )}
-                </ResponsiveContainer>
-              )}
-            </>
-          )}
         </div>
 
-        {/* ===== Recent Orders ===== */}
-        <div className="bg-white rounded-xl shadow-sm border border-zontaGold p-6">
-          <h2 className="font-semibold text-zontaRed mb-4">Recent Orders</h2>
+        <div className="h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={applicationsTrend}>
+              <defs>
+                <linearGradient id="memGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#b0062c" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#b0062c" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="schGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#0a6ba0" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#0a6ba0" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+              <XAxis dataKey="date" tick={{ fontSize: 12 }} interval={4} />
+              <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+              <Tooltip />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="memberships"
+                name="Memberships"
+                stroke="#b0062c"
+                fill="url(#memGrad)"
+                strokeWidth={2}
+              />
+              <Area
+                type="monotone"
+                dataKey="scholarships"
+                name="Scholarships"
+                stroke="#0a6ba0"
+                fill="url(#schGrad)"
+                strokeWidth={2}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
 
-          {isLoading ? (
-            <p className="text-gray-500 text-sm">Loading orders...</p>
-          ) : recentOrders.length === 0 ? (
-            <p className="text-gray-500 text-sm">No recent orders found.</p>
+      {/* ===== Status Breakdown + Recent Applications ===== */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-zontaDark mb-4">
+            Application Status
+          </h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={statusBreakdown}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Bar dataKey="value" fill="#d4a017" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-zontaDark mb-4">
+            Recent Membership Applications
+          </h3>
+          {recentApplications.length === 0 ? (
+            <p className="text-sm text-gray-500">No applications yet.</p>
           ) : (
-            <div className="divide-y divide-gray-100">
-              {recentOrders.map((order) => (
-                <div
-                  key={order._id}
-                  className="flex justify-between py-3 text-sm"
+            <ul className="divide-y divide-gray-100">
+              {recentApplications.map((m) => (
+                <li
+                  key={m._id}
+                  className="py-3 flex items-center justify-between text-sm"
                 >
                   <div>
-                    <p className="font-medium text-gray-800">
-                      ${order.total.toFixed(2)}
-                    </p>
-                    <p className="text-gray-500 text-xs">
-                      {new Date(order.createdAt).toLocaleDateString()}
+                    <p className="font-medium text-zontaDark">{m.name}</p>
+                    <p className="text-gray-500 text-xs">{m.email}</p>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                        m.paid
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {m.paid ? "Paid" : "Pending"}
+                    </span>
+                    <p className="text-gray-400 text-xs mt-1">
+                      {new Date(m.createdAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <span
-                    className={`px-2 py-1 rounded-md text-xs font-semibold ${
-                      order.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : order.status === "Completed"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
-        </div>
+        </section>
       </div>
     </div>
   );
 }
 
-/* ==============================
-   🧱 SummaryCard Component
-============================== */
-function SummaryCard({
-  title,
+function StatCard({
+  icon,
+  label,
   value,
+  sub,
+  tint,
 }: {
-  title: string;
-  value: string | number;
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+  sub?: string;
+  tint: string;
 }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-5 border-l-4 border-zontaGold">
-      <div className="text-sm text-gray-500">{title}</div>
-      <div className="mt-2 text-2xl font-semibold text-zontaRed">{value}</div>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="flex items-center gap-3">
+        <div className={`p-3 rounded-lg ${tint}`}>{icon}</div>
+        <div>
+          <p className="text-sm text-gray-500">{label}</p>
+          <p className="text-2xl font-bold text-zontaDark">{value}</p>
+          {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+        </div>
+      </div>
     </div>
   );
 }

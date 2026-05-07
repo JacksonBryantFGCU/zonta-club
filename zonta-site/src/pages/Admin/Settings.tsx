@@ -2,14 +2,8 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type {
-  SettingsState,
-  FeatureToggles,
-} from "../../queries/settingsTypes";
+import type { SettingsState } from "../../queries/settingsTypes";
 
-// ========================
-// 📡 API Helpers
-// ========================
 async function fetchSettings(): Promise<SettingsState> {
   const token = localStorage.getItem("adminToken");
   const res = await fetch(
@@ -39,9 +33,6 @@ async function updateSettings(updated: SettingsState): Promise<SettingsState> {
   return res.json();
 }
 
-// ========================
-// 🧠 React Component
-// ========================
 export default function Settings() {
   const queryClient = useQueryClient();
   const {
@@ -53,29 +44,24 @@ export default function Settings() {
     queryFn: fetchSettings,
   });
 
-  const mutation = useMutation({
-    mutationFn: updateSettings,
-    onSuccess: () => {
-      // Invalidate both admin settings and public settings queries
-      queryClient.invalidateQueries({ queryKey: ["settings"] });
-      queryClient.invalidateQueries({ queryKey: ["publicSettings"] });
-
-      // Force immediate refetch of public settings
-      queryClient.refetchQueries({ queryKey: ["publicSettings"] });
-
-      setStatus(" Settings saved - changes will appear immediately");
-      setTimeout(() => setStatus(""), 3000);
-    },
-    onError: (error: Error) => {
-      console.error(" Save settings error:", error);
-      setStatus(` Failed to save settings: ${error.message}`);
-    },
-  });
-
   const [status, setStatus] = useState("");
   const [draft, setDraft] = useState<SettingsState | null>(null);
 
-  // Initialize draft when settings load
+  const mutation = useMutation({
+    mutationFn: updateSettings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+      queryClient.invalidateQueries({ queryKey: ["publicSettings"] });
+      queryClient.refetchQueries({ queryKey: ["publicSettings"] });
+      setStatus("Settings saved - changes will appear immediately");
+      setTimeout(() => setStatus(""), 3000);
+    },
+    onError: (error: Error) => {
+      console.error("Save settings error:", error);
+      setStatus(`Failed to save settings: ${error.message}`);
+    },
+  });
+
   if (draft === null && settings) {
     setDraft(settings);
   }
@@ -96,32 +82,15 @@ export default function Settings() {
       };
     });
 
-  const updateAdmin = (id: string, key: string, value: unknown) =>
-    setDraft((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        admins: prev.admins.map((a) =>
-          a.id === id ? { ...a, [key]: value } : a
-        ),
-      };
-    });
-
   const handleSave = () => mutation.mutate(draft);
-
-  // Check if logged-in admin is the president (has full access)
-  const loggedInEmail = localStorage.getItem("adminEmail");
-  const isPresident = loggedInEmail === "jackbryant5589@gmail.com";
 
   return (
     <div className="space-y-10">
-      {/* Header */}
       <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h1 className="text-xl font-semibold text-zontaRed">Site Settings</h1>
           <p className="text-sm text-gray-600">
-            Manage backend features and admin access. These settings do not
-            affect the public site design.
+            Manage backend features and site-wide notices.
           </p>
         </div>
 
@@ -136,7 +105,6 @@ export default function Settings() {
 
       {status && <p className="text-sm text-zontaRed">{status}</p>}
 
-      {/* Maintenance */}
       <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         <h2 className="text-lg font-semibold text-zontaRed">
           Maintenance Mode
@@ -163,7 +131,6 @@ export default function Settings() {
         />
       </section>
 
-      {/* Announcement */}
       <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         <h2 className="text-lg font-semibold text-zontaRed">
           Homepage Announcement
@@ -201,83 +168,23 @@ export default function Settings() {
         />
       </section>
 
-      {/* Features */}
       <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         <h2 className="text-lg font-semibold text-zontaRed">Feature Toggles</h2>
         <p className="text-sm text-gray-600 mb-3">
           Control which backend features are currently active.
         </p>
 
-        {[
-          { key: "shopEnabled", label: "Enable Shop" },
-          { key: "donationsEnabled", label: "Enable Donations" },
-        ].map((f) => (
-          <label key={f.key} className="flex items-center gap-2 mb-2">
-            <input
-              type="checkbox"
-              checked={draft.features[f.key as keyof FeatureToggles]}
-              onChange={(e) => toggle("features", f.key, e.target.checked)}
-              className="h-4 w-4 text-zontaGold rounded border-gray-300"
-            />
-            {f.label}
-          </label>
-        ))}
-      </section>
-
-      {/* Admin Access */}
-      <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 overflow-x-auto">
-        <h2 className="text-lg font-semibold text-zontaRed mb-3">
-          Admin Access
-        </h2>
-        <p className="text-sm text-gray-600 mb-4">
-          Manage admin account roles and access. Only the Club President can
-          modify roles or deactivate accounts.
-        </p>
-
-        <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-          <thead className="bg-gray-50 text-gray-700">
-            <tr>
-              <th className="py-2 px-3 text-left font-medium">Name</th>
-              <th className="py-2 px-3 text-left font-medium">Email</th>
-              <th className="py-2 px-3 text-left font-medium">Role</th>
-              <th className="py-2 px-3 text-left font-medium">Active</th>
-            </tr>
-          </thead>
-          <tbody>
-            {draft.admins.map((a) => (
-              <tr key={a.id} className="border-t border-gray-200">
-                <td className="py-2 px-3">{a.name}</td>
-                <td className="py-2 px-3">{a.email}</td>
-                <td className="py-2 px-3">
-                  <select
-                    value={a.role}
-                    onChange={(e) => updateAdmin(a.id, "role", e.target.value)}
-                    disabled={!isPresident}
-                    className="border border-gray-300 rounded-md px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-zontaGold disabled:bg-gray-100"
-                    aria-label={`Role for ${a.name}`}
-                  >
-                    <option value="full">Full Access</option>
-                    <option value="read">Read Only</option>
-                  </select>
-                </td>
-                <td className="py-2 px-3">
-                  <input
-                    type="checkbox"
-                    checked={a.active}
-                    onChange={(e) =>
-                      updateAdmin(a.id, "active", e.target.checked)
-                    }
-                    disabled={
-                      !isPresident || a.email === "jackbryant5589@gmail.com"
-                    }
-                    className="h-4 w-4 text-zontaGold rounded border-gray-300"
-                    aria-label={`Toggle active status for ${a.name}`}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <label className="flex items-center gap-2 mb-2">
+          <input
+            type="checkbox"
+            checked={draft.features.donationsEnabled}
+            onChange={(e) =>
+              toggle("features", "donationsEnabled", e.target.checked)
+            }
+            className="h-4 w-4 text-zontaGold rounded border-gray-300"
+          />
+          Enable Donations
+        </label>
       </section>
 
       {status && <p className="text-sm text-zontaRed">{status}</p>}

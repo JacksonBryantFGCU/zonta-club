@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(rm -f pages/Ecommerce.tsx pages/ProductDetails.tsx pages/Cart.tsx pages/Success.tsx pages/Admin/Products.tsx pages/Admin/Orders.tsx pages/Admin/OrderDetailsModal.tsx components/CartDrawer.tsx components/SearchBar.tsx components/SortDropdown.tsx context/CartProvider.tsx queries/productQueries.ts)",
+      "Bash(rm -rf pages/Admin/Products)",
+      "Bash(npx tsx:*)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :5173)",
+      "Bash(taskkill *)",
+      "PowerShell(Stop-Process *)"
+    ]
+  }
+}

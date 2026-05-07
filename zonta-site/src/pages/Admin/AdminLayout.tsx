@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  Package,
   CalendarDays,
   BookOpen,
   Users,
@@ -26,8 +25,6 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/admin/orders", label: "Orders", icon: Package },
-  { to: "/admin/products", label: "Products", icon: Package },
   { to: "/admin/donations", label: "Donations", icon: Heart },
   { to: "/admin/events", label: "Events", icon: CalendarDays },
 

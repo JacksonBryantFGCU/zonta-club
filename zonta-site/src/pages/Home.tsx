@@ -51,10 +51,12 @@ export default function Home() {
       _id, title, date, location, description, "imageUrl": image.asset->url
     }`;
 
-    sanity.fetch<Event[]>(query).then((data) => {
-      setEvents(data);
-      setLoading(false);
-    });
+    sanity.fetch<Event[]>(query)
+      .then((data) => {
+        setEvents(data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
   const handlePrevious = () => {
@@ -280,32 +282,32 @@ export default function Home() {
             <PartnerCard
               name="American Cancer Society"
               logoUrl={ACSLogo}
-              donateUrl="https://donate.cancer.org/"
+              donateUrl="https://www.cancer.org/"
             />
             <PartnerCard
               name="Habitat for Humanity"
               logoUrl={HabitatLogo}
-              donateUrl="https://www.habitat.org/donate"
+              donateUrl="https://www.habitat.org/"
             />
             <PartnerCard
               name="PACE Center for Girls"
               logoUrl={PACELogo}
-              donateUrl="https://pacecenter.org/donate/"
+              donateUrl="https://pacecenter.org/"
             />
             <PartnerCard
               name="Path2Freedom"
               logoUrl={Path2FreedomLogo}
-              donateUrl="https://www.path2freedom.com/donate"
+              donateUrl="https://www.path2freedom.org"
             />
             <PartnerCard
               name="Project H.E.L.P."
               logoUrl={ProjectHelpLogo}
-              donateUrl="https://projecthelpnaples.org/donate/"
+              donateUrl="https://projecthelpnaples.org/"
             />
             <PartnerCard
               name="The Shelter for Abused Women & Children"
               logoUrl={ShelterLogo}
-              donateUrl="https://naplesshelter.org/donate/"
+              donateUrl="https://naplesshelter.org/"
             />
           </div>
         </div>
@@ -330,12 +332,14 @@ export default function Home() {
               Become a Member
             </button>
 
-            <button
-              onClick={() => navigate("/donate")}
+            <a
+              href="https://zontastore.com/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-white text-zontaMahogany font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaCyan hover:text-white hover:scale-105 border-2 border-zontaCyan transition-all duration-300"
             >
-              Donate
-            </button>
+              Visit Our Store
+            </a>
           </div>
         </div>
       </section>

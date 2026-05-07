@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
  */
 const generateHash = async (): Promise<void> => {
   try {
-    const password = "Marcus1"; // change before running
+    const password = "Georgie1!"; // change before running
     const hash = await bcrypt.hash(password, 10);
 
     console.log("Plain Password:", password);

@@ -77,7 +77,7 @@ export default function About() {
               No leadership members found in Sanity.
             </p>
           ) : (
-            <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-5xl mx-auto">
               {leaders.map((leader: Leader) => (
                 <div
                   key={leader._id}

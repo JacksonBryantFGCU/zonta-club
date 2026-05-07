@@ -1,24 +1,11 @@
 // zonta-server/src/controllers/authController.ts
 
-import path from "path";
-import { fileURLToPath } from "url";
-
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import type { Request, Response } from "express";
-import fs from "fs-extra";
 import jwt, { JwtPayload, Secret, SignOptions } from "jsonwebtoken";
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 dotenv.config();
-
-interface AdminUser {
-  email: string;
-  password: string; // hashed
-}
 
 interface AdminPayload extends JwtPayload {
   email: string;
@@ -29,28 +16,29 @@ export const adminLogin = async (req: Request, res: Response): Promise<void> => 
   try {
     const { email, password } = req.body as { email: string; password: string };
 
-    // Load admins.json dynamically
-    const adminsPath = path.resolve(__dirname, "../../config/admins.json");
-    const admins: AdminUser[] = await fs.readJSON(adminsPath);
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-    // Find matching admin
-    const admin = admins.find((a) => a.email.toLowerCase() === email.toLowerCase());
-    if (!admin) {
+    if (!adminEmail || !adminPasswordHash) {
+      console.error("ADMIN_EMAIL or ADMIN_PASSWORD_HASH not configured");
+      res.status(500).json({ error: "Admin credentials not configured" });
+      return;
+    }
+
+    if (email.toLowerCase() !== adminEmail.toLowerCase()) {
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
 
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, admin.password);
+    const isMatch = await bcrypt.compare(password, adminPasswordHash);
     if (!isMatch) {
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
 
-    // Generate JWT
     const secret = (process.env.JWT_SECRET as Secret) || "fallback_secret";
     const token = jwt.sign(
-      { email: admin.email, role: "admin" } as AdminPayload,
+      { email: adminEmail, role: "admin" } as AdminPayload,
       secret,
       { expiresIn: process.env.TOKEN_EXPIRY || "1h" } as SignOptions
     );

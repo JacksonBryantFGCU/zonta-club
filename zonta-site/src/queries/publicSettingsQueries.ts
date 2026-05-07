@@ -1,7 +1,6 @@
 // zonta-site/src/queries/publicSettingsQueries.ts
 
 import { useQuery } from "@tanstack/react-query";
-import { sanity } from "../lib/sanityClient";
 
 export interface PublicSettings {
   maintenance: {
@@ -14,25 +13,29 @@ export interface PublicSettings {
     link: string;
   };
   features: {
-    shopEnabled: boolean;
     donationsEnabled: boolean;
   };
 }
 
+const DEFAULT_SETTINGS: PublicSettings = {
+  maintenance: { enabled: false, message: "" },
+  announcement: { enabled: false, text: "", link: "" },
+  features: { donationsEnabled: true },
+};
+
 async function fetchPublicSettings(): Promise<PublicSettings> {
-  const query = `*[_type == "siteSettings" && _id == "settings"][0]{
-    maintenance,
-    announcement,
-    features
-  }`;
+  const base = (import.meta.env.VITE_BACKEND_URL ?? "").replace(/\/$/, "");
+  const res = await fetch(`${base}/api/public/settings`, {
+    headers: { Accept: "application/json" },
+  });
 
-  const settings = await sanity.fetch(query);
+  if (!res.ok) return DEFAULT_SETTINGS;
 
-  // Return defaults if no settings found
-  return settings || {
-    maintenance: { enabled: false, message: "" },
-    announcement: { enabled: false, text: "", link: "" },
-    features: { shopEnabled: true, donationsEnabled: true },
+  const data = (await res.json()) as Partial<PublicSettings> | null;
+  return {
+    maintenance: data?.maintenance ?? DEFAULT_SETTINGS.maintenance,
+    announcement: data?.announcement ?? DEFAULT_SETTINGS.announcement,
+    features: data?.features ?? DEFAULT_SETTINGS.features,
   };
 }
 

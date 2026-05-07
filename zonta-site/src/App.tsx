@@ -14,13 +14,8 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Scholarships from "./pages/Scholarships";
 import Membership from "./pages/Membership";
-import Ecommerce from "./pages/Ecommerce";
-import ProductDetails from "./pages/ProductDetails";
-import Cart from "./pages/Cart";
-import Success from "./pages/Success";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { CartProvider } from "./context/CartProvider";
 import { useRouteProgress } from "./hooks/useRouteProgress";
 import { useIsFetching } from "@tanstack/react-query";
 import { useLoading } from "./hooks/useLoading";
@@ -31,8 +26,6 @@ import MembershipCancel from "./pages/MembershipCancel";
 //  Import Admin components
 import AdminLayout from "./pages/Admin/AdminLayout";
 import DashboardHome from "./pages/Admin/DashboardHome";
-import Orders from "./pages/Admin/Orders";
-import Products from "./pages/Admin/Products";
 import Events from "./pages/Admin/Events";
 import ScholarshipsAdmin from "./pages/Admin/Scholarships/Scholarships";
 import Memberships from "./pages/Admin/Memberships";
@@ -74,8 +67,7 @@ export default function App() {
   };
 
   return (
-    <CartProvider>
-      <MaintenanceWrapper>
+    <MaintenanceWrapper>
         <div className="min-h-screen bg-white text-gray-900 flex flex-col">
           <AnnouncementBanner />
           <Navbar />
@@ -178,58 +170,6 @@ export default function App() {
                   }
                 />
                 <Route
-                  path="/ecommerce"
-                  element={
-                    <motion.div
-                      variants={pageVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                    >
-                      <Ecommerce />
-                    </motion.div>
-                  }
-                />
-                <Route
-                  path="/product/:id"
-                  element={
-                    <motion.div
-                      variants={pageVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                    >
-                      <ProductDetails />
-                    </motion.div>
-                  }
-                />
-                <Route
-                  path="/cart"
-                  element={
-                    <motion.div
-                      variants={pageVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                    >
-                      <Cart />
-                    </motion.div>
-                  }
-                />
-                <Route
-                  path="/success"
-                  element={
-                    <motion.div
-                      variants={pageVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                    >
-                      <Success />
-                    </motion.div>
-                  }
-                />
-                <Route
                   path="/membership-cancel"
                   element={
                     <motion.div
@@ -254,8 +194,6 @@ export default function App() {
                   }
                 >
                   <Route index element={<DashboardHome />} />
-                  <Route path="orders" element={<Orders />} />
-                  <Route path="products" element={<Products />} />
                   <Route path="donations" element={<Donations />} />
                   <Route path="events" element={<Events />} />
                   <Route path="scholarships" element={<ScholarshipsAdmin />} />
@@ -293,6 +231,5 @@ export default function App() {
           <Footer />
         </div>
       </MaintenanceWrapper>
-    </CartProvider>
   );
 }

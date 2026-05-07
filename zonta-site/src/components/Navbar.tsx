@@ -18,7 +18,6 @@ export default function Navbar() {
     { name: "Who We Are", path: "/about" },
     { name: "Scholarships", path: "/scholarships" },
     { name: "Memberships", path: "/membership" },
-    { name: "Ecommerce", path: "/ecommerce" },
   ];
 
   //  Smooth background + shadow on scroll

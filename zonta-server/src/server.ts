@@ -14,7 +14,6 @@ import { cleanupUnpaidApplications } from "./controllers/membershipApplicationsC
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { adminLimiter } from "./middlewares/rateLimiter.js";
 import authRoutes from "./routes/authRoutes.js";
-import categoriesRoutes from "./routes/categoriesRoutes.js";
 import checkoutRoutes from "./routes/checkoutRoutes.js";
 import donationsRoutes from "./routes/donationsRoutes.js";
 import eventsRoutes from "./routes/eventsRoutes.js";
@@ -22,12 +21,10 @@ import leadershipRoutes from "./routes/leadershipRoutes.js";
 import membershipApplicationsRoutes from "./routes/membershipApplicationsRoutes.js";
 import membershipsPublicRoutes from "./routes/membershipsPublicRoutes.js";
 import membershipsRoutes from "./routes/membershipsRoutes.js";
-import ordersRoutes from "./routes/ordersRoutes.js";
-import productsRoutes from "./routes/productsRoutes.js";
 import scholarshipsApplicationsRoutes from "./routes/scholarshipApplicationsRoutes.js";
 import scholarshipsPublicRoutes from "./routes/scholarshipsPublicRoutes.js";
 import scholarshipsRoutes from "./routes/scholarshipsRoutes.js";
-import settingsRoutes from "./routes/settingsRoutes.js";
+import settingsRoutes, { publicSettingsRouter } from "./routes/settingsRoutes.js";
 
 dotenv.config({ override: true });
 
@@ -56,7 +53,10 @@ app.use(
    ========================================================= */
 app.use(
   cors({
-    origin: ["https://zonta-club-x9jt.vercel.app"],
+    origin: [
+      "https://zonta-club-x9jt.vercel.app",
+      "http://localhost:5173",
+    ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
@@ -90,17 +90,15 @@ app.use("/receipts", express.static(receiptsDir));
    PUBLIC API ROUTES  (NO AUTH)
    ========================================================= */
 app.use("/api/auth", authRoutes);
+app.use("/api/checkout", checkoutRoutes);
 app.use("/api/public/memberships", membershipsPublicRoutes); // 🔥 correct mount
+app.use("/api/public/settings", publicSettingsRouter);
 app.use("/api/scholarships", scholarshipsPublicRoutes); // public scholarships
-app.use("/api/products", productsRoutes);
 
 /* =========================================================
 ADMIN API ROUTES (PROTECTED)
 ========================================================= */
-app.use("/api/admin/orders", ordersRoutes);
-app.use("/api/admin/categories", categoriesRoutes);
 app.use("/api/admin/events", eventsRoutes);
-app.use("/api/admin/products", productsRoutes);
 app.use("/api/admin/scholarships", scholarshipsRoutes);
 app.use("/api/admin/scholarship-applications", scholarshipsApplicationsRoutes);
 app.use("/api/admin/settings", settingsRoutes);
@@ -108,8 +106,6 @@ app.use("/api/admin/memberships", membershipsRoutes); // admin memberships
 app.use("/api/admin/membership-applications", membershipApplicationsRoutes);
 app.use("/api/admin/leadership", leadershipRoutes);
 app.use("/api/admin/donations", donationsRoutes);
-
-app.use("/api/checkout", checkoutRoutes);
 
 /* =========================================================
    ROOT ROUTE
@@ -134,20 +130,6 @@ app.use((req: Request, res: Response) => {
 app.use(
   errorHandler as unknown as (err: any, req: Request, res: Response, next: NextFunction) => void
 );
-
-/* =========================================================
-   ADMIN INFO LOGGING
-   ========================================================= */
-const adminsPath = path.resolve("dist/config/admins.json");
-let adminCount = 0;
-try {
-  if (fs.existsSync(adminsPath)) {
-    const adminsData = JSON.parse(fs.readFileSync(adminsPath, "utf-8"));
-    adminCount = Array.isArray(adminsData) ? adminsData.length : 0;
-  }
-} catch (err) {
-  console.warn("Could not read admins.json:", err);
-}
 
 /* =========================================================
    DEBUG ROUTE LISTING
@@ -185,7 +167,6 @@ const PORT = Number(process.env.PORT || 4000);
 app.listen(PORT, () => {
   console.log("==========================================");
   console.log(`Sanity project: ${process.env.SANITY_PROJECT_ID}`);
-  console.log(`Admin count: ${adminCount}`);
   console.log(`Server running at http://localhost:${PORT}`);
   console.log("==========================================");
 
