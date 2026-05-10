@@ -49,12 +49,23 @@ app.use(
 /* =========================================================
    CORS
    ========================================================= */
+const CORS_ORIGINS = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim())
+  : [
+      "http://localhost:5173",
+      "https://zonta-club-x9jt.vercel.app",
+      "https://www.zontaclubofnaples.org",
+      "https://zontaclubofnaples.org",
+    ];
+
 app.use(
   cors({
-    origin: [
-      "https://zonta-club-x9jt.vercel.app",
-      "http://localhost:5173",
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (server-to-server, curl, Postman)
+      if (!origin) return callback(null, true);
+      if (CORS_ORIGINS.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS: origin '${origin}' not allowed`));
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
