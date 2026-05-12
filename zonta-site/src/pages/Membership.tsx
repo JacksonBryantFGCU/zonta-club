@@ -1,25 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { fetchPublicMemberships } from "../queries/membershipPublicQueries";
 import HeroImage from "../assets/hero_women2.jpeg";
 
 export default function Membership() {
-  const navigate = useNavigate();
-
-  const {
-    data: memberships = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["public-memberships"],
-    queryFn: fetchPublicMemberships,
-  });
-
   return (
     <main className="bg-white">
+      {/* ================= HERO ================= */}
       <section className="grid md:grid-cols-2 items-center gap-10 px-6 py-20 max-w-7xl mx-auto">
-        {/* Image block */}
         <div className="h-72 md:h-96 rounded-2xl overflow-hidden shadow-lg border border-zontaGold/40">
           <img
             src={HeroImage}
@@ -28,7 +14,6 @@ export default function Membership() {
           />
         </div>
 
-        {/* Text block */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -85,68 +70,84 @@ export default function Membership() {
         </div>
       </section>
 
-      {/* ================= MEMBERSHIP TIERS ================= */}
-      <section className="bg-zontaLightGold/10 py-20">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-zontaMahogany mb-14">
-          Membership Options
-        </h2>
+      {/* ================= HOW TO APPLY ================= */}
+      <section className="bg-zontaLightGold/10 py-20 mt-20">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-zontaMahogany mb-4">
+            How to Apply
+          </h2>
+          <p className="text-center text-gray-600 mb-12">
+            Membership applications are submitted by mail. There is no online
+            application.
+          </p>
 
-        <div className="max-w-7xl mx-auto px-6">
-          {isLoading ? (
-            <p className="text-center text-gray-600 py-10">
-              Loading memberships...
+          {/* Steps */}
+          <ol className="space-y-6 mb-12">
+            {[
+              "Download and print the New Member Application below.",
+              "Complete the application in full.",
+              `Write a check for $170.00 payable to "Zonta Club of Naples".`,
+              "Mail your completed application and check to the address below.",
+            ].map((step, i) => (
+              <motion.li
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="flex gap-4 items-start"
+              >
+                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-zontaMahogany text-white text-sm font-bold flex items-center justify-center">
+                  {i + 1}
+                </span>
+                <p className="text-gray-700 pt-1">{step}</p>
+              </motion.li>
+            ))}
+          </ol>
+
+          {/* Download button */}
+          <div className="text-center mb-12">
+            <a
+              href="/documents/new-member-application.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-zontaGold text-white font-semibold px-8 py-3 rounded-md hover:bg-zontaOrange transition"
+            >
+              ↓ Download New Member Application (PDF)
+            </a>
+          </div>
+
+          {/* Mailing address */}
+          <div className="bg-white rounded-2xl border border-zontaGold/40 shadow-sm p-8 mb-6 text-center">
+            <h3 className="text-lg font-semibold text-zontaMahogany mb-3">
+              Mailing Address
+            </h3>
+            <address className="not-italic text-gray-700 leading-relaxed">
+              Zonta Club of Naples
+              <br />
+              P.O. Box 10911
+              <br />
+              Naples, FL 34101
+            </address>
+          </div>
+
+          {/* Payment method note */}
+          <div className="bg-zontaGold/10 border border-zontaGold/30 rounded-xl p-5 mb-6 text-sm text-gray-700">
+            <p>
+              <strong>Note:</strong> Membership dues must be submitted by check
+              with your mailed application. Please make checks payable to{" "}
+              <strong>"Zonta Club of Naples"</strong>.
             </p>
-          ) : isError ? (
-            <p className="text-center text-red-600">
-              Failed to load memberships.
+          </div>
+
+          {/* Board review note */}
+          <div className="bg-white rounded-2xl border border-zontaGold/40 shadow-sm p-6 text-sm text-gray-600">
+            <p>
+              Your application will be reviewed by the Club's Board of
+              Directors. If your application is not approved, your check will be
+              returned.
             </p>
-          ) : memberships.length === 0 ? (
-            <p className="text-center text-gray-600">
-              No membership options available right now.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              {memberships.map((m, idx) => (
-                <motion.div
-                  key={m._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-white rounded-2xl p-8 border border-zontaGold/40 shadow-[0_8px_25px_rgba(0,0,0,0.05)] flex flex-col"
-                >
-                  <h3 className="text-2xl font-bold text-zontaMahogany mb-2">
-                    {m.title}
-                  </h3>
-
-                  <p className="text-gray-700 text-sm mb-4">{m.description}</p>
-
-                  <p className="text-lg font-semibold text-zontaGold mb-4">
-                    {m.price ? `$${m.price.toFixed(2)}` : "No Fee"}
-                  </p>
-
-                  <ul className="text-gray-700 text-sm mb-6 space-y-2">
-                    {m.benefits?.map((b: string, i: number) => (
-                      <li key={i} className="flex gap-2 items-start">
-                        <span className="text-zontaGold text-lg leading-none">
-                          •
-                        </span>
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={() => navigate(`/membership/apply/${m._id}`)}
-                    className="mt-auto w-full bg-zontaGold text-white font-semibold py-2.5 rounded-md hover:bg-zontaOrange transition"
-                  >
-                    Join Now
-                  </button>
-                </motion.div>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </section>
 

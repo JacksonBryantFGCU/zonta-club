@@ -11,6 +11,21 @@ export default function About() {
     staleTime: 1000 * 60 * 10, // keep fresh for 10 minutes
   });
 
+  // Per-person pixel offsets [x, y] from center.
+  // The image is rendered as a 150%×150% square with object-fit:cover, so it
+  // always fills the circle regardless of the photo's aspect ratio.
+  // Positive x = face moves RIGHT. Positive y = face moves DOWN (shows upper image).
+  // [x, y, scale?] — scale defaults to 1. Increase scale for photos that leave
+  // white edges due to a wide aspect ratio.
+  const imageOffsets: Record<string, [number, number, number?]> = {
+    "Linda Pearson":    [  0,  20],
+    "Lorene Carpenter": [ 5,  25, 1.1],
+    "June Tartar":      [-15,   5],
+    "Susie Mehas":      [  0,   0],
+    "Eunice Usher":     [  0,  20],
+    "Barbara Haman":    [ 10,   0, 1.15],
+  };
+
   return (
     <main className="flex flex-col items-center text-center overflow-hidden -mt-4">
       {/* Hero Section */}
@@ -83,14 +98,26 @@ export default function About() {
                   key={leader._id}
                   className="bg-white border border-zontaGold rounded-xl shadow-md hover:shadow-lg transition flex flex-col items-center p-6"
                 >
-                  {leader.imageUrl ? (
-                    <img
-                      src={leader.imageUrl}
-                      alt={leader.name}
-                      className="w-44 h-44 object-cover rounded-full border-4 border-zontaGold mb-4"
-                    />
-                  ) : (
-                    <div className="w-44 h-44 flex items-center justify-center rounded-full border-4 border-zontaGold mb-4 bg-zontaGold/20 text-zontaDark">
+                  {leader.imageUrl ? (() => {
+                    const [xOff, yOff, scale = 1] = imageOffsets[leader.name] ?? [0, 0];
+                    return (
+                      <div className="w-52 h-52 rounded-full border-4 border-zontaGold mb-4 overflow-hidden relative flex-shrink-0">
+                        <img
+                          src={leader.imageUrl!}
+                          alt={leader.name}
+                          className="absolute"
+                          style={{
+                            width: "130%",
+                            height: "auto",
+                            top: "50%",
+                            left: "50%",
+                            transform: `translate(calc(-50% + ${xOff}px), calc(-50% + ${yOff}px)) scale(${scale})`,
+                          }}
+                        />
+                      </div>
+                    );
+                  })() : (
+                    <div className="w-52 h-52 flex items-center justify-center rounded-full border-4 border-zontaGold mb-4 bg-zontaGold/20 text-zontaDark">
                       No Image
                     </div>
                   )}

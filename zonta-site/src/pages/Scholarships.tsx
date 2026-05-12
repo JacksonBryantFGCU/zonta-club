@@ -1,39 +1,7 @@
-// zonta-site/src/pages/Scholarships.tsx
-
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import HeroImage from "../assets/hero_women_empowerment.jpg";
 
-const fetchPublicScholarships = async () => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/scholarships`);
-  if (!res.ok) throw new Error("Failed to fetch scholarships");
-  return res.json();
-};
-
-interface Scholarship {
-  _id: string;
-  title: string;
-  description?: string;
-  eligibility?: string[];
-  amount?: number;
-  deadline?: string;
-  imageUrl?: string;
-}
-
 export default function Scholarships() {
-  const navigate = useNavigate();
-
-  const {
-    data: scholarships = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["public-scholarships"],
-    queryFn: fetchPublicScholarships,
-    staleTime: 1000 * 60 * 10,
-  });
-
   return (
     <main className="flex flex-col items-center text-center overflow-hidden -mt-4">
       {/* ===== Hero Section ===== */}
@@ -46,87 +14,108 @@ export default function Scholarships() {
 
         <div className="relative z-10 max-w-3xl px-6 text-white">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 drop-shadow-md">
-            Scholarships & Opportunities
+            Scholarships & Awards
           </h1>
           <p className="text-lg sm:text-xl bg-white/70 text-zontaDark px-6 py-3 rounded-lg shadow-md font-medium">
-            The Zonta Club of Naples supports women through education and
-            service. Explore active scholarships below and apply directly online.
+            The Zonta Club of Naples supports women in science, technology,
+            engineering, and mathematics through international awards and
+            recognition.
           </p>
         </div>
       </section>
 
-      {/* ===== Scholarships Section ===== */}
-      <section className="py-20 px-6 bg-white text-zontaDark max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-zontaRed mb-10">
-          Current Scholarships
-        </h2>
+      {/* ===== Award Card ===== */}
+      <section className="py-20 px-6 bg-white text-zontaDark w-full">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="bg-white border border-zontaGold rounded-2xl shadow-md overflow-hidden text-left"
+          >
+            {/* Card header */}
+            <div className="bg-zontaMahogany px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-xl font-bold text-white">
+                Zonta Women in STEM Award
+              </h2>
+              <span className="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                Applications Closed
+              </span>
+            </div>
 
-        {isLoading ? (
-          <p className="text-zontaDark/70">Loading scholarships...</p>
-        ) : isError ? (
-          <p className="text-red-600">Failed to load scholarships.</p>
-        ) : scholarships.length === 0 ? (
-          <p className="text-zontaDark/70">
-            No active scholarships are currently available.
-          </p>
-        ) : (
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-            {scholarships.map((scholarship: Scholarship) => (
-              <motion.div
-                key={scholarship._id}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white border border-zontaGold rounded-xl shadow-md hover:shadow-lg transition overflow-hidden flex flex-col"
+            <div className="p-8 space-y-7">
+              {/* Description */}
+              <p className="text-gray-700 leading-relaxed">
+                The Zonta Women in STEM Award uplifts innovation and celebrates
+                the accomplishments of women ages 18–35 in science, technology,
+                engineering, and mathematics fields. The award recognizes
+                groundbreaking research, pioneering discoveries, and exemplary
+                contributions to advancing knowledge and innovation in STEM.
+              </p>
+
+              {/* Award detail */}
+              <div>
+                <h3 className="text-xs font-semibold text-zontaMahogany uppercase tracking-widest mb-2">
+                  Award
+                </h3>
+                <p className="text-gray-700">
+                  Zonta International offers{" "}
+                  <strong>16 international awards of US$10,000 each</strong> and
+                  a complimentary one-year supporting membership in Zonta
+                  International for the next financial year.
+                </p>
+              </div>
+
+              {/* Eligibility */}
+              <div>
+                <h3 className="text-xs font-semibold text-zontaMahogany uppercase tracking-widest mb-2">
+                  Eligibility
+                </h3>
+                <p className="text-gray-700">
+                  Women ages <strong>18–35</strong> at the time of application
+                  who demonstrate groundbreaking research, pioneering
+                  discoveries, or exemplary contributions in a science,
+                  technology, engineering, or mathematics field of study or
+                  industry.
+                </p>
+              </div>
+
+              {/* Application Status */}
+              <div className="bg-zontaGold/10 border border-zontaGold/30 rounded-xl p-5">
+                <h3 className="text-xs font-semibold text-zontaMahogany uppercase tracking-widest mb-2">
+                  Application Status
+                </h3>
+                <p className="text-gray-700">
+                  The deadline to apply for the 2026 Zonta Women in STEM Award
+                  is now closed. Please check back in{" "}
+                  <strong>September 2026</strong> for information about the next
+                  application cycle.
+                </p>
+              </div>
+
+              {/* Disabled CTA */}
+              <button
+                disabled
+                className="w-full bg-gray-100 text-gray-400 font-semibold py-3 rounded-md cursor-not-allowed"
               >
-                {scholarship.imageUrl && (
-                  <img
-                    src={scholarship.imageUrl}
-                    alt={scholarship.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
+                Applications Currently Closed
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-                <div className="p-6 flex flex-col flex-grow text-left">
-                  <h3 className="text-2xl font-semibold text-zontaRed mb-2">
-                    {scholarship.title}
-                  </h3>
-                  <p className="text-zontaDark/80 text-sm mb-3">
-                    {scholarship.description}
-                  </p>
-
-                  {scholarship.amount && (
-                    <p className="text-sm font-semibold text-zontaGold mb-2">
-                      Award: ${scholarship.amount.toLocaleString()}
-                    </p>
-                  )}
-
-                  {scholarship.deadline && (
-                    <p className="text-sm text-zontaDark/80 mb-3">
-                      Deadline:{" "}
-                      {new Date(scholarship.deadline).toLocaleDateString()}
-                    </p>
-                  )}
-
-                  {scholarship.eligibility && (
-                    <ul className="text-sm list-disc list-inside mb-4 text-zontaDark/70">
-                      {scholarship.eligibility.map((req, i) => (
-                        <li key={i}>{req}</li>
-                      ))}
-                    </ul>
-                  )}
-
-                  <button
-                    onClick={() =>
-                      navigate(`/scholarships/apply/${scholarship._id}`)
-                    }
-                    className="mt-auto bg-zontaGold text-white px-5 py-2 rounded-md hover:bg-zontaRed transition"
-                  >
-                    Apply Now
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+      {/* ===== Contact ===== */}
+      <section className="pb-20 px-6 text-center">
+        <p className="text-gray-600">
+          For questions about our scholarship programs, contact us at{" "}
+          <a
+            href="mailto:info@zontanaples.org"
+            className="text-zontaMahogany underline hover:text-zontaGold transition"
+          >
+            info@zontanaples.org
+          </a>
+        </p>
       </section>
     </main>
   );

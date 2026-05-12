@@ -6,7 +6,6 @@ import {
   fetchMembershipApplications,
   updateMembershipApplicationStatus,
   deleteMembershipApplication,
-  createMembershipPaymentLink,
   type MembershipApplication,
 } from "../../../queries/membershipApplicationQueries";
 
@@ -53,15 +52,6 @@ export default function MembershipApplications() {
       queryClient.invalidateQueries({
         queryKey: ["admin", "membershipApplications"],
       }),
-  });
-
-  // Create payment link
-  const generatePaymentLinkMutation = useMutation({
-    mutationFn: (id: string) => createMembershipPaymentLink(id),
-    onSuccess: (data) => {
-      alert(`Payment link generated:\n\n${data.checkoutUrl}`);
-      navigator.clipboard.writeText(data.checkoutUrl);
-    },
   });
 
   const handleView = (app: MembershipApplication) => {
@@ -122,8 +112,6 @@ export default function MembershipApplications() {
         {applications.map((app) => {
           const price = app.membershipType?.price ?? 0;
           const isFreeTier = price === 0;
-          const showPaymentLink =
-            !isFreeTier && !app.paid && app.status !== "rejected";
 
           const safeStatus = app.status ?? "pending";
 
@@ -187,17 +175,6 @@ export default function MembershipApplications() {
                   Update Status
                 </button>
 
-                {showPaymentLink && (
-                  <button
-                    onClick={() =>
-                      generatePaymentLinkMutation.mutate(app._id)
-                    }
-                    className="px-3 py-1 text-xs bg-zontaMahogany text-white rounded-md hover:bg-zontaRed transition"
-                  >
-                    Payment Link
-                  </button>
-                )}
-
                 <button
                   onClick={() => handleDelete(app._id, app.name)}
                   className="px-3 py-1 text-xs bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition"
@@ -205,6 +182,11 @@ export default function MembershipApplications() {
                   Delete
                 </button>
               </div>
+
+              <p className="mt-3 text-xs text-gray-400 italic">
+                Online membership payments are disabled. Membership dues are
+                now submitted by mailed check.
+              </p>
             </div>
           );
         })}
