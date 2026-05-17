@@ -6,9 +6,16 @@ declare namespace NodeJS {
 
     FRONTEND_URL: string;
 
-    STRIPE_SECRET_KEY: string;
-    STRIPE_WEBHOOK_SECRET: string;
-    STRIPE_SHIPPING_RATE?: string;
+    // Square — required for one-time donation payments
+    SQUARE_ACCESS_TOKEN?: string;
+    SQUARE_LOCATION_ID?: string;
+    SQUARE_ENVIRONMENT?: string; // "sandbox" | "production"
+
+    // Square — not required until recurring donations are wired
+    SQUARE_DONATION_PLAN_VARIATION_ID?: string;
+
+    // Square — not required until webhook verification is wired
+    SQUARE_WEBHOOK_SIGNATURE_KEY?: string;
 
     SANITY_PROJECT_ID: string;
     SANITY_DATASET: string;

@@ -48,7 +48,7 @@ router.get("/:id", async (req, res) => {
 
 /**
  * @route POST /api/public/memberships/apply
- * @desc Submit membership application + Stripe checkout
+ * @desc Submit membership application (dues paid by mailed check)
  */
 router.post("/apply", submitMembershipApplication);
 

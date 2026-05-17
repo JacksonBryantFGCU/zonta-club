@@ -1,18 +1,17 @@
 // zonta-server/server.ts
 
-import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 
-import { handleStripeWebhook } from "./controllers/checkoutController.js";
 import { cleanupUnpaidApplications } from "./controllers/membershipApplicationsController.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { adminLimiter } from "./middlewares/rateLimiter.js";
 import authRoutes from "./routes/authRoutes.js";
-import checkoutRoutes from "./routes/checkoutRoutes.js";
+import squareDonationRoutes from "./routes/squareDonationRoutes.js";
 import donationsRoutes from "./routes/donationsRoutes.js";
+import onlineDonationsRoutes from "./routes/onlineDonationsRoutes.js";
 import eventsRoutes from "./routes/eventsRoutes.js";
 import leadershipRoutes from "./routes/leadershipRoutes.js";
 import membershipApplicationsRoutes from "./routes/membershipApplicationsRoutes.js";
@@ -38,8 +37,15 @@ app.use(
       directives: {
         "default-src": ["'self'"],
         "img-src": ["'self'", "data:", "https:"],
-        "script-src": ["'self'", "https://js.stripe.com"],
-        "frame-src": ["'self'", "https://js.stripe.com"],
+        "script-src": [
+          "'self'",
+          "https://web.squarecdn.com",
+        ],
+        "frame-src": [
+          "'self'",
+          "https://squareupsandbox.com",
+          "https://squareup.com",
+        ],
       },
     },
     crossOriginEmbedderPolicy: false,
@@ -72,15 +78,6 @@ app.use(
 );
 
 /* =========================================================
-   Stripe Webhook
-   ========================================================= */
-app.post(
-  "/api/checkout/webhook",
-  bodyParser.raw({ type: "application/json" }),
-  handleStripeWebhook
-);
-
-/* =========================================================
    JSON Parsing + Rate Limiting
    ========================================================= */
 app.use(express.json({ limit: "10mb" }));
@@ -92,7 +89,7 @@ app.use("/api", adminLimiter);
    PUBLIC API ROUTES  (NO AUTH)
    ========================================================= */
 app.use("/api/auth", authRoutes);
-app.use("/api/checkout", checkoutRoutes);
+app.use("/api/checkout/square", squareDonationRoutes);
 app.use("/api/public/memberships", membershipsPublicRoutes); // 🔥 correct mount
 app.use("/api/public/settings", publicSettingsRouter);
 app.use("/api/scholarships", scholarshipsPublicRoutes); // public scholarships
@@ -108,6 +105,7 @@ app.use("/api/admin/memberships", membershipsRoutes); // admin memberships
 app.use("/api/admin/membership-applications", membershipApplicationsRoutes);
 app.use("/api/admin/leadership", leadershipRoutes);
 app.use("/api/admin/donations", donationsRoutes);
+app.use("/api/admin/online-donations", onlineDonationsRoutes);
 
 /* =========================================================
    ROOT ROUTE

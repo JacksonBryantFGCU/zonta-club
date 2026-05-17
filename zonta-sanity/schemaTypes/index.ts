@@ -8,6 +8,7 @@ import membership from "./membership";
 import membershipApplication from "./membershipApplication";
 import siteSettings from "./siteSettings";
 import donation from "./donation";
+import onlineDonation from "./onlineDonation";
 
 export const schemaTypes = [
   event,
@@ -18,4 +19,5 @@ export const schemaTypes = [
   membershipApplication,
   siteSettings,
   donation,
+  onlineDonation,
 ];

@@ -77,23 +77,3 @@ export async function deleteMembershipApplication(id: string) {
   return res.json();
 }
 
-export async function createMembershipPaymentLink(
-  id: string
-): Promise<{ checkoutUrl: string }> {
-  const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/admin/membership-applications/${id}/payment-link`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: getAuthHeaders().Authorization,
-      },
-    }
-  );
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Failed to create payment link: ${text}`);
-  }
-
-  return res.json();
-}

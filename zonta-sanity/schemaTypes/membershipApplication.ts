@@ -67,13 +67,13 @@ export default defineType({
       name: 'stripeSessionId',
       title: 'Stripe Session ID',
       type: 'string',
-      description: 'Stripe checkout session ID for this payment',
+      description: 'Legacy Stripe field — kept for historical records only. Stripe is no longer used.',
     }),
     defineField({
       name: 'paymentIntentId',
       title: 'Stripe Payment Intent ID',
       type: 'string',
-      description: 'Stripe payment intent ID',
+      description: 'Legacy Stripe field — kept for historical records only. Stripe is no longer used.',
     }),
     defineField({
       name: 'createdAt',
