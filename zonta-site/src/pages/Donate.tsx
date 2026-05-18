@@ -716,8 +716,8 @@ export default function Donate() {
 
       {/* ══════════════════════════════ MISSION STATEMENT ═══════════════════════════ */}
       <section className="py-14 px-6 bg-white">
-        <div className="max-w-3xl mx-auto">
-          <blockquote className="border-l-4 border-zontaGold pl-6">
+        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-8 sm:gap-12">
+          <blockquote className="border-l-4 border-zontaGold pl-6 flex-1">
             <p className="text-gray-700 text-base sm:text-lg leading-relaxed italic">
               The Zonta Club of Naples envisions a world in which women's rights
               are recognized as human rights and everyone is able to achieve her
@@ -726,6 +726,25 @@ export default function Donate() {
               with men. In such a world, no woman lives in fear of violence.
             </p>
           </blockquote>
+
+          <div className="flex flex-col items-center gap-2 flex-shrink-0">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+              Verified Nonprofit
+            </p>
+            <a
+              aria-label="Zonta Foundation of Naples Inc — Candid transparency profile"
+              href="https://app.candid.org/profile/9294309/zonta-foundation-of-naples-inc-46-1196879/?pkId=5917167f-f8cb-42d6-8cf8-e30a42f1478d"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="opacity-90 hover:opacity-100 transition-opacity"
+            >
+              <img
+                alt="Candid Seal of Transparency"
+                src="https://widgets.guidestar.org/prod/v1/pdp/transparency-seal/9294309/svg"
+                className="h-24 w-auto"
+              />
+            </a>
+          </div>
         </div>
       </section>
 
@@ -1409,7 +1428,7 @@ export default function Donate() {
               <button
                 type="submit"
                 disabled={submitting}
-                aria-busy={submitting}
+                aria-busy={submitting ? "true" : "false"}
                 className={`w-full py-4 text-sm font-semibold rounded-xl shadow-sm transition-colors ${
                   submitting
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"

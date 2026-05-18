@@ -49,35 +49,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* What We Do */}
-      <section className="py-20 px-6 bg-white text-zontaDark max-w-7xl mx-auto text-left">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-zontaRed mb-8 text-center">
-            What We Do
-          </h2>
-          <p className="text-lg leading-relaxed mb-8">
-            Zonta Club of Naples brings together individuals who believe in
-            gender equality and want to make a tangible impact in their
-            communities. Our projects and initiatives focus on advocacy,
-            education, and service.
-          </p>
-          <ul className="space-y-4 list-disc list-inside text-lg">
-            <li>
-              <span className="font-semibold text-zontaRed">Advocacy:</span>{" "}
-              Working to influence policies that promote women’s rights and equality.
-            </li>
-            <li>
-              <span className="font-semibold text-zontaRed">Education:</span>{" "}
-              Offering scholarships and recognition awards to empower women through learning.
-            </li>
-            <li>
-              <span className="font-semibold text-zontaRed">Service:</span>{" "}
-              Supporting initiatives that improve safety, dignity, and well-being of women locally.
-            </li>
-          </ul>
-        </div>
-      </section>
-
       {/* Leadership Section */}
       <section className="py-20 px-6 bg-zontaGold/10 w-full">
         <div className="max-w-7xl mx-auto text-center">
@@ -136,6 +107,35 @@ export default function About() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* What We Do */}
+      <section className="py-20 px-6 bg-white text-zontaDark max-w-7xl mx-auto text-left">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl font-bold text-zontaRed mb-8 text-center">
+            What We Do
+          </h2>
+          <p className="text-lg leading-relaxed mb-8">
+            Zonta Club of Naples brings together individuals who believe in
+            gender equality and want to make a tangible impact in their
+            communities. Our projects and initiatives focus on advocacy,
+            education, and service.
+          </p>
+          <ul className="space-y-4 list-disc list-inside text-lg">
+            <li>
+              <span className="font-semibold text-zontaRed">Advocacy:</span>{" "}
+              Working to influence policies that promote women’s rights and equality.
+            </li>
+            <li>
+              <span className="font-semibold text-zontaRed">Education:</span>{" "}
+              Offering scholarships and recognition awards to empower women through learning.
+            </li>
+            <li>
+              <span className="font-semibold text-zontaRed">Service:</span>{" "}
+              Supporting initiatives that improve safety, dignity, and well-being of women locally.
+            </li>
+          </ul>
         </div>
       </section>
     </main>
