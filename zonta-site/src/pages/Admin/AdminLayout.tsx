@@ -14,7 +14,7 @@ import {
   Heart,
   FileText,
 } from "lucide-react";
-import ZontaLogo from "../../assets/Zonta_emblem.png";
+import ZontaLogo from "../../assets/logos/zonta-emblem.png";
 
 type NavItem = {
   to: string;

@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { fetchLeadership, type Leader } from "../queries/leadershipQueries";
-import HeroImage from "../assets/hero_about.jpeg";
+import HeroImage from "../assets/heroes/about-hero.jpeg";
 
 export default function About() {
   const { data: leaders = [], isLoading, isError } = useQuery({

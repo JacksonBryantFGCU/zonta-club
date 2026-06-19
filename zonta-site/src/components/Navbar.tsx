@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ZontaLogo from "../assets/Zonta_emblem.png";
+import ZontaLogo from "../assets/logos/zonta-emblem.png";
 import { useAnnouncementBanner } from "../hooks/useAnnouncementBanner";
 
 export default function Navbar() {
@@ -17,7 +17,7 @@ export default function Navbar() {
     { name: "Home", path: "/" },
     { name: "Who We Are", path: "/about" },
     { name: "Scholarships", path: "/scholarships" },
-    { name: "Memberships", path: "/membership" },
+    { name: "Membership", path: "/membership" },
   ];
 
   //  Smooth background + shadow on scroll

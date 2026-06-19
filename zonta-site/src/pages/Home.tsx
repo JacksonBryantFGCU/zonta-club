@@ -1,9 +1,15 @@
 // zonta-site/src/pages/Home.tsx
 
 import { useEffect, useState } from "react";
-import HeroImage1 from "../assets/hero_women_empowerment.jpg";
-import HeroImage2 from "../assets/hero_women2.jpeg";
-import HeroImage3 from "../assets/hero_women3.jpg";
+import GroupBanner from "../assets/carousel/group-banner.jpg";
+import MallBooth from "../assets/carousel/mall-booth.jpeg";
+import VolunteersFlyer from "../assets/carousel/volunteers-flyer.jpg";
+import GroupWithOfficer from "../assets/carousel/group-with-officer.jpeg";
+import AwardPresentation from "../assets/carousel/award-presentation.jpg";
+import DonationCheck from "../assets/carousel/donation-check.jpg";
+import Conference from "../assets/carousel/conference.jpeg";
+import HabitatRestore from "../assets/carousel/habitat-restore.jpg";
+import PhotoCollage from "../assets/carousel/photo-collage.png";
 
 import { sanity } from "../lib/sanityClient";
 import groq from "groq";
@@ -12,12 +18,12 @@ import PartnerCard from "../components/PartnerCard";
 import { useNavigate } from "react-router-dom";
 
 // Partner logos
-import ACSLogo from "../assets/acs-sponsor.png";
-import HabitatLogo from "../assets/habitatforhumanity-sponsor.png";
-import PACELogo from "../assets/pace-sponsor.png";
-import Path2FreedomLogo from "../assets/path2freedom-sponsor.jpg";
-import ProjectHelpLogo from "../assets/project-help-sponsor.png";
-import ShelterLogo from "../assets/shelter-sponsor.jpg";
+import ACSLogo from "../assets/sponsors/acs.png";
+import HabitatLogo from "../assets/sponsors/habitat-for-humanity.png";
+import PACELogo from "../assets/sponsors/pace.png";
+import Path2FreedomLogo from "../assets/sponsors/path2freedom.jpg";
+import ProjectHelpLogo from "../assets/sponsors/project-help.png";
+import ShelterLogo from "../assets/sponsors/shelter.jpg";
 
 interface Event {
   _id: string;
@@ -34,7 +40,27 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   // ===== HERO CAROUSEL SETUP =====
-  const heroImages = [HeroImage1, HeroImage2, HeroImage3];
+  // Each slide is configured independently so its zoom/cropping can be
+  // tuned later without affecting the other images.
+  //   fit:      "cover"   = fills the frame (may crop edges) — best for wide photos
+  //             "contain" = shows the whole image (no cropping, letterboxed)
+  //   position: which part stays in view when "cover" crops (e.g. "center top")
+  type HeroSlide = {
+    src: string;
+    fit: "cover" | "contain";
+    position?: string;
+  };
+  const heroImages: HeroSlide[] = [
+    { src: GroupBanner, fit: "cover", position: "center" }, // lead image
+    { src: MallBooth, fit: "contain", position: "center" },
+    { src: VolunteersFlyer, fit: "contain", position: "center" },
+    { src: GroupWithOfficer, fit: "contain", position: "center" },
+    { src: AwardPresentation, fit: "contain", position: "center" }, // portrait
+    { src: DonationCheck, fit: "contain", position: "center" },
+    { src: Conference, fit: "contain", position: "center" },
+    { src: HabitatRestore, fit: "contain", position: "center" }, // portrait
+    { src: PhotoCollage, fit: "contain", position: "center" },
+  ];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -72,21 +98,34 @@ export default function Home() {
       {/* ===== HERO CAROUSEL SECTION ===== */}
       <section className="relative min-h-[90vh] flex flex-col justify-center items-center w-full text-center overflow-hidden">
         {/* Background Carousel */}
-        {heroImages.map((img, i) => (
+        {heroImages.map((slide, i) => (
           <div
             key={i}
-            className={`
-              absolute inset-0 
-              bg-cover
-              bg-center
-              sm:bg-center
-              bg-no-repeat
-              transition-opacity duration-[1500ms]
-              ${currentIndex === i ? "opacity-100" : "opacity-0"}
-            `}
-            style={{ backgroundImage: `url(${img})` }}
-          />
+            aria-hidden={currentIndex !== i}
+            className={`absolute inset-0 transition-opacity duration-[1500ms] ${
+              currentIndex === i ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {/* Blurred fill so "contain" images don't show empty bars */}
+            <div
+              className="absolute inset-0 bg-cover bg-center blur-2xl scale-110"
+              style={{ backgroundImage: `url(${slide.src})` }}
+            />
+            {/* The image itself — whole (contain) or filling (cover) */}
+            <div
+              className="absolute inset-0 bg-no-repeat"
+              style={{
+                backgroundImage: `url(${slide.src})`,
+                backgroundSize: slide.fit,
+                backgroundPosition: slide.position ?? "center",
+              }}
+            />
+          </div>
         ))}
+
+        {/* Dark scrim — keeps the white heading readable over every image,
+            including light backgrounds like the flyer and the check */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/55 to-black/40" />
 
         {/* Previous Button */}
         <button

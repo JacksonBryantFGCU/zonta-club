@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import HeroImage from "../assets/hero_women_empowerment.jpg";
+import HeroImage from "../assets/heroes/women-empowerment-hero.jpg";
 
 export default function Scholarships() {
   return (

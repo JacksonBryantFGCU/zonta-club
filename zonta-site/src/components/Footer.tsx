@@ -2,7 +2,7 @@
 
 import { Mail } from "lucide-react";
 import { FaFacebook } from "react-icons/fa";
-import ZontaLogo from "../assets/Zonta_emblem.png";
+import ZontaLogo from "../assets/logos/zonta-emblem.png";
 
 export default function Footer() {
   return (

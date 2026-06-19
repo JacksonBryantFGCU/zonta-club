@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import HeroImage from "../assets/hero_women2.jpeg";
+import HeroImage from "../assets/heroes/membership-hero.jpeg";
+import MembershipBrochure from "../assets/membership/membership-brochure.jpg";
 
 export default function Membership() {
   return (
@@ -32,42 +33,31 @@ export default function Membership() {
         </motion.div>
       </section>
 
-      {/* ================= WHY JOIN ================= */}
-      <section className="max-w-6xl mx-auto px-6 py-0">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-zontaMahogany mb-12">
-          Why Join Zonta?
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-10">
-          {[
-            {
-              title: "Community Impact",
-              text: "Support local service projects and empower women and girls in Naples and beyond.",
-            },
-            {
-              title: "Leadership Growth",
-              text: "Develop leadership skills and participate in meaningful advocacy opportunities.",
-            },
-            {
-              title: "Networking & Connection",
-              text: "Join a supportive community of inspiring women and build lifelong friendships.",
-            },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-white rounded-2xl p-8 border border-zontaGold/40 shadow-[0_8px_30px_rgba(0,0,0,0.05)]"
-            >
-              <h3 className="text-xl font-semibold text-zontaMahogany mb-3">
-                {item.title}
-              </h3>
-              <p className="text-gray-700">{item.text}</p>
-            </motion.div>
-          ))}
-        </div>
+      {/* ================= MEMBERSHIP DOCUMENT ================= */}
+      <section className="max-w-5xl mx-auto px-6 py-0">
+        <a
+          href="/documents/zonta-membership.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block rounded-2xl overflow-hidden border border-zontaGold/40 shadow-[0_8px_30px_rgba(0,0,0,0.05)]"
+          aria-label="Open the Zonta Club of Naples membership brochure (PDF)"
+        >
+          <img
+            src={MembershipBrochure}
+            alt="Zonta Club of Naples membership brochure — the world we envision and what we stand for"
+            className="w-full h-auto"
+          />
+        </a>
+        <p className="text-center mt-4">
+          <a
+            href="/documents/zonta-membership.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-zontaMahogany underline font-medium hover:text-zontaGold transition"
+          >
+            Open the membership brochure (PDF)
+          </a>
+        </p>
       </section>
 
       {/* ================= HOW TO APPLY ================= */}
@@ -131,21 +121,11 @@ export default function Membership() {
             </address>
           </div>
 
-          {/* Payment method note */}
-          <div className="bg-zontaGold/10 border border-zontaGold/30 rounded-xl p-5 mb-6 text-sm text-gray-700">
-            <p>
-              <strong>Note:</strong> Membership dues must be submitted by check
-              with your mailed application. Please make checks payable to{" "}
-              <strong>"Zonta Club of Naples"</strong>.
-            </p>
-          </div>
-
           {/* Board review note */}
           <div className="bg-white rounded-2xl border border-zontaGold/40 shadow-sm p-6 text-sm text-gray-600">
             <p>
-              Your application will be reviewed by the Club's Board of
-              Directors. If your application is not approved, your check will be
-              returned.
+              Once your application is approved you will be notified. A refund
+              will be issued for any rejected applications.
             </p>
           </div>
         </div>
@@ -163,10 +143,10 @@ export default function Membership() {
           </p>
 
           <a
-            href="mailto:zonta_naples@gmail.com"
+            href="mailto:lindakay03@yahoo.com"
             className="text-zontaMahogany underline font-medium hover:text-zontaGold transition"
           >
-            info@zontanaples.org
+            lindakay03@yahoo.com
           </a>
         </div>
       </section>

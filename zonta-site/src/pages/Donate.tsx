@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { usePublicSettings } from "../queries/publicSettingsQueries";
-import HeroImage from "../assets/hero_women_empowerment.jpg";
+import HeroImage from "../assets/heroes/women-empowerment-hero.jpg";
 
 // ── Square Web Payments SDK types (minimal) ────────────────────────────────
 
