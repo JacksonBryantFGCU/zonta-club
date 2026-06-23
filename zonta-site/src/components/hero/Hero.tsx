@@ -9,6 +9,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { heroSlides } from "./heroImages";
 
+// ADAPTIVE-BOX TEST: height of the photo stage at each breakpoint. Bump these
+// up/down to make every image larger/smaller. (Used only by the adaptive box.)
+const BOX_STAGE = "h-[20rem] sm:h-[24rem] lg:h-[30rem]";
+
 export default function Hero() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,9 +48,12 @@ export default function Hero() {
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-6 py-16 sm:px-8 lg:grid-cols-2 lg:gap-14 lg:py-24">
         {/* ===== Left: brand panel ===== */}
-        <div className="max-w-xl">
+        {/* Centered when stacked (phone/tablet) so the text block is balanced on
+            its own; left-aligned in the two-column desktop split where it's
+            anchored by the photo beside it. */}
+        <div className="mx-auto max-w-xl text-center lg:mx-0 lg:text-left">
           {/* Eyebrow */}
-          <div className="mb-6 flex items-center gap-3">
+          <div className="mb-6 flex items-center justify-center gap-3 lg:justify-start">
             <span className="h-px w-10 bg-zontaGold" />
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-zontaGold sm:text-sm">
               Naples, Florida
@@ -60,14 +67,14 @@ export default function Hero() {
           </h1>
 
           {/* Supporting copy */}
-          <p className="mt-6 max-w-lg text-base leading-relaxed text-white/80 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-white/80 sm:text-lg lg:mx-0">
             The Zonta Club of Naples advances the status of women locally and
             globally — creating real change through compassion, education, and
             advocacy.
           </p>
 
           {/* CTAs */}
-          <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:items-start lg:justify-start">
             <button
               onClick={() => navigate("/about")}
               className="group inline-flex items-center justify-center gap-2 rounded-lg bg-zontaGold px-7 py-3.5 font-semibold text-zontaMahogany shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-zontaLightGold hover:shadow-xl active:translate-y-0 active:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
@@ -85,88 +92,84 @@ export default function Hero() {
             </button>
           </div>
 
-          {/* Slide indicators */}
-          <div className="mt-12 flex items-center gap-2" role="tablist" aria-label="Hero slides">
-            {heroSlides.map((slide, i) => (
+          {/* Carousel controls — kept here in the brand panel (not over the
+              photo) so they sit in one consistent place regardless of each
+              image's size. Dots + arrows + counter. */}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-4 lg:justify-start">
+            {/* Slide indicators */}
+            <div className="flex items-center gap-2" role="tablist" aria-label="Hero slides">
+              {heroSlides.map((slide, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  aria-label={`Show slide ${i + 1}: ${slide.alt}`}
+                  aria-selected={currentIndex === i}
+                  role="tab"
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    currentIndex === i
+                      ? "w-8 bg-zontaGold"
+                      : "w-3 bg-white/30 hover:bg-white/55"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Arrows + counter */}
+            <div className="flex items-center gap-3">
               <button
+                onClick={handlePrevious}
+                aria-label="Previous image"
+                className="rounded-full border border-white/30 p-2 text-white transition-all duration-300 hover:border-zontaGold hover:bg-white/5 hover:text-zontaGold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-4 w-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+              </button>
+              <span className="min-w-[3.5rem] text-center font-mono text-xs tracking-widest text-white/70">
+                {counter(currentIndex + 1)} / {counter(total)}
+              </span>
+              <button
+                onClick={handleNext}
+                aria-label="Next image"
+                className="rounded-full border border-white/30 p-2 text-white transition-all duration-300 hover:border-zontaGold hover:bg-white/5 hover:text-zontaGold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-4 w-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== Right: photo carousel ===== */}
+        {/* ▼▼▼ ADAPTIVE-BOX TEST ▼▼▼
+            Experimental "stabilized adjustable box": a fixed-height stage in
+            which each image is shown in full at its natural shape (no crop, no
+            blur fill), framed and centered. Portrait photos fill the height;
+            landscape photos sit centered with breathing room above/below.
+            To revert to the fixed framed-crop carousel, restore this block from
+            git history (commit 2ab0941). BOX_STAGE below tunes the height. */}
+        <div className="relative">
+          {/* Stage: stable height keeps the hero from jumping between slides. */}
+          <div className={`relative w-full ${BOX_STAGE}`}>
+            {heroSlides.map((slide, i) => (
+              <div
                 key={i}
-                onClick={() => setCurrentIndex(i)}
-                aria-label={`Show slide ${i + 1}: ${slide.alt}`}
-                aria-selected={currentIndex === i}
-                role="tab"
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  currentIndex === i
-                    ? "w-8 bg-zontaGold"
-                    : "w-3 bg-white/30 hover:bg-white/55"
+                aria-hidden={currentIndex !== i}
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-[1200ms] ${
+                  currentIndex === i ? "opacity-100" : "opacity-0"
                 }`}
-              />
+              >
+                <img
+                  src={slide.src}
+                  alt={currentIndex === i ? slide.alt : ""}
+                  className="max-h-full max-w-full rounded-2xl object-contain shadow-2xl ring-1 ring-zontaGold/20"
+                />
+              </div>
             ))}
           </div>
         </div>
-
-        {/* ===== Right: framed photo carousel ===== */}
-        <div className="relative">
-          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-zontaGold/20 sm:aspect-[5/4] lg:aspect-[4/5]">
-            {heroSlides.map((slide, i) => {
-              const contain = slide.fit === "contain";
-              return (
-                <div
-                  key={i}
-                  aria-hidden={currentIndex !== i}
-                  className={`absolute inset-0 transition-opacity duration-[1200ms] ${
-                    currentIndex === i ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  {/* Blurred fill so contained (wide) images don't show empty bars */}
-                  {contain && (
-                    <div
-                      className="absolute inset-0 scale-110 bg-cover bg-center blur-xl"
-                      style={{ backgroundImage: `url(${slide.src})` }}
-                    />
-                  )}
-                  <img
-                    src={slide.src}
-                    alt={currentIndex === i ? slide.alt : ""}
-                    className={`absolute inset-0 h-full w-full object-center ${
-                      contain ? "object-contain p-3" : "object-cover"
-                    }`}
-                  />
-                </div>
-              );
-            })}
-
-            {/* Gentle bottom gradient so the counter stays legible */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 to-transparent" />
-
-            {/* Prev / Next */}
-            <button
-              onClick={handlePrevious}
-              aria-label="Previous image"
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-zontaMahogany/55 p-2.5 text-white backdrop-blur-sm transition-all duration-300 hover:bg-zontaMahogany/80 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-5 w-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-            </button>
-            <button
-              onClick={handleNext}
-              aria-label="Next image"
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-zontaMahogany/55 p-2.5 text-white backdrop-blur-sm transition-all duration-300 hover:bg-zontaMahogany/80 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-5 w-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
-            </button>
-
-            {/* Counter */}
-            <div className="absolute bottom-4 left-4 rounded-md bg-black/45 px-3 py-1 font-mono text-xs tracking-widest text-white backdrop-blur-sm">
-              {counter(currentIndex + 1)} / {counter(total)}
-            </div>
-          </div>
-
-          {/* Decorative offset frame behind the image */}
-          <div className="absolute -bottom-5 -right-5 -z-10 hidden h-full w-full rounded-2xl border-[3px] border-zontaGold/70 lg:block" />
-        </div>
+        {/* ▲▲▲ END ADAPTIVE-BOX TEST ▲▲▲ */}
       </div>
     </section>
   );

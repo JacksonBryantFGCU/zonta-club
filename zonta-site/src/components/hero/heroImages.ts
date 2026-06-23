@@ -20,14 +20,21 @@ export type HeroSlide = {
   // check) are shown whole ("contain") so nothing important is cut off.
   // Defaults to "cover" when omitted.
   fit?: "cover" | "contain";
+  // CSS object-position controlling which part of a "cover" photo stays in
+  // view when the frame crops it (e.g. "center top" to favor faces over feet).
+  // Defaults to "center" when omitted.
+  position?: string;
 };
 
 export const heroSlides: HeroSlide[] = [
   { src: GroupBanner, alt: "Zonta Club of Naples members gathered at a club event" },
   { src: MallBooth, alt: "Members staffing a Zonta outreach booth" },
   { src: VolunteersFlyer, alt: "Zonta volunteers event flyer", fit: "contain" },
-  { src: GroupWithOfficer, alt: "Members standing beside the Zonta Club of Naples banner" },
-  { src: AwardPresentation, alt: "Award presentation at a Zonta event" },
+  // Wide group shot — show the whole frame so the member in red on the left
+  // edge isn't cropped out.
+  { src: GroupWithOfficer, alt: "Members standing beside the Zonta Club of Naples banner", fit: "contain" },
+  // Crop higher so faces show rather than feet.
+  { src: AwardPresentation, alt: "Award presentation at a Zonta event", position: "center top" },
   { src: DonationCheck, alt: "Zonta Club of Naples presenting a $30,000 donation check", fit: "contain" },
   { src: Conference, alt: "Zonta International conference session" },
   { src: HabitatRestore, alt: "Members volunteering at the Habitat ReStore" },
