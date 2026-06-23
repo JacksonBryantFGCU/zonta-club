@@ -13,13 +13,13 @@ export default function Hero() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Auto-advance every 6s. Keyed on currentIndex so the timer restarts from a
-  // full 6s whenever the slide changes by any means (auto, arrows, or dots) —
+  // Auto-advance every 8s. Keyed on currentIndex so the timer restarts from a
+  // full 8s whenever the slide changes by any means (auto, arrows, or dots) —
   // clicking "next" never looks like it skipped two images.
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((i) => (i === heroSlides.length - 1 ? 0 : i + 1));
-    }, 6000);
+    }, 8000);
     return () => clearInterval(interval);
   }, [currentIndex]);
 
