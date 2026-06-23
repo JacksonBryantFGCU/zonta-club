@@ -10,6 +10,12 @@ body {
   .container {
     @apply max-w-6xl mx-auto px-4;
   }
+
+  /* Editorial serif for the home page hero headline.
+     Scoped to this class so other pages are unaffected. */
+  .font-display {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  }
 }
 
 #nprogress .bar {

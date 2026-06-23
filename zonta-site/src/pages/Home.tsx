@@ -1,20 +1,11 @@
 // zonta-site/src/pages/Home.tsx
 
 import { useEffect, useState } from "react";
-import GroupBanner from "../assets/carousel/group-banner.jpg";
-import MallBooth from "../assets/carousel/mall-booth.jpeg";
-import VolunteersFlyer from "../assets/carousel/volunteers-flyer.jpg";
-import GroupWithOfficer from "../assets/carousel/group-with-officer.jpeg";
-import AwardPresentation from "../assets/carousel/award-presentation.jpg";
-import DonationCheck from "../assets/carousel/donation-check.jpg";
-import Conference from "../assets/carousel/conference.jpeg";
-import HabitatRestore from "../assets/carousel/habitat-restore.jpg";
-import PhotoCollage from "../assets/carousel/photo-collage.png";
-
 import { sanity } from "../lib/sanityClient";
 import groq from "groq";
 import EventCard from "../components/EventCard";
 import PartnerCard from "../components/PartnerCard";
+import Hero from "../components/hero/Hero";
 import { useNavigate } from "react-router-dom";
 
 // Partner logos
@@ -39,38 +30,6 @@ export default function Home() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ===== HERO CAROUSEL SETUP =====
-  // Each slide is configured independently so its zoom/cropping can be
-  // tuned later without affecting the other images.
-  //   fit:      "cover"   = fills the frame (may crop edges) — best for wide photos
-  //             "contain" = shows the whole image (no cropping, letterboxed)
-  //   position: which part stays in view when "cover" crops (e.g. "center top")
-  type HeroSlide = {
-    src: string;
-    fit: "cover" | "contain";
-    position?: string;
-  };
-  const heroImages: HeroSlide[] = [
-    { src: GroupBanner, fit: "cover", position: "center" }, // lead image
-    { src: MallBooth, fit: "contain", position: "center" },
-    { src: VolunteersFlyer, fit: "contain", position: "center" },
-    { src: GroupWithOfficer, fit: "contain", position: "center" },
-    { src: AwardPresentation, fit: "contain", position: "center" }, // portrait
-    { src: DonationCheck, fit: "contain", position: "center" },
-    { src: Conference, fit: "contain", position: "center" },
-    { src: HabitatRestore, fit: "contain", position: "center" }, // portrait
-    { src: PhotoCollage, fit: "contain", position: "center" },
-  ];
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((i) => (i === heroImages.length - 1 ? 0 : i + 1));
-    }, 6000); // rotate every 6s
-
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
-
   // ===== FETCH EVENTS =====
   useEffect(() => {
     const query = groq`*[_type == "event"] | order(date desc)[0..2]{
@@ -85,149 +44,10 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handlePrevious = () => {
-    setCurrentIndex((i) => (i === 0 ? heroImages.length - 1 : i - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((i) => (i === heroImages.length - 1 ? 0 : i + 1));
-  };
-
   return (
     <main className="flex flex-col items-center justify-center text-center overflow-hidden -mt-4 font-body">
-      {/* ===== HERO CAROUSEL SECTION ===== */}
-      <section className="relative min-h-[90vh] flex flex-col justify-center items-center w-full text-center overflow-hidden">
-        {/* Background Carousel */}
-        {heroImages.map((slide, i) => (
-          <div
-            key={i}
-            aria-hidden={currentIndex !== i}
-            className={`absolute inset-0 transition-opacity duration-[1500ms] ${
-              currentIndex === i ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            {/* Blurred fill so "contain" images don't show empty bars */}
-            <div
-              className="absolute inset-0 bg-cover bg-center blur-2xl scale-110"
-              style={{ backgroundImage: `url(${slide.src})` }}
-            />
-            {/* The image itself — whole (contain) or filling (cover) */}
-            <div
-              className="absolute inset-0 bg-no-repeat"
-              style={{
-                backgroundImage: `url(${slide.src})`,
-                backgroundSize: slide.fit,
-                backgroundPosition: slide.position ?? "center",
-              }}
-            />
-          </div>
-        ))}
-
-        {/* Dark scrim — keeps the white heading readable over every image,
-            including light backgrounds like the flyer and the check */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/55 to-black/40" />
-
-        {/* Previous Button */}
-        <button
-          onClick={handlePrevious}
-          className="absolute left-4 z-20 bg-white/30 hover:bg-white/50 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110"
-          aria-label="Previous image"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 19.5L8.25 12l7.5-7.5"
-            />
-          </svg>
-        </button>
-
-        {/* Next Button */}
-        <button
-          onClick={handleNext}
-          className="absolute right-4 z-20 bg-white/30 hover:bg-white/50 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110"
-          aria-label="Next image"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8.25 4.5l7.5 7.5-7.5 7.5"
-            />
-          </svg>
-        </button>
-
-        {/* Carousel Indicators */}
-        <div className="absolute bottom-24 z-20 flex gap-2">
-          {heroImages.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                currentIndex === i
-                  ? "bg-white w-8"
-                  : "bg-white/50 hover:bg-white/75"
-              }`}
-              aria-label={`Go to image ${i + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Foreground Content */}
-        <div className="relative z-10 px-4 sm:px-6 lg:px-8 max-w-4xl text-white drop-shadow-lg">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-heading font-bold leading-tight mb-6">
-            Empowering Women <br className="hidden sm:block" /> Through Service
-            & Advocacy
-          </h1>
-
-          <p className="text-lg sm:text-xl bg-white/90 text-zontaMahogany px-6 py-3 rounded-lg max-w-2xl mx-auto font-medium shadow-sm border-2 border-zontaCyan/30">
-            The Zonta Club of Naples advances the status of women locally and
-            globally — creating real change through compassion, education, and
-            advocacy.
-          </p>
-
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate("/about")}
-              className="bg-zontaMahogany text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaCyan hover:scale-105 transition-all duration-300"
-            >
-              Learn More
-            </button>
-            <button
-              onClick={() => navigate("/donate")}
-              className="bg-white text-zontaMahogany font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-zontaLightGold hover:text-white hover:scale-105 border-2 border-zontaLightGold transition-all duration-300"
-            >
-              Donate
-            </button>
-          </div>
-        </div>
-
-        {/* Decorative Wave */}
-        <svg
-          className="absolute bottom-0 left-0 w-full text-white -mb-1"
-          viewBox="0 0 1440 320"
-          preserveAspectRatio="none"
-        >
-          <path
-            fill="currentColor"
-            d="M0,224L60,202.7C120,181,240,139,360,154.7C480,171,600,245,720,250.7C840,256,960,192,1080,154.7C1200,117,1320,107,1380,101.3L1440,96L1440,320L0,320Z"
-          ></path>
-        </svg>
-      </section>
+      {/* ===== HERO SECTION ===== */}
+      <Hero />
 
       {/* ===== Mission Section ===== */}
       <section className="py-20 px-6 bg-white text-gray-800 max-w-7xl mx-auto -mt-1">
