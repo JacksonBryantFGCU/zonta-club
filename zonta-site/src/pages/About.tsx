@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchLeadership, type Leader } from "../queries/leadershipQueries";
 import HeroImage from "../assets/heroes/about-hero.jpeg";
+import EuniceUsherPhoto from "../assets/leadership/eunice-usher.jpg";
 
 export default function About() {
   const { data: leaders = [], isLoading, isError } = useQuery({
@@ -17,6 +18,10 @@ export default function About() {
   // Positive x = face moves RIGHT. Positive y = face moves DOWN (shows upper image).
   // [x, y, scale?] — scale defaults to 1. Increase scale for photos that leave
   // white edges due to a wide aspect ratio.
+  const localImages: Record<string, string> = {
+    "Eunice Usher": EuniceUsherPhoto,
+  };
+
   const imageOffsets: Record<string, [number, number, number?]> = {
     "Linda Pearson":    [  0,  20],
     "Lorene Carpenter": [ 5,  25, 1.1],
@@ -69,12 +74,13 @@ export default function About() {
                   key={leader._id}
                   className="bg-white border border-zontaGold rounded-xl shadow-md hover:shadow-lg transition flex flex-col items-center p-6"
                 >
-                  {leader.imageUrl ? (() => {
+                  {(leader.imageUrl || localImages[leader.name]) ? (() => {
                     const [xOff, yOff, scale = 1] = imageOffsets[leader.name] ?? [0, 0];
+                    const imageSrc = localImages[leader.name] ?? leader.imageUrl!;
                     return (
                       <div className="w-52 h-52 rounded-full border-4 border-zontaGold mb-4 overflow-hidden relative flex-shrink-0">
                         <img
-                          src={leader.imageUrl!}
+                          src={imageSrc}
                           alt={leader.name}
                           className="absolute"
                           style={{

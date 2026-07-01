@@ -10,7 +10,7 @@ import AwardPresentation from "../../assets/carousel/award-presentation.jpg";
 import DonationCheck from "../../assets/carousel/donation-check.jpg";
 import Conference from "../../assets/carousel/conference.jpeg";
 import HabitatRestore from "../../assets/carousel/habitat-restore.jpg";
-import PhotoCollage from "../../assets/carousel/photo-collage.png";
+import CarouselLast from "../../assets/carousel/Carousel-last.jpeg";
 
 export type HeroSlide = {
   src: string;
@@ -38,5 +38,5 @@ export const heroSlides: HeroSlide[] = [
   { src: DonationCheck, alt: "Zonta Club of Naples presenting a $30,000 donation check", fit: "contain" },
   { src: Conference, alt: "Zonta International conference session" },
   { src: HabitatRestore, alt: "Members volunteering at the Habitat ReStore" },
-  { src: PhotoCollage, alt: "Collage of Zonta Club of Naples activities", fit: "contain" },
+  { src: CarouselLast, alt: "Zonta Club of Naples members", fit: "contain" },
 ];
